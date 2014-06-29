@@ -1,0 +1,5 @@
+A fully catkin-ized version of manipulation using doro.
+
+grasp_pose_generator ===> This creates 4 hardcoded grasp poses from the position of the object to be grasped.
+
+doro_manipulation    ===> This provides a convenience interface to moveit.
