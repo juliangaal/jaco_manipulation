@@ -5,47 +5,56 @@
  *      Author: Chittaranjan Srinivas Swaminathan
  */
 
-#include "doro_manipulation.h"
+#include "doro_manipulation/doro_manipulation.h"
 
-DoroManipulation::DoroManipulation() : group("arm")
+namespace doro_manipulation
 {
-	// TODO Auto-generated constructor stub
+DoroManipulation::DoroManipulation() : group_("arm"), pam_server_(nh_, "plan_and_move_arm", boost::bind(&DoroManipulation::processGoal, this, _1), false)
+{
 	ROS_INFO("Initializing Doro Manipulation!");
 
-	ros::NodeHandle nh;
+	finger_pub_ = nh_.advertise<std_msgs::Float32MultiArray>("/finger_command", 1);
+	pub_ptu_ = nh_.advertise<sensor_msgs::JointState>("/ptu/cmd", 1);
 
-	grasp_pose_sub = nh.subscribe("/grasp_poses", 1, &DoroManipulation::graspPosesCallback, this);
-
-	table_position_sub = nh.subscribe("/table_position", 1, &DoroManipulation::tablePositionCallback, this);
-
-	table_coeffs_sub = nh.subscribe("/table_coeffs", 1, &DoroManipulation::tableCoeffsCallback, this);
-
-	velocity_pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
-
-	finger_pub = nh.advertise<jaco_msgs::FingerPosition>("/cmd_abs_finger", 1);
-	pub_ptu = nh.advertise<sensor_msgs::JointState>("/ptu/cmd", 1);
-
-	pose_list.grasp_poses.resize(4);
-	pose_list.pregrasp_poses.resize(4);
-
-	table_coeffs.values.resize(4);
-	tf_listener = new tf::TransformListener(ros::Duration(10));
+	tf_listener_ = boost::shared_ptr<tf::TransformListener>(new tf::TransformListener(ros::Duration(10)));
 	
-	group.setPlanningTime(10);
-
-	aligned = false;
-	near = false;
+	group_.setPlanningTime(10);
+	pam_server_.start();
+	ROS_INFO("Plan and Move Server has started.");
 }
 
-void DoroManipulation::resetValues()
+void DoroManipulation::processGoal(const doro_manipulation::PlanAndMoveArmGoalConstPtr& _goal)
 {
-	pose_list.grasp_poses.clear();
-	pose_list.pregrasp_poses.clear();
-	table_coeffs.values.clear();
-	
-	pose_list.grasp_poses.resize(4);
-	pose_list.pregrasp_poses.resize(4);
-	table_coeffs.values.resize(4);
+	ROS_INFO("Got a goal. Working on it...");
+
+	bool result_value;
+
+	if(_goal->goal_type.compare("pose") == 0)
+	{
+		ROS_INFO("*************");
+		ROS_INFO("*Pose target*");
+		ROS_INFO("*************");
+		result_value = planAndMove(_goal->target_pose);
+	}
+	else
+	{
+		ROS_INFO("**************");
+		ROS_INFO("*Named target*");
+		ROS_INFO("**************");
+		result_value = planAndMove(_goal->goal_type);
+	}
+
+	if(result_value)
+	{
+		ROS_INFO("Sam was a showing scalp flat top... Action succeeded.");
+		pam_server_.setSucceeded();
+	}
+
+	else
+	{
+		ROS_INFO("For some reason the execution failed... Action aborted/failed.");
+		pam_server_.setAborted();
+	}
 }
 
 void DoroManipulation::tiltPtu(float value)
@@ -69,117 +78,20 @@ void DoroManipulation::tiltPtu(float value)
 	ptu_msg.velocity[1]=0.5;
 
 	sleep(1);
-	pub_ptu.publish(ptu_msg);
+	pub_ptu_.publish(ptu_msg);
 	sleep(1);
 
 	ROS_INFO("TILTED PTU");
 }
 
-/**
- *  Callback that stores the pose of the cylinder (in the /jaco_base_link frame)  in the
- *  variable cylinder_pose
- */
-void DoroManipulation::graspPosesCallback(const doro_msgs::GraspPosesConstPtr& _list)
-{
-	//ROS_INFO("CALLBACK CYLINDER!");
-	pose_list = *_list;
-	//ROS_INFO("CALLBACK CYLINDER DONE!");
-}
-
-/**
- *  Function to return the current value of the cylinder pose
- */
-doro_msgs::GraspPoses DoroManipulation::getCylinderPose()
-{
-	return pose_list;
-}
-
 DoroManipulation::~DoroManipulation()
 {
-	if(tf_listener)
-		delete tf_listener;
 
-	grasp_pose_sub.shutdown();
-	table_position_sub.shutdown();
-	table_coeffs_sub.shutdown();
-}
-
-void DoroManipulation::tablePositionCallback(const geometry_msgs::PointStampedConstPtr& _table)
-{
-	table_position = *_table;
-}
-
-geometry_msgs::PointStamped DoroManipulation::getTablePosition()
-{
-	return table_position;
-}
-
-void DoroManipulation::tableCoeffsCallback(const pcl_msgs::ModelCoefficientsConstPtr& _table_coeffs)
-{
-	table_coeffs = *_table_coeffs;
-}
-
-pcl_msgs::ModelCoefficients DoroManipulation::getTableCoeffs()
-{
-	return table_coeffs;
-}
-
-void DoroManipulation::adjustDoro()
-{
-	ros::NodeHandle nh;
-	table_position_sub = nh.subscribe("/table_position", 1, &DoroManipulation::tablePositionCallback, this);
-
-	/* THIS CODE WAS INSIDE TABLE POSITION CALLBACK. FIND A WAY!
-	 * geometry_msgs::Twist adjust_vel;
-
-	double dist_to_table = DIST2D(_table->point.x,_table->point.y);
-
-	if(dist_to_table > 0.89)
-	{
-		dist_to_table = DIST2D(_table->point.x ,_table->point.y);
-
-		ROS_INFO("Table is at (%f, %f) from doro. [%d]", _table->point.x, _table->point.y, _table->header.seq);
-		ROS_INFO("Table is %fm from doro.", dist_to_table);
-
-		if(fabs(_table->point.y) < 0.1)
-			aligned = true;
-		else
-			aligned = false;
-
-		if(!near)
-			adjust_vel.linear.x = 0.1;
-		else
-			adjust_vel.linear.x = 0.0;
-
-		if(!aligned)
-			adjust_vel.angular.z = (_table->point.y > 0? 1 : -1)*0.1;
-		else
-			adjust_vel.angular.z = 0.0;
-
-		velocity_pub.publish(adjust_vel);
-	}
-
-	else
-	{
-		ROS_INFO("Target seems to be in range. Let's go, then.");
-		near = true;
-		aligned = true;
-	}
-	 */
-
-	tiltPtu(-0.5);
-	ros::Rate callback_rate(0.5);
-	while(!near)
-	{
-		ros::spinOnce();
-		callback_rate.sleep();
-	}
-	table_position_sub.shutdown();
 }
 
 bool DoroManipulation::hasReachedPose (const geometry_msgs::PoseStamped& target_pose)
 {
-	geometry_msgs::PoseStamped now_pose = group.getCurrentPose();
+	geometry_msgs::PoseStamped now_pose = group_.getCurrentPose();
 
 	if(
 			(now_pose.pose.position.x - target_pose.pose.position.x < 0.01) &&
@@ -207,22 +119,17 @@ bool DoroManipulation::hasReachedPose (const geometry_msgs::PoseStamped& target_
 bool DoroManipulation::planAndMove(const geometry_msgs::PoseStamped& target_pose)
 {
 
-	group.allowReplanning(true);
-	group.allowLooking(true);
+	group_.allowReplanning(true);
+	group_.allowLooking(true);
+	group_.setStartStateToCurrentState();
 
-	group.setStartStateToCurrentState();
+	ROS_INFO("FRAME FOR PLANNING:= %s",group_.getPoseReferenceFrame().c_str());
 	
-	//ROS_INFO("CURRENT STATE SET!");
-
-
-	group.setPoseReferenceFrame (target_pose.header.frame_id);
-	group.setPoseTarget(target_pose);
-	//group.setRandomTarget();
+	group_.setPoseReferenceFrame (target_pose.header.frame_id);
+	group_.setPoseTarget(target_pose);
+	//group_.setRandomTarget();
 	
-	ROS_INFO("TARGET POSE SET!");
-	
-
-	geometry_msgs::PoseStamped the_pose_now = group.getCurrentPose();
+	geometry_msgs::PoseStamped the_pose_now = group_.getCurrentPose("jaco_gripper_tool_frame");
 
 	ROS_INFO("The pose now: (%f,%f,%f) ; (%f,%f,%f,%f)",
 			the_pose_now.pose.position.x,
@@ -232,7 +139,7 @@ bool DoroManipulation::planAndMove(const geometry_msgs::PoseStamped& target_pose
 			the_pose_now.pose.orientation.y,
 			the_pose_now.pose.orientation.z,
 			the_pose_now.pose.orientation.w);
-		ROS_INFO("NOW FRAME:= %s",the_pose_now.header.frame_id.c_str());
+		ROS_INFO("FRAME FOR CURRENT POSE:= %s",the_pose_now.header.frame_id.c_str());
 
 	ROS_INFO("The target pose: (%f,%f,%f) ; (%f,%f,%f,%f)",
 			target_pose.pose.position.x,
@@ -242,33 +149,61 @@ bool DoroManipulation::planAndMove(const geometry_msgs::PoseStamped& target_pose
 			target_pose.pose.orientation.y,
 			target_pose.pose.orientation.z,
 			target_pose.pose.orientation.w);
-	ROS_INFO("FRAME FOR PLANNING:= %s",target_pose.header.frame_id.c_str());
+	ROS_INFO("FRAME FOR TARGET POSE:= %s",target_pose.header.frame_id.c_str());
 
-
-
-	ROS_INFO("FRAME FOR PLANNING:= %s",group.getPoseReferenceFrame().c_str());
-	bool success = group.plan(doro_plan);
+	bool success = group_.plan(doro_plan_);
 
 	if(success)
-		ROS_INFO("WOW A PLAN WAS FOUND!!!");
+		ROS_INFO("PLAN FOUND!");
 	else
 	{
-		ROS_INFO("SOMETHING SUCKED AND WE FAILED MISERABLY!!!");
+		ROS_INFO("A plan was not found.");
 		return false;
 	}
 
-	if(group.move())
+	if(group_.move())
 	{
-		ROS_INFO("WE MOVED MAN!!!");
-		while(!hasReachedPose(target_pose))
-		{
-			sleep(1);
-		}
+		ROS_INFO("Motion complete.");
 		return true;
 	}
 	else
 	{
-		ROS_INFO("SUCKS! LIFE SUCKS!!!");
+		ROS_INFO("Oh! Sucks. Life sucks...");
+		return false;
+	}
+
+}
+
+bool DoroManipulation::planAndMove(const std::string& target_pose_string)
+{
+
+	group_.allowReplanning(true);
+	group_.allowLooking(true);
+	group_.setStartStateToCurrentState();
+
+	ROS_INFO("FRAME FOR PLANNING:= %s",group_.getPoseReferenceFrame().c_str());
+
+	group_.setNamedTarget(target_pose_string);
+	//group_.setRandomTarget();
+
+	bool success = group_.plan(doro_plan_);
+
+	if(success)
+		ROS_INFO("PLAN FOUND!");
+	else
+	{
+		ROS_INFO("A plan was not found.");
+		return false;
+	}
+
+	if(group_.move())
+	{
+		ROS_INFO("Motion complete.");
+		return true;
+	}
+	else
+	{
+		ROS_INFO("Oh! Sucks. Life sucks...");
 		return false;
 	}
 
@@ -279,11 +214,11 @@ bool DoroManipulation::planAndMove(const geometry_msgs::PoseStamped& target_pose
 bool DoroManipulation::plan(const geometry_msgs::PoseStamped& target_pose)
 {
 
-	group.setStartStateToCurrentState();
+	//group_.setStartStateToCurrentState();
 
-	group.setPoseReferenceFrame (target_pose.header.frame_id);
-	group.setPoseTarget(target_pose);
-	geometry_msgs::PoseStamped the_pose_now = group.getCurrentPose();
+	group_.setPoseReferenceFrame (target_pose.header.frame_id);
+	group_.setPoseTarget(target_pose);
+	geometry_msgs::PoseStamped the_pose_now = group_.getCurrentPose();
 
 	ROS_INFO("The pose now: (%f,%f,%f) ; (%f,%f,%f,%f)",
 			the_pose_now.pose.position.x,
@@ -303,27 +238,27 @@ bool DoroManipulation::plan(const geometry_msgs::PoseStamped& target_pose)
 			target_pose.pose.orientation.z,
 			target_pose.pose.orientation.w);
 
-	return group.plan(doro_plan);
+	return group_.plan(doro_plan_);
 }
 
 
 /**
  * Attaches the table obstacle to the planning scene interface.
  */
-void DoroManipulation::addTableAsObstacle()
+void DoroManipulation::addTableAsObstacle(geometry_msgs::PoseStamped table_pose)
 {
 	ros::param::set("/plane_extraction_enable", true);
 
-	while(table_position.point.x == table_position.point.y &&
-			table_position.point.x == table_position.point.z &&
-			table_position.point.x == 0)
+	while(table_pose.pose.position.x == table_pose.pose.position.y &&
+			table_pose.pose.position.x == table_pose.pose.position.z &&
+			table_pose.pose.position.x == 0)
 	{
 		ROS_INFO("Waiting for table position...");
 	    sleep(1);
 	}
 
 	moveit_msgs::CollisionObject collision_object;
-	collision_object.header.frame_id = group.getPlanningFrame();
+	collision_object.header.frame_id = group_.getPlanningFrame();
 
 	/* The id of the object is used to identify it. */
 	collision_object.id = "table";
@@ -337,20 +272,20 @@ void DoroManipulation::addTableAsObstacle()
 	primitive.dimensions[2] = 0.025;
 
 	/* A pose for the box (specified relative to frame_id) */
-	geometry_msgs::Pose table_pose;
-	table_pose.orientation.w = 1.0;
-	table_pose.position.x = table_position.point.x;
-	table_pose.position.y = table_position.point.y;
-	table_pose.position.z = table_position.point.z;
+	geometry_msgs::Pose table_pose_;
+	table_pose_.orientation.w = 1.0;
+	table_pose_.position.x = table_pose.pose.position.x;
+	table_pose_.position.y = table_pose.pose.position.y;
+	table_pose_.position.z = table_pose.pose.position.z;
 
 	collision_object.primitives.push_back(primitive);
-	collision_object.primitive_poses.push_back(table_pose);
+	collision_object.primitive_poses.push_back(table_pose_);
 	collision_object.operation = collision_object.ADD;
 
 	std::vector<moveit_msgs::CollisionObject> collision_objects;
 	collision_objects.push_back(collision_object);
 
-	ps_interface.addCollisionObjects(collision_objects);
+	ps_interface_.addCollisionObjects(collision_objects);
 
 
 	ROS_INFO("THE PLANE WAS ADDED! SEE RVIZ!");
@@ -363,10 +298,10 @@ void DoroManipulation::addTableAsObstacle()
 /**
  * Attaches the object that is going to be picked up as obstacle.
  */
-void DoroManipulation::addTargetAsObstacle()
+void DoroManipulation::addTargetAsObstacle(geometry_msgs::PoseStamped box_pose)
 {
 	moveit_msgs::CollisionObject collision_object;
-	collision_object.header.frame_id = group.getPlanningFrame();
+	collision_object.header.frame_id = group_.getPlanningFrame();
 
 	/* The id of the object is used to identify it. */
 	collision_object.id = "pill_box";
@@ -382,9 +317,9 @@ void DoroManipulation::addTargetAsObstacle()
 	/* A pose for the box (specified relative to frame_id) */
 	geometry_msgs::Pose pill_box_pose;
 	pill_box_pose.orientation.w = 1.0;
-	pill_box_pose.position.x = pose_list.grasp_poses[0].pose.position.x;
-	pill_box_pose.position.y = pose_list.grasp_poses[0].pose.position.y;
-	pill_box_pose.position.z = pose_list.grasp_poses[0].pose.position.z;
+	pill_box_pose.position.x = box_pose.pose.position.x;
+	pill_box_pose.position.y = box_pose.pose.position.y;
+	pill_box_pose.position.z = box_pose.pose.position.z;
 
 	collision_object.primitives.push_back(primitive);
 	collision_object.primitive_poses.push_back(pill_box_pose);
@@ -393,7 +328,7 @@ void DoroManipulation::addTargetAsObstacle()
 	std::vector<moveit_msgs::CollisionObject> collision_objects;
 	collision_objects.push_back(collision_object);
 
-	ps_interface.addCollisionObjects(collision_objects);
+	ps_interface_.addCollisionObjects(collision_objects);
 
 	ROS_INFO("The box was added as a collision object!");
 }
@@ -402,47 +337,58 @@ void DoroManipulation::removeTable()
 {
 	std::vector<std::string> object_ids;
 	object_ids.push_back("table");
-	ps_interface.removeCollisionObjects(object_ids);
+	ps_interface_.removeCollisionObjects(object_ids);
 }
 
 void DoroManipulation::removeTarget()
 {
 	std::vector<std::string> object_ids;
 	object_ids.push_back("table");
-	ps_interface.removeCollisionObjects(object_ids);
+	ps_interface_.removeCollisionObjects(object_ids);
 }
 
 void DoroManipulation::attachTarget()
 {
-	group.attachObject("pill_box");
+	group_.attachObject("pill_box");
 	ROS_INFO("Pill box is in gripper now.");
 }
 
 void DoroManipulation::detachTarget()
 {
-	group.detachObject("pill_box");
+	group_.detachObject("pill_box");
 	removeTarget();
 	ROS_INFO("Pill box removed.");
 }
 
 void DoroManipulation::closeHand(float value)
 {
-	jaco_msgs::FingerPosition FP;
+	std_msgs::Float32MultiArray FP;
 
-	FP.Finger_1 = value;
-	FP.Finger_2 = value;
-	FP.Finger_3 = value;
+	FP.data.push_back(value);
+	FP.data.push_back(value);
+	FP.data.push_back(value);
 
-	finger_pub.publish(FP);
+	finger_pub_.publish(FP);
 }
 
 void DoroManipulation::openHand()
 {
-	jaco_msgs::FingerPosition FP;
+	closeHand(0.0);
+}
+}
 
-	FP.Finger_1 = 0.0;
-	FP.Finger_2 = 0.0;
-	FP.Finger_3 = 0.0;
+int main(int argn, char* args[])
+{
+	ros::init(argn, args, "doro_manipulation_server");
+	ros::MultiThreadedSpinner m_t_spinner(4);
 
-	finger_pub.publish(FP);
+	ROS_INFO("Starting server for manipulation.");
+	doro_manipulation::DoroManipulation dmt;
+	ROS_INFO("Server is up!");
+
+	ROS_INFO("Starting server for grasp pose generation.");
+	doro_manipulation::GraspPoseGenerator GPG_server;
+	ROS_INFO("SERVER IS UP.");
+
+	m_t_spinner.spin();
 }

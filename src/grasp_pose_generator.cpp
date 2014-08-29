@@ -5,73 +5,25 @@
  *      Author: ace
  */
 
-#include <grasp_pose_generator.h>
+#include <doro_manipulation/grasp_pose_generator.h>
+
+namespace doro_manipulation {
 
 GraspPoseGenerator::GraspPoseGenerator()
 {
-    ros::NodeHandle np;
+    tf_listener_ = new tf::TransformListener(n_,ros::Duration(10));
+    server_ = n_.advertiseService ("generate_grasp_poses", &GraspPoseGenerator::serverCB, this);
 
-    tf_listener = new tf::TransformListener(np,ros::Duration(10));
+    ROS_INFO("Server Started");
 
-    pub_goal_ =
-    	n_.advertise<geometry_msgs::PoseStamped>("/cluster_pose", 10);
-
-    pub_grasp_poses_ = n_.advertise<doro_msgs::GraspPoses>("/grasp_poses", 10);
-
-    pub_ptu_ = n_.advertise<sensor_msgs::JointState>("/ptu/cmd", 2);
-
-    clusters_sub_ = n_.subscribe("/clusters", 1, &GraspPoseGenerator::clustersCB, this);
-
-    for(int i = 0; i < 4; i++)
-    	cluster_position[i].setValue(0.0,0.0,0.0);
-
-    old_p_.setValue(0.0,0.0,0.0);
-
-    avg_count_ = 0.0;
-    tiltPtu(-0.5);
-
-    ros::param::set("/cluster_extraction_enable", true);
-
-}
-
-void GraspPoseGenerator::tiltPtu(float value)
-{
-	ROS_INFO("PTU IS BEING TILTED!");
-	sensor_msgs::JointState ptu_msg;
-	ptu_msg.header.stamp = ros::Time::now() + ros::Duration(0.01);
-
-	ptu_msg.name.resize(2);
-	ptu_msg.position.resize(2);
-	ptu_msg.velocity.resize(2);
-	ptu_msg.effort.resize(2);
-
-	ptu_msg.name[0] = "ptu_pan_joint";
-	ptu_msg.name[1] = "ptu_tilt_joint";
-
-	ptu_msg.position[0]=0.0;
-	ptu_msg.position[1]=value;
-
-	ptu_msg.velocity[0]=0.5;
-	ptu_msg.velocity[1]=0.5;
-
-	sleep(1);
-	pub_ptu_.publish(ptu_msg);
-	sleep(1);
-
-	ROS_INFO("TILTED PTU");
 }
 
 GraspPoseGenerator::~GraspPoseGenerator()
 {
-	tiltPtu(0.0);
-
 	ROS_INFO("GraspPoseGenerator Shutting down...");
-	clusters_sub_.shutdown();
 
-	ros::param::set("/cluster_extraction_enable", false);
-
-	if(tf_listener)
-		delete tf_listener;
+	if(tf_listener_)
+		delete tf_listener_;
 }
 
 geometry_msgs::PointStamped GraspPoseGenerator::transformPointToBaseLink(const geometry_msgs::PointStamped& in_pt)
@@ -80,8 +32,8 @@ geometry_msgs::PointStamped GraspPoseGenerator::transformPointToBaseLink(const g
 
 	try
 	{
-		tf_listener->waitForTransform("base_link", in_pt.header.frame_id, in_pt.header.stamp, ros::Duration(1));
-		tf_listener->transformPoint("base_link", in_pt, out_pt);
+		tf_listener_->waitForTransform("base_link", in_pt.header.frame_id, in_pt.header.stamp, ros::Duration(1));
+		tf_listener_->transformPoint("base_link", in_pt, out_pt);
 	}
 	catch(tf::TransformException& exception)
 	{
@@ -91,42 +43,23 @@ geometry_msgs::PointStamped GraspPoseGenerator::transformPointToBaseLink(const g
 	return out_pt;
 }
 
-void GraspPoseGenerator::clustersCB(const doro_msgs::ClustersConstPtr& _clusters)
+bool GraspPoseGenerator::serverCB(doro_manipulation::GenerateGraspPosesRequest& _request,
+										doro_manipulation::GenerateGraspPosesResponse& _response)
 {
-		if(_clusters->cluster_centroids.size() == 0)
-		{
-			ROS_INFO("In GraspPoseGenerator: No clusters in the message.");
-			return;
-		}
-
-	 	tf::Vector3 p (
-	 					_clusters->cluster_centroids[0].point.x,
-	 					_clusters->cluster_centroids[0].point.y,
-	 					_clusters->cluster_centroids[0].point.z + 0.03
+		tf::Vector3 p (
+	 					_request.object_location.point.x,
+	 					_request.object_location.point.y,
+	 					_request.object_location.point.z + 0.03
 	 				   );
 
 	 	if(p.z() > 2.0 || p.z() < 0.5)
 	 	{
 	 		ROS_INFO("In GraspPoseGenerator: Out of bounds value...");
-	 		return;
+	 		return false;
 	 	}
 
 
-	 	if(avg_count_ > 9.00)
-	 	{
-	 		avg_count_ = 1.00;
-	 	}
-	 	else
-	 	{
-	 		//ROS_INFO("Averaging...");
-	 		p = ( (old_p_*avg_count_) + p) / (avg_count_ + 1.0);
-
-	 		avg_count_+=1.0;
-	 	}
-
-        old_p_ = p;
-
-        geometry_msgs::PointStamped pt_o; // The origin of the openni frame in the base_link frame.
+	 	geometry_msgs::PointStamped pt_o; // The origin of the openni frame in the base_link frame.
 
         pt_o.header.stamp = ros::Time::now();
         pt_o.header.frame_id = "xtion_camera_depth_optical_frame";
@@ -159,7 +92,6 @@ void GraspPoseGenerator::clustersCB(const doro_msgs::ClustersConstPtr& _clusters
 
         tf::Matrix3x3 rotatey (0.9848, 0, 0.17365, 0, 1, 0, -0.17365, 0, 0.9848);
         tf::Matrix3x3 rotate25z (0.906, -0.423, 0, 0.423, 0.906, 0, 0, 0, 1);
-
 
 
          // The Vectors for the top grasp
@@ -244,10 +176,10 @@ void GraspPoseGenerator::clustersCB(const doro_msgs::ClustersConstPtr& _clusters
         // Verbose - bad programming - but this should be enough for the simple case
 
         // Header assignment
-        target_pose_top_.header =  _clusters->cluster_centroids[0].header ;
-        target_pose_1_.header = _clusters->cluster_centroids[0].header;
-        target_pose_2_.header = _clusters->cluster_centroids[0].header;
-        target_pose_3_.header = _clusters->cluster_centroids[0].header;
+        target_pose_top_.header = _request.object_location.header ;
+        target_pose_1_.header = _request.object_location.header;
+        target_pose_2_.header = _request.object_location.header;
+        target_pose_3_.header = _request.object_location.header;
 
         geometry_msgs::Point _point;
 
@@ -283,49 +215,43 @@ void GraspPoseGenerator::clustersCB(const doro_msgs::ClustersConstPtr& _clusters
 
         geometry_msgs::PoseStamped target_goal_in_base_frame;
 
-        // Let us freakin create the message variable
-        doro_msgs::GraspPosesPtr pose_list (new doro_msgs::GraspPoses);
 
-        pose_list->grasp_poses.resize(4);
-        pose_list->pregrasp_poses.resize(4);
+        _response.grasp_poses.resize(4);
+        _response.pregrasp_poses.resize(4);
 
 
         	// First the grasp pose. Then the pregrasp pose
             target_pose_top_.pose.position.z += 0.02;
             target_pose_top_.pose.position.x += 0.025;
-        	pose_list->grasp_poses[3] = target_pose_top_;
+            _response.grasp_poses[3] = target_pose_top_;
         	target_pose_top_.pose.position.z += 0.03;
-        	pose_list->pregrasp_poses[3] = target_pose_top_;
+        	_response.pregrasp_poses[3] = target_pose_top_;
 
 
         	// First the grasp pose. Then the pregrasp pose
         	target_pose_1_.pose.position.x += 0.020;
-        	pose_list->grasp_poses[1] = target_pose_1_;
+        	_response.grasp_poses[1] = target_pose_1_;
         	target_pose_1_.pose.position.x -= 0.07;
-        	pose_list->pregrasp_poses[1] = target_pose_1_;
+        	_response.pregrasp_poses[1] = target_pose_1_;
 
         	// First the grasp pose. Then the pregrasp pose
         	target_pose_2_.pose.position.x += 0.020;
         	target_pose_2_.pose.position.y += 0.020;
-        	pose_list->grasp_poses[2] = target_pose_2_;
+        	_response.grasp_poses[2] = target_pose_2_;
         	target_pose_2_.pose.position.x -= 0.070;
         	target_pose_2_.pose.position.y -= 0.070;
-        	pose_list->pregrasp_poses[2] = target_pose_2_;
+        	_response.pregrasp_poses[2] = target_pose_2_;
 
         	// First the grasp pose. Then the pregrasp pose
         	target_pose_3_.pose.position.x += 0.022;
         	target_pose_3_.pose.position.y += 0.022;
-        	pose_list->grasp_poses[0] = target_pose_3_;
+        	_response.grasp_poses[0] = target_pose_3_;
         	target_pose_3_.pose.position.x -= 0.070;
         	target_pose_3_.pose.position.y -= 0.070;
-        	pose_list->pregrasp_poses[0] = target_pose_3_;
+        	_response.pregrasp_poses[0] = target_pose_3_;
 
         // Set the number and despatch
-        pose_list->number_of_poses = pose_list->grasp_poses.size();
-
-        pub_grasp_poses_.publish(pose_list);
-        pub_goal_.publish(pose_list->grasp_poses[0]);
-
+        return true;
 }
 
 float GraspPoseGenerator::dist3D(const geometry_msgs::Point p1, const geometry_msgs::Point p2)
@@ -338,11 +264,5 @@ float GraspPoseGenerator::dist3D(const geometry_msgs::Point p1, const geometry_m
     return sqrt((float)(dx * dx + dy * dy + dz * dz));
 }
 
-/*
-int main(int argn, char* args[])
-{
-	ros::init(argn, args, "hand_pose_generator");
-	GraspPoseGenerator GPG;
-	ros::spin();
-}*/
+}
 
