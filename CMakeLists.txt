@@ -122,7 +122,8 @@ add_executable(doro_manipulation_server src/doro_manipulation.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(doro_manipulation_node doro_manipulation_generate_messages_cpp)
+add_dependencies(gpg_client doro_manipulation_generate_messages_cpp)
+add_dependencies(doro_manipulation_server doro_manipulation_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(gpg_client

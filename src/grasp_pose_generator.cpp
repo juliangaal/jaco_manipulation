@@ -104,7 +104,7 @@ bool GraspPoseGenerator::serverCB(doro_manipulation::GenerateGraspPosesRequest& 
 
          // Simple grasp vectors
          tf::Vector3 oy_1 = abs_z * -1;
-         tf::Vector3 ox_1 = (oy_1.cross(view).normalized()) * -1;
+         tf::Vector3 ox_1 = (oy_1.cross(view).normalized());
          tf::Vector3 oz_1 = ox_1.cross(oy_1);
 
          // Second simple grasp
