@@ -51,8 +51,6 @@
 	h_pose.header.frame_id = "/base_link";\
 }
 
-#define DIST2D(x,y) sqrt( (x*x) + (y*y) )
-
 namespace doro_manipulation
 {
 /**

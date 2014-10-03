@@ -6,14 +6,12 @@ project(doro_manipulation)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   actionlib
+  actionlib_msgs
   cmake_modules
   doro_msgs
   geometry_msgs
-  move_base_msgs
   moveit_core
   moveit_ros_planning_interface
-  pcl_conversions
-  pcl_ros
   pluginlib
   roscpp
   std_msgs
@@ -65,6 +63,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_service_files(
   FILES
   GenerateGraspPoses.srv
+  GeneratePutDownPoints.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -77,8 +76,8 @@ add_action_files(
 generate_messages(
   DEPENDENCIES
   geometry_msgs
-  move_base_msgs
   std_msgs
+  actionlib_msgs
 )
 
 ###################################
@@ -92,8 +91,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES doro_manipulation grasp_pose_generator
-  CATKIN_DEPENDS actionlib cmake_modules geometry_msgs move_base_msgs moveit_core moveit_ros_planning_interface pcl_conversions pcl_ros pluginlib roscpp std_msgs tf message_runtime
+  LIBRARIES doro_manipulation grasp_pose_generator put_down_points_generator
+  CATKIN_DEPENDS actionlib actionlib_msgs cmake_modules geometry_msgs moveit_core moveit_ros_planning_interface pluginlib roscpp std_msgs tf message_runtime
 #  DEPENDS system_lib
 )
 
@@ -109,30 +108,52 @@ include_directories(
 )
 
 ## Declare a cpp library --> DoroManipulation
-# add_library(doro_manipulation
-#	src/doro_manipulation.cpp
-#)
+add_library(doro_manipulation
+    src/doro_manipulation.cpp
+)
 
-add_library(grasp_pose_generator src/grasp_pose_generator.cpp)
+add_library(grasp_pose_generator
+    src/grasp_pose_generator.cpp
+)
+
+add_library(put_down_points_generator
+    src/put_down_points_generator.cpp
+)
 
 # Test client for grasp pose generator
 add_executable(gpg_client src/gpg_client.cc)
 
-add_executable(doro_manipulation_server src/doro_manipulation.cpp)
+add_executable(manipulation_server src/manipulation_services_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(gpg_client doro_manipulation_generate_messages_cpp)
-add_dependencies(doro_manipulation_server doro_manipulation_generate_messages_cpp)
+add_dependencies(doro_manipulation doro_manipulation_generate_messages_cpp)
+add_dependencies(grasp_pose_generator doro_manipulation_generate_messages_cpp)
+add_dependencies(put_down_points_generator doro_manipulation_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(gpg_client
   ${catkin_LIBRARIES}
 )
 
-target_link_libraries(doro_manipulation_server
+target_link_libraries(doro_manipulation
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(grasp_pose_generator
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(put_down_points_generator
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(manipulation_server
   ${catkin_LIBRARIES}
   grasp_pose_generator
+  doro_manipulation
+  put_down_points_generator
 )
 
 #############

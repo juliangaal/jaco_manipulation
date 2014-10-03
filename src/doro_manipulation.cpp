@@ -20,7 +20,6 @@ DoroManipulation::DoroManipulation() : group_("arm"), pam_server_(nh_, "plan_and
 	
 	group_.setPlanningTime(10);
 	pam_server_.start();
-	ROS_INFO("Plan and Move Server has started.");
 }
 
 void DoroManipulation::processGoal(const doro_manipulation::PlanAndMoveArmGoalConstPtr& _goal)
@@ -375,20 +374,4 @@ void DoroManipulation::openHand()
 {
 	closeHand(0.0);
 }
-}
-
-int main(int argn, char* args[])
-{
-	ros::init(argn, args, "doro_manipulation_server");
-	ros::MultiThreadedSpinner m_t_spinner(4);
-
-	ROS_INFO("Starting server for manipulation.");
-	doro_manipulation::DoroManipulation dmt;
-	ROS_INFO("Server is up!");
-
-	ROS_INFO("Starting server for grasp pose generation.");
-	doro_manipulation::GraspPoseGenerator GPG_server;
-	ROS_INFO("SERVER IS UP.");
-
-	m_t_spinner.spin();
 }

@@ -1,0 +1,4 @@
+int32 max_points
+float32 min_distance_to_object
+---
+geometry_msgs/PointStamped[] put_down_points
