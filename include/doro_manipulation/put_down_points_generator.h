@@ -16,6 +16,7 @@
 #include <doro_manipulation/common.h>
 
 namespace doro_manipulation {
+
 /**
  * \brief Provides a ROS service to look at a table and generate safe put down points.
  * Assumes that there is a table in front.

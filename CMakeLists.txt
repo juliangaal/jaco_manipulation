@@ -130,7 +130,7 @@ add_executable(manipulation_server src/manipulation_services_node.cpp)
 add_dependencies(gpg_client doro_manipulation_generate_messages_cpp)
 add_dependencies(doro_manipulation doro_manipulation_generate_messages_cpp)
 add_dependencies(grasp_pose_generator doro_manipulation_generate_messages_cpp)
-add_dependencies(put_down_points_generator doro_manipulation_generate_messages_cpp)
+add_dependencies(put_down_points_generator doro_manipulation_generate_messages_cpp doro_msgs_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(gpg_client
