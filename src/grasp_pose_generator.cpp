@@ -47,8 +47,8 @@ bool GraspPoseGenerator::serverCB(doro_manipulation::GenerateGraspPosesRequest& 
 										doro_manipulation::GenerateGraspPosesResponse& _response)
 {
 		tf::Vector3 p (
-	 					_request.object_location.point.x + 0.015,
-	 					_request.object_location.point.y + 0.015,
+	 					_request.object_location.point.x + 0.02,
+	 					_request.object_location.point.y + 0.0,
 	 					_request.object_location.point.z + 0.01
 	 				   );
 
