@@ -47,9 +47,9 @@ bool GraspPoseGenerator::serverCB(doro_manipulation::GenerateGraspPosesRequest& 
 										doro_manipulation::GenerateGraspPosesResponse& _response)
 {
 		tf::Vector3 p (
-	 					_request.object_location.point.x,
-	 					_request.object_location.point.y,
-	 					_request.object_location.point.z + 0.03
+	 					_request.object_location.point.x + 0.015,
+	 					_request.object_location.point.y + 0.015,
+	 					_request.object_location.point.z + 0.01
 	 				   );
 
 	 	if(p.z() > 2.0 || p.z() < 0.3)
