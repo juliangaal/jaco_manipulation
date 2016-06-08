@@ -42,8 +42,8 @@ geometry_msgs::PointStamped GraspPoseGenerator::transformPointToBaseLink(const g
 
 	try
 	{
-		tf_listener_->waitForTransform("base_link", in_pt.header.frame_id, in_pt.header.stamp, ros::Duration(1));
-		tf_listener_->transformPoint("base_link", in_pt, out_pt);
+		tf_listener_->waitForTransform("root", in_pt.header.frame_id, in_pt.header.stamp, ros::Duration(1));
+		tf_listener_->transformPoint("root", in_pt, out_pt);
 	}
 	catch(tf::TransformException& exception)
 	{
@@ -69,17 +69,15 @@ bool GraspPoseGenerator::serverCB(doro_manipulation::GenerateGraspPosesRequest& 
 	 	}
 
 
-	 	geometry_msgs::PointStamped pt_o; // The origin of the openni frame in the base_link frame.
+	 	geometry_msgs::PointStamped pt_o; // Same frame.
 
         pt_o.header.stamp = ros::Time::now();
-        pt_o.header.frame_id = "xtion_camera_depth_optical_frame";
+        pt_o.header.frame_id = "root";
         pt_o.point.x = 0.0;
         pt_o.point.y = 0.0;
         pt_o.point.z = 0.0;
 
         pt_o = transformPointToBaseLink(pt_o);
-
-        // The view vector is simply (p - pt_o)
 
         tf::Vector3 view;
         view.setValue (
@@ -137,28 +135,6 @@ bool GraspPoseGenerator::serverCB(doro_manipulation::GenerateGraspPosesRequest& 
          oz_3 = rotate25z * oz_2;
          ox_3 = rotate25z * ox_2;
          oy_3 = oy_2;
-
-         /*
-         // This has to be done after all the rotations in y. This is a fine tuning.
-         // Set 1
-         ox_1 = rotate10z * rotate10z * ox_1;
-         oy_1 = rotate10z * rotate10z * oy_1;
-         oz_1 = rotate10z * rotate10z * oz_1;
-
-         // Set 2
-         ox_2 = rotate10z * rotate10z * ox_2;
-         oy_2 = rotate10z * rotate10z * oy_2;
-         oz_2 = rotate10z * rotate10z * oz_2;
-
-         // Set 3
-         ox_3 = rotate10z * rotate10z * ox_3;
-         oy_3 = rotate10z * rotate10z * oy_3;
-         oz_3 = rotate10z * rotate10z * oz_3;
-*/
-
-        // ROS_INFO("ox. X: %f, Y: %f, Z: %f", ox.x(), ox.y(), ox.z());
-        // ROS_INFO("oy. X: %f, Y: %f, Z: %f", oy.x(), oy.y(), oy.z());
-        // ROS_INFO("oz. X: %f, Y: %f, Z: %f", oz.x(), oz.y(), oz.z());
 
         // Convert this into a quaternion from the basis matrix.
         tf::Matrix3x3 basis_top(

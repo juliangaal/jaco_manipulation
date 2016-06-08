@@ -26,10 +26,9 @@ int main(int argn, char* args[])
 
 	doro_manipulation::GenerateGraspPoses message;
 
-	message.request.object_location.point.x = 0.750812;
-	message.request.object_location.point.y = -0.0176425;
-	message.request.object_location.point.z = 0.897799;
-
+	message.request.object_location.point.x = 0.0;
+	message.request.object_location.point.y = -0.20;
+	message.request.object_location.point.z = 0.50;
 	message.request.object_location.header.frame_id = "base_link";
 	message.request.object_location.header.stamp = ros::Time::now();
 
