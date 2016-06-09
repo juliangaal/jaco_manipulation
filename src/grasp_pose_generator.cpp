@@ -75,9 +75,9 @@ bool GraspPoseGenerator::serverCB(doro_manipulation::GenerateGraspPosesRequest& 
         pt_o.header.frame_id = "root";
         pt_o.point.x = 0.0;
         pt_o.point.y = 0.0;
-        pt_o.point.z = 0.0;
+        pt_o.point.z = 1.0;
 
-        pt_o = transformPointToBaseLink(pt_o);
+        //pt_o = transformPointToBaseLink(pt_o);
 
         tf::Vector3 view;
         view.setValue (
@@ -159,6 +159,20 @@ bool GraspPoseGenerator::serverCB(doro_manipulation::GenerateGraspPosesRequest& 
 
         tf::Vector3 target_p = p;
 
+        // We have the positions and rotations in the Tool frame.
+        // We convert it to the Hand frame (Frame 6).
+
+        tf::Matrix3x3 FromToolTo6 (
+        			 1, 0, 0,
+					 0, -1, 0,
+					 0, 0,	-1
+        		);
+
+        basis_top = basis_top * FromToolTo6;
+        basis_1= basis_1 * FromToolTo6;
+        basis_2= basis_2* FromToolTo6;
+        basis_3 = basis_3* FromToolTo6;
+
         // Verbose - bad programming - but this should be enough for the simple case
 
         // Header assignment
@@ -199,42 +213,39 @@ bool GraspPoseGenerator::serverCB(doro_manipulation::GenerateGraspPosesRequest& 
         tf::quaternionTFToMsg(q_3, target_pose_3_.pose.orientation);
 
 
-        geometry_msgs::PoseStamped target_goal_in_base_frame;
-
-
         _response.grasp_poses.resize(4);
         _response.pregrasp_poses.resize(4);
 
 
-        	// First the grasp pose. Then the pregrasp pose
-            target_pose_top_.pose.position.z += 0.02;
-            target_pose_top_.pose.position.x += 0.025;
-            _response.grasp_poses[3] = target_pose_top_;
-        	target_pose_top_.pose.position.z += 0.03;
-        	_response.pregrasp_poses[3] = target_pose_top_;
+        // First the grasp pose. Then the pregrasp pose
+        target_pose_top_.pose.position.z += 0.02;
+        target_pose_top_.pose.position.x += 0.025;
+        _response.grasp_poses[3] = target_pose_top_;
+        target_pose_top_.pose.position.z += 0.03;
+        _response.pregrasp_poses[3] = target_pose_top_;
 
 
-        	// First the grasp pose. Then the pregrasp pose
-        	target_pose_1_.pose.position.x += 0.020;
-        	_response.grasp_poses[1] = target_pose_1_;
-        	target_pose_1_.pose.position.x -= 0.07;
-        	_response.pregrasp_poses[1] = target_pose_1_;
+        // First the grasp pose. Then the pregrasp pose
+        target_pose_1_.pose.position.x += 0.020;
+        _response.grasp_poses[1] = target_pose_1_;
+        target_pose_1_.pose.position.x -= 0.07;
+        _response.pregrasp_poses[1] = target_pose_1_;
 
-        	// First the grasp pose. Then the pregrasp pose
-        	target_pose_2_.pose.position.x += 0.020;
-        	target_pose_2_.pose.position.y += 0.020;
-        	_response.grasp_poses[2] = target_pose_2_;
-        	target_pose_2_.pose.position.x -= 0.070;
-        	target_pose_2_.pose.position.y -= 0.070;
-        	_response.pregrasp_poses[2] = target_pose_2_;
+        // First the grasp pose. Then the pregrasp pose
+        target_pose_2_.pose.position.x += 0.020;
+        target_pose_2_.pose.position.y += 0.020;
+        _response.grasp_poses[2] = target_pose_2_;
+        target_pose_2_.pose.position.x -= 0.070;
+        target_pose_2_.pose.position.y -= 0.070;
+        _response.pregrasp_poses[2] = target_pose_2_;
 
-        	// First the grasp pose. Then the pregrasp pose
-        	target_pose_3_.pose.position.x += 0.022;
-        	target_pose_3_.pose.position.y += 0.022;
-        	_response.grasp_poses[0] = target_pose_3_;
-        	target_pose_3_.pose.position.x -= 0.070;
-        	target_pose_3_.pose.position.y -= 0.070;
-        	_response.pregrasp_poses[0] = target_pose_3_;
+        // First the grasp pose. Then the pregrasp pose
+        target_pose_3_.pose.position.x += 0.022;
+        target_pose_3_.pose.position.y += 0.022;
+        _response.grasp_poses[0] = target_pose_3_;
+        target_pose_3_.pose.position.x -= 0.070;
+        target_pose_3_.pose.position.y -= 0.070;
+        _response.pregrasp_poses[0] = target_pose_3_;
 
         // Set the number and despatch
         return true;

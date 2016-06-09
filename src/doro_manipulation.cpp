@@ -138,7 +138,7 @@ bool DoroManipulation::planAndMove(const geometry_msgs::PoseStamped& target_pose
 	group_.setPoseTarget(target_pose);
 	//group_.setRandomTarget();
 	
-	geometry_msgs::PoseStamped the_pose_now = group_.getCurrentPose("jaco_gripper_tool_frame");
+	geometry_msgs::PoseStamped the_pose_now = group_.getCurrentPose("jaco_link_hand");
 
 	ROS_INFO("The pose now: (%f,%f,%f) ; (%f,%f,%f,%f)",
 			the_pose_now.pose.position.x,
