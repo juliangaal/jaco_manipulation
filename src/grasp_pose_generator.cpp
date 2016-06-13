@@ -62,13 +62,6 @@ bool GraspPoseGenerator::serverCB(doro_manipulation::GenerateGraspPosesRequest& 
 	 					_request.object_location.point.z + 0.005
 	 				   );
 
-	 	if(p.z() > 2.0 || p.z() < 0.3)
-	 	{
-	 		ROS_INFO("In GraspPoseGenerator: Out of bounds value...");
-	 		return false;
-	 	}
-
-
 	 	geometry_msgs::PointStamped pt_o; // Same frame.
 
         pt_o.header.stamp = ros::Time::now();
