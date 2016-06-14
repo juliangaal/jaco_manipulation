@@ -15,8 +15,8 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>
   
 */
-#ifndef DORO_MANIPULATION_H_
-#define DORO_MANIPULATION_H_
+#ifndef JACO_MANIPULATION_H_
+#define JACO_MANIPULATION_H_
 
 #include <moveit/move_group_interface/move_group.h>
 #include <moveit/planning_interface/planning_interface.h>
@@ -33,8 +33,8 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PointStamped.h>
 
-#include <doro_manipulation/PlanAndMoveArmAction.h>
-#include <doro_manipulation/grasp_pose_generator.h>
+#include <jaco_manipulation/PlanAndMoveArmAction.h>
+#include <jaco_manipulation/grasp_pose_generator.h>
 
 #include "std_msgs/Float32MultiArray.h"
 #include "sensor_msgs/JointState.h"
@@ -61,12 +61,12 @@
 	h_pose.header.frame_id = "/base_link";\
 }
 
-namespace doro_manipulation
+namespace jaco_manipulation
 {
 /**
  * Convenience class to talk to Moveit-ROS interface.
  */
-class DoroManipulation
+class JacoManipulation
 {
 
 protected:
@@ -79,12 +79,12 @@ protected:
 	/**
 	 * Action server that is used for manipulation.
 	 */
-	actionlib::SimpleActionServer <doro_manipulation::PlanAndMoveArmAction> pam_server_;
+	actionlib::SimpleActionServer <jaco_manipulation::PlanAndMoveArmAction> pam_server_;
 
 	/**
 	 * The plan variable.
 	 */
-	moveit::planning_interface::MoveGroup::Plan doro_plan_;
+	moveit::planning_interface::MoveGroup::Plan plan_;
 
 	/**
 	 * The planning scene interface.
@@ -123,7 +123,7 @@ protected:
 	 /**
 	  * Callback for the action server.
 	  */
-	 void processGoal(const doro_manipulation::PlanAndMoveArmGoalConstPtr& _goal);
+	 void processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr& _goal);
 
 public:
 
@@ -132,8 +132,8 @@ public:
 	  */
 	move_group_interface::MoveGroup group_;
 
-	DoroManipulation();
-	virtual ~DoroManipulation();
+	JacoManipulation();
+	virtual ~JacoManipulation();
 
 	/**
 	 * A function to add the table as an obstacle.
@@ -198,4 +198,4 @@ public:
 
 };
 }
-#endif /* DORO_MANIPULATION_H_ */
+#endif /* JACO_MANIPULATION_H_ */

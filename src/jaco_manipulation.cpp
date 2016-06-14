@@ -15,11 +15,11 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>
   
 */
-#include "doro_manipulation/doro_manipulation.h"
+#include "jaco_manipulation/jaco_manipulation.h"
 
-namespace doro_manipulation
+namespace jaco_manipulation
 {
-DoroManipulation::DoroManipulation() : group_("arm"), pam_server_(nh_, "plan_and_move_arm", boost::bind(&DoroManipulation::processGoal, this, _1), false)
+JacoManipulation::JacoManipulation() : group_("arm"), pam_server_(nh_, "plan_and_move_arm", boost::bind(&JacoManipulation::processGoal, this, _1), false)
 {
 	ROS_INFO("Initializing Doro Manipulation!");
 
@@ -32,7 +32,7 @@ DoroManipulation::DoroManipulation() : group_("arm"), pam_server_(nh_, "plan_and
 	pam_server_.start();
 }
 
-void DoroManipulation::processGoal(const doro_manipulation::PlanAndMoveArmGoalConstPtr& _goal)
+void JacoManipulation::processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr& _goal)
 {
 	ROS_INFO("Got a goal. Working on it...");
 
@@ -66,7 +66,7 @@ void DoroManipulation::processGoal(const doro_manipulation::PlanAndMoveArmGoalCo
 	}
 }
 
-void DoroManipulation::tiltPtu(float value)
+void JacoManipulation::tiltPtu(float value)
 {
 	ROS_INFO("PTU IS BEING TILTED!");
 	sensor_msgs::JointState ptu_msg;
@@ -93,12 +93,12 @@ void DoroManipulation::tiltPtu(float value)
 	ROS_INFO("TILTED PTU");
 }
 
-DoroManipulation::~DoroManipulation()
+JacoManipulation::~JacoManipulation()
 {
 
 }
 
-bool DoroManipulation::hasReachedPose (const geometry_msgs::PoseStamped& target_pose)
+bool JacoManipulation::hasReachedPose (const geometry_msgs::PoseStamped& target_pose)
 {
 	geometry_msgs::PoseStamped now_pose = group_.getCurrentPose();
 
@@ -125,7 +125,7 @@ bool DoroManipulation::hasReachedPose (const geometry_msgs::PoseStamped& target_
 /**
  * Convenience function to plan and execute the pose specified by target_pose
  */
-bool DoroManipulation::planAndMove(const geometry_msgs::PoseStamped& target_pose)
+bool JacoManipulation::planAndMove(const geometry_msgs::PoseStamped& target_pose)
 {
 
 	group_.allowReplanning(true);
@@ -160,7 +160,7 @@ bool DoroManipulation::planAndMove(const geometry_msgs::PoseStamped& target_pose
 			target_pose.pose.orientation.w);
 	ROS_INFO("FRAME FOR TARGET POSE:= %s",target_pose.header.frame_id.c_str());
 
-	bool success = group_.plan(doro_plan_);
+	bool success = group_.plan(plan_);
 
 	if(success)
 		ROS_INFO("PLAN FOUND!");
@@ -183,7 +183,7 @@ bool DoroManipulation::planAndMove(const geometry_msgs::PoseStamped& target_pose
 
 }
 
-bool DoroManipulation::planAndMove(const std::string& target_pose_string)
+bool JacoManipulation::planAndMove(const std::string& target_pose_string)
 {
 
 	group_.allowReplanning(true);
@@ -195,7 +195,7 @@ bool DoroManipulation::planAndMove(const std::string& target_pose_string)
 	group_.setNamedTarget(target_pose_string);
 	//group_.setRandomTarget();
 
-	bool success = group_.plan(doro_plan_);
+	bool success = group_.plan(plan_);
 
 	if(success)
 		ROS_INFO("PLAN FOUND!");
@@ -220,7 +220,7 @@ bool DoroManipulation::planAndMove(const std::string& target_pose_string)
 /**
  * Convenience function to plan the pose specified by target_pose
  */
-bool DoroManipulation::plan(const geometry_msgs::PoseStamped& target_pose)
+bool JacoManipulation::plan(const geometry_msgs::PoseStamped& target_pose)
 {
 
 	//group_.setStartStateToCurrentState();
@@ -247,14 +247,14 @@ bool DoroManipulation::plan(const geometry_msgs::PoseStamped& target_pose)
 			target_pose.pose.orientation.z,
 			target_pose.pose.orientation.w);
 
-	return group_.plan(doro_plan_);
+	return group_.plan(plan_);
 }
 
 
 /**
  * Attaches the table obstacle to the planning scene interface.
  */
-void DoroManipulation::addTableAsObstacle(geometry_msgs::PoseStamped table_pose)
+void JacoManipulation::addTableAsObstacle(geometry_msgs::PoseStamped table_pose)
 {
 	ros::param::set("/plane_extraction_enable", true);
 
@@ -307,7 +307,7 @@ void DoroManipulation::addTableAsObstacle(geometry_msgs::PoseStamped table_pose)
 /**
  * Attaches the object that is going to be picked up as obstacle.
  */
-void DoroManipulation::addTargetAsObstacle(geometry_msgs::PoseStamped box_pose)
+void JacoManipulation::addTargetAsObstacle(geometry_msgs::PoseStamped box_pose)
 {
 	moveit_msgs::CollisionObject collision_object;
 	collision_object.header.frame_id = group_.getPlanningFrame();
@@ -342,34 +342,34 @@ void DoroManipulation::addTargetAsObstacle(geometry_msgs::PoseStamped box_pose)
 	ROS_INFO("The box was added as a collision object!");
 }
 
-void DoroManipulation::removeTable()
+void JacoManipulation::removeTable()
 {
 	std::vector<std::string> object_ids;
 	object_ids.push_back("table");
 	ps_interface_.removeCollisionObjects(object_ids);
 }
 
-void DoroManipulation::removeTarget()
+void JacoManipulation::removeTarget()
 {
 	std::vector<std::string> object_ids;
 	object_ids.push_back("table");
 	ps_interface_.removeCollisionObjects(object_ids);
 }
 
-void DoroManipulation::attachTarget()
+void JacoManipulation::attachTarget()
 {
 	group_.attachObject("pill_box");
 	ROS_INFO("Pill box is in gripper now.");
 }
 
-void DoroManipulation::detachTarget()
+void JacoManipulation::detachTarget()
 {
 	group_.detachObject("pill_box");
 	removeTarget();
 	ROS_INFO("Pill box removed.");
 }
 
-void DoroManipulation::closeHand(float value)
+void JacoManipulation::closeHand(float value)
 {
 	std_msgs::Float32MultiArray FP;
 
@@ -380,7 +380,7 @@ void DoroManipulation::closeHand(float value)
 	finger_pub_.publish(FP);
 }
 
-void DoroManipulation::openHand()
+void JacoManipulation::openHand()
 {
 	closeHand(0.0);
 }

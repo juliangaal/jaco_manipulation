@@ -15,9 +15,9 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>
   
 */
-#include <doro_manipulation/grasp_pose_generator.h>
+#include <jaco_manipulation/grasp_pose_generator.h>
 
-namespace doro_manipulation {
+namespace jaco_manipulation {
 
 GraspPoseGenerator::GraspPoseGenerator()
 {
@@ -53,8 +53,8 @@ geometry_msgs::PointStamped GraspPoseGenerator::transformPointToBaseLink(const g
 	return out_pt;
 }
 
-bool GraspPoseGenerator::serverCB(doro_manipulation::GenerateGraspPosesRequest& _request,
-										doro_manipulation::GenerateGraspPosesResponse& _response)
+bool GraspPoseGenerator::serverCB(jaco_manipulation::GenerateGraspPosesRequest& _request,
+										jaco_manipulation::GenerateGraspPosesResponse& _response)
 {
 		tf::Vector3 p (
 	 					_request.object_location.point.x + 0.01,

@@ -16,9 +16,9 @@
   
 */
 #include <ros/ros.h>
-#include <doro_manipulation/grasp_pose_generator.h>
-#include <doro_manipulation/doro_manipulation.h>
-#include <doro_manipulation/put_down_points_generator.h>
+#include <jaco_manipulation/grasp_pose_generator.h>
+#include <jaco_manipulation/jaco_manipulation.h>
+//#include <jaco_manipulation/put_down_points_generator.h>
 
 int main(int argn, char* args[])
 {
@@ -26,11 +26,11 @@ int main(int argn, char* args[])
 	ros::MultiThreadedSpinner m_t_spinner(4);
 
 	ROS_INFO("Starting server for manipulation.");
-	doro_manipulation::DoroManipulation dmt;
+	jaco_manipulation::JacoManipulation dmt;
 	ROS_INFO("Starting server for grasp pose generation.");
-	doro_manipulation::GraspPoseGenerator GPG_server;
-	ROS_INFO("Starting server for put down points generation.");
-	doro_manipulation::PutDownPointsGenerator PDPG_server;
+	jaco_manipulation::GraspPoseGenerator GPG_server;
+  // ROS_INFO("Starting server for put down points generation.");
+	// jaco_manipulation::PutDownPointsGenerator PDPG_server;
 
 	ROS_INFO("All servers are up.");
 

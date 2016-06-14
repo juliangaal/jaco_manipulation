@@ -28,9 +28,9 @@
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
 
-#include <doro_manipulation/GenerateGraspPoses.h>
+#include <jaco_manipulation/GenerateGraspPoses.h>
 
-namespace doro_manipulation
+namespace jaco_manipulation
 {
 /**
  * Provides a ROS service to generate a graps pose from a point in 3D.
@@ -66,8 +66,8 @@ protected:
     /**
      * Server callback.
      */
-    bool serverCB(doro_manipulation::GenerateGraspPosesRequest & _request,
-    										doro_manipulation::GenerateGraspPosesResponse & _response);
+    bool serverCB(jaco_manipulation::GenerateGraspPosesRequest & _request,
+    										jaco_manipulation::GenerateGraspPosesResponse & _response);
 
     /**
      * Convenience function.
