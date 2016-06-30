@@ -13,35 +13,35 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>
-  
-*/
+
+ */
 
 #include <jaco_manipulation/GenerateGraspPoses.h>
 #include <ros/ros.h>
 
 int main(int argn, char* args[])
 {
-	ros::init(argn, args, "gpg_test_client");
-	ros::NodeHandle nh;
+  ros::init(argn, args, "gpg_test_client");
+  ros::NodeHandle nh;
 
-	jaco_manipulation::GenerateGraspPoses message;
+  jaco_manipulation::GenerateGraspPoses message;
 
-	message.request.object_location.point.x = 0.0;
-	message.request.object_location.point.y = -0.20;
-	message.request.object_location.point.z = 0.50;
-	message.request.object_location.header.frame_id = "base_link";
-	message.request.object_location.header.stamp = ros::Time::now();
+  message.request.object_location.point.x = 0.0;
+  message.request.object_location.point.y = -0.20;
+  message.request.object_location.point.z = 0.50;
+  message.request.object_location.header.frame_id = "base_link";
+  message.request.object_location.header.stamp = ros::Time::now();
 
 
-	ros::ServiceClient cliend = nh.serviceClient <jaco_manipulation::GenerateGraspPoses> ("generate_grasp_poses", false);
+  ros::ServiceClient cliend = nh.serviceClient <jaco_manipulation::GenerateGraspPoses> ("generate_grasp_poses", false);
 
-	if(cliend.call(message))
-	{
-		std::cout<<message.response;
-	}
-	else
-	{
-		ROS_ERROR("Fails");
-		std::cout<<message.response;
-	}
+  if(cliend.call(message))
+  {
+    std::cout<<message.response;
+  }
+  else
+  {
+    ROS_ERROR("Fails");
+    std::cout<<message.response;
+  }
 }

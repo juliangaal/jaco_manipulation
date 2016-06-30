@@ -13,8 +13,8 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>
-  
-*/
+
+ */
 #include <ros/ros.h>
 #include <jaco_manipulation/grasp_pose_generator.h>
 #include <jaco_manipulation/jaco_manipulation.h>
@@ -22,19 +22,19 @@
 
 int main(int argn, char* args[])
 {
-	ros::init(argn, args, "manipulation_server");
-	ros::MultiThreadedSpinner m_t_spinner(4);
+  ros::init(argn, args, "manipulation_server");
+  ros::MultiThreadedSpinner m_t_spinner(4);
 
-	ROS_INFO("Starting server for manipulation.");
-	jaco_manipulation::JacoManipulation dmt;
-	ROS_INFO("Starting server for grasp pose generation.");
-	jaco_manipulation::GraspPoseGenerator GPG_server;
+  ROS_INFO("Starting server for manipulation.");
+  jaco_manipulation::JacoManipulation dmt;
+  ROS_INFO("Starting server for grasp pose generation.");
+  jaco_manipulation::GraspPoseGenerator GPG_server;
   // ROS_INFO("Starting server for put down points generation.");
-	// jaco_manipulation::PutDownPointsGenerator PDPG_server;
+  // jaco_manipulation::PutDownPointsGenerator PDPG_server;
 
-	ROS_INFO("All servers are up.");
+  ROS_INFO("All servers are up.");
 
-	m_t_spinner.spin();
+  m_t_spinner.spin();
 }
 
 

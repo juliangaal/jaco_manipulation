@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   tf
   message_generation
+  wpi_jaco_msgs
 )
 
 ## Generate services in the 'srv' folder
@@ -42,7 +43,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES jaco_manipulation grasp_pose_generator
-  CATKIN_DEPENDS actionlib actionlib_msgs cmake_modules geometry_msgs moveit_core moveit_ros_planning_interface pluginlib roscpp std_msgs tf message_runtime
+  CATKIN_DEPENDS actionlib actionlib_msgs cmake_modules geometry_msgs moveit_core moveit_ros_planning_interface pluginlib roscpp std_msgs tf message_runtime wpi_jaco_msgs
 )
 
 include_directories(include)
