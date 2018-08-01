@@ -236,10 +236,10 @@ bool GraspPoseGenerator::serverCB(jaco_manipulation::GenerateGraspPosesRequest& 
 
   // First the grasp pose. Then the pregrasp pose
   target_pose_top_.pose.position.z += 0.02;
-  target_pose_top_.pose.position.y -= 0.025;
-  _response.grasp_poses[3] = target_pose_top_;
+  target_pose_top_.pose.position.y -= 0.05;
+  _response.grasp_poses[0] = target_pose_top_;
   target_pose_top_.pose.position.z += 0.03;
-  _response.pregrasp_poses[3] = target_pose_top_;
+  _response.pregrasp_poses[0] = target_pose_top_;
 
 
   // First the grasp pose. Then the pregrasp pose
@@ -259,10 +259,10 @@ bool GraspPoseGenerator::serverCB(jaco_manipulation::GenerateGraspPosesRequest& 
   // First the grasp pose. Then the pregrasp pose
   target_pose_3_.pose.position.y -= 0.022;
   target_pose_3_.pose.position.x += 0.022;
-  _response.grasp_poses[0] = target_pose_3_;
+  _response.grasp_poses[3] = target_pose_3_;
   target_pose_3_.pose.position.y += 0.070;
   target_pose_3_.pose.position.x -= 0.070;
-  _response.pregrasp_poses[0] = target_pose_3_;
+  _response.pregrasp_poses[3] = target_pose_3_;
 
   _response.grasp_poses[0].header.frame_id = "root";
   _response.grasp_poses[1].header.frame_id = "root";
