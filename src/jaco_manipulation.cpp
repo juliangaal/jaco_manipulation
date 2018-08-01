@@ -135,7 +135,7 @@ bool JacoManipulation::planAndMove(const geometry_msgs::PoseStamped& target_pose
       target_pose.pose.orientation.w);
   ROS_INFO("FRAME FOR TARGET POSE:= %s",target_pose.header.frame_id.c_str());
 
-  bool success = group_.plan(plan_);
+  bool success = group_.plan(plan_) == moveit::planning_interface::MoveItErrorCode::SUCCESS;
 
   if(success)
     ROS_INFO("PLAN FOUND!");
@@ -196,8 +196,8 @@ bool JacoManipulation::planAndMove(const std::string& target_pose_string)
     group_.setNamedTarget(target_pose_string);
     //group_.setRandomTarget();
 
-    bool success = group_.plan(plan_);
-
+    bool success = (group_.plan(plan_) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+                    
     if(success)
       ROS_INFO("PLAN FOUND!");
     else
@@ -250,7 +250,7 @@ bool JacoManipulation::plan(const geometry_msgs::PoseStamped& target_pose)
       target_pose.pose.orientation.z,
       target_pose.pose.orientation.w);
 
-  return group_.plan(plan_);
+  return group_.plan(plan_) == moveit::planning_interface::MoveItErrorCode::SUCCESS;
 }
 
 

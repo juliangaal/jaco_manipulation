@@ -18,7 +18,7 @@
 #ifndef JACO_MANIPULATION_H_
 #define JACO_MANIPULATION_H_
 
-#include <moveit/move_group_interface/move_group.h>
+#include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_interface/planning_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <moveit/planning_scene_monitor/planning_scene_monitor.h>
@@ -91,7 +91,7 @@ protected:
   /**
    * The plan variable.
    */
-  moveit::planning_interface::MoveGroup::Plan plan_;
+  moveit::planning_interface::MoveGroupInterface::Plan plan_;
 
   /**
    * The planning scene interface.
@@ -122,7 +122,7 @@ public:
   /**
    * The move_group variable.
    */
-  move_group_interface::MoveGroup group_;
+  moveit::planning_interface::MoveGroupInterface group_;
 
   JacoManipulation();
   virtual ~JacoManipulation();

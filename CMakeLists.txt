@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(jaco_manipulation)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -42,7 +44,7 @@ generate_messages(
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES jaco_manipulation grasp_pose_generator
+  LIBRARIES jaco2_manipulation grasp_pose_generator
   CATKIN_DEPENDS actionlib actionlib_msgs cmake_modules geometry_msgs moveit_core moveit_ros_planning_interface pluginlib roscpp std_msgs tf message_runtime wpi_jaco_msgs
 )
 
@@ -52,7 +54,7 @@ include_directories(
 )
 
 ## Declare a cpp library --> DoroManipulation
-add_library(jaco_manipulation
+add_library(jaco2_manipulation
     src/jaco_manipulation.cpp
 )
 
@@ -75,7 +77,7 @@ add_executable(manipulation_server src/manipulation_services_node.cpp)
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(gpg_client jaco_manipulation_generate_messages_cpp)
-add_dependencies(jaco_manipulation jaco_manipulation_generate_messages_cpp)
+add_dependencies(jaco2_manipulation jaco_manipulation_generate_messages_cpp)
 add_dependencies(grasp_pose_generator jaco_manipulation_generate_messages_cpp)
 add_dependencies(pam_client jaco_manipulation_generate_messages_cpp)
 #add_dependencies(put_down_points_generator jaco_manipulation_generate_messages_cpp)
@@ -85,7 +87,7 @@ target_link_libraries(gpg_client
   ${catkin_LIBRARIES}
 )
 
-target_link_libraries(jaco_manipulation
+target_link_libraries(jaco2_manipulation
   ${catkin_LIBRARIES}
 )
 
@@ -100,7 +102,7 @@ target_link_libraries(grasp_pose_generator
 target_link_libraries(manipulation_server
   ${catkin_LIBRARIES}
   grasp_pose_generator
-  jaco_manipulation
+  jaco2_manipulation
 #  put_down_points_generator
 )
 
