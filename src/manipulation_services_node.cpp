@@ -27,10 +27,9 @@ int main(int argn, char* args[])
 
   ROS_INFO("Starting server for manipulation.");
   jaco_manipulation::JacoManipulation dmt;
+
   ROS_INFO("Starting server for grasp pose generation.");
   jaco_manipulation::GraspPoseGenerator GPG_server;
-  // ROS_INFO("Starting server for put down points generation.");
-  // jaco_manipulation::PutDownPointsGenerator PDPG_server;
 
   ROS_INFO("All servers are up.");
 

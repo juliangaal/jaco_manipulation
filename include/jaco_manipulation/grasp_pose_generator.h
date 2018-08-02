@@ -18,9 +18,9 @@
 #ifndef GRASP_POSE_GENERATOR_H_
 #define GRASP_POSE_GENERATOR_H_
 
+#include <cmath>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PointStamped.h>
-
 #include <std_srvs/Empty.h>
 #include <tf/tf.h>
 #include <tf/transform_listener.h>
@@ -30,69 +30,64 @@
 
 #include <jaco_manipulation/GenerateGraspPoses.h>
 
-namespace jaco_manipulation
-{
+namespace jaco_manipulation {
 /**
  * Provides a ROS service to generate a graps pose from a point in 3D.
  * Assumes that the point is within bounds and reachable.
  */
-class GraspPoseGenerator
-{
+class GraspPoseGenerator {
 
+ public:
+  /**
+   * Constructor.
+   */
+  GraspPoseGenerator();
 
-public:
-	/**
-	 * Constructor.
-	 */
-    GraspPoseGenerator();
+  /**
+   * Destructor.
+   */
+  ~GraspPoseGenerator();
 
-    /**
-     * Destructor.
-     */
-    ~GraspPoseGenerator();
+  /**
+   * A listener for the transform information.
+   */
+  tf::TransformListener *tf_listener_;
 
-    /**
-     * A listener for the transform information.
-     */
-    tf::TransformListener *tf_listener_;
+ protected:
 
-protected:
+  /**
+   * ROS server that returns a grasp pose when object's location is given.
+   */
+  ros::ServiceServer server_;
 
-    /**
-     * ROS server that returns a grasp pose when object's location is given.
-     */
-    ros::ServiceServer server_;
+  /**
+   * Server callback.
+   */
+  bool serverCB(jaco_manipulation::GenerateGraspPosesRequest &request,
+                jaco_manipulation::GenerateGraspPosesResponse &response);
 
-    /**
-     * Server callback.
-     */
-    bool serverCB(jaco_manipulation::GenerateGraspPosesRequest & _request,
-    										jaco_manipulation::GenerateGraspPosesResponse & _response);
+  /**
+   * Convenience function.
+   */
+  inline float dist3D(const geometry_msgs::Point p1, const geometry_msgs::Point p2);
 
-    /**
-     * Convenience function.
-     */
-    inline float dist3D(const geometry_msgs::Point p1, const geometry_msgs::Point p2);
+  /**
+   * Convenience function to transform a point to the base_link frame.
+   */
+  geometry_msgs::PointStamped transformPointToBaseLink(const geometry_msgs::PointStamped &in_pt);
 
-    /**
-     * Convenience function to transform a point to the base_link frame.
-     */
-    geometry_msgs::PointStamped transformPointToBaseLink(const geometry_msgs::PointStamped& in_pt);
+  /**
+   * A common nodehandle.
+   */
+  ros::NodeHandle n_;
 
-    /**
-     * A common nodehandle.
-     */
-    ros::NodeHandle n_;
-
-    /**
-     * The generated poses are stored in these variables.
-     */
-    geometry_msgs::PoseStamped 	target_pose_top_,
-    								target_pose_1_,
-    								target_pose_2_,
-    								target_pose_3_,
-    								hand_pose_;
-
+  /**
+   * The generated poses are stored in these variables.
+   */
+  geometry_msgs::PoseStamped target_pose_top_;
+  geometry_msgs::PoseStamped target_pose_1_;
+  geometry_msgs::PoseStamped target_pose_2_;
+  geometry_msgs::PoseStamped target_pose_3_;
 };
 }
 #endif /* JACO_HAND_POSE_GENERATOR_H_ */
