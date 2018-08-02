@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   moveit_core
   moveit_ros_planning_interface
+  moveit_visual_tools
   pluginlib
   roscpp
   std_msgs
@@ -55,16 +56,13 @@ include_directories(
 
 ## Declare a cpp library --> DoroManipulation
 add_library(jaco2_manipulation
+    src/jaco_boundaries.cpp
     src/jaco_manipulation.cpp
 )
 
 add_library(grasp_pose_generator
     src/grasp_pose_generator.cpp
 )
-
-#add_library(put_down_points_generator
-#    src/put_down_points_generator.cpp
-#)
 
 # Test client for grasp pose generator
 add_executable(gpg_client src/gpg_client.cc)
@@ -80,7 +78,6 @@ add_dependencies(gpg_client jaco_manipulation_generate_messages_cpp)
 add_dependencies(jaco2_manipulation jaco_manipulation_generate_messages_cpp)
 add_dependencies(grasp_pose_generator jaco_manipulation_generate_messages_cpp)
 add_dependencies(pam_client jaco_manipulation_generate_messages_cpp)
-#add_dependencies(put_down_points_generator jaco_manipulation_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(gpg_client
@@ -95,15 +92,10 @@ target_link_libraries(grasp_pose_generator
   ${catkin_LIBRARIES}
 )
 
-#target_link_libraries(put_down_points_generator
-#  ${catkin_LIBRARIES}
-#)
-
 target_link_libraries(manipulation_server
   ${catkin_LIBRARIES}
   grasp_pose_generator
   jaco2_manipulation
-#  put_down_points_generator
 )
 
 target_link_libraries(pam_client
