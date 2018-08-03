@@ -28,12 +28,17 @@ JacoManipulation::JacoManipulation() :
     pam_server_(nh_, "plan_and_move_arm", boost::bind(&JacoManipulation::processGoal, this, _1), false),
     visual_tools_("root"),
     haa_client_("jaco_arm/home_arm", true) {
-  ROS_INFO("Initializing Doro Manipulation!");
+  ROS_INFO("Initializing Jaco Manipulation!");
 
   finger_pub_ = nh_.advertise<std_msgs::Float32>("jaco_arm/finger_cmd", 1);
+
   tf_listener_ = boost::shared_ptr<tf::TransformListener>(new tf::TransformListener(ros::Duration(10)));
-  move_group_.setPlanningTime(10);
+
+  move_group_.setPlanningTime(0.2);
+  move_group_.setPlannerId("RRTstarkConfigDefault");
+
   pam_server_.start();
+
   prepMoveItVisualTools();
 }
 
@@ -89,17 +94,6 @@ bool JacoManipulation::planAndMove(const std::string &target_pose_string) {
     moveGripper(6500.00);
     sleep(3.0);
     return true;
-  } else if (target_pose_string == "home" || target_pose_string == "HOME") {
-    ROS_INFO("[JacoManipulation]: Homing Arm...");
-
-    haa_client_.waitForServer();
-
-    wpi_jaco_msgs::HomeArmGoal hag;
-    hag.retract = false;
-    haa_client_.sendGoal(hag);
-    haa_client_.waitForResult();
-
-    return (haa_client_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED);
   } else {
     move_group_.allowReplanning(true);
     move_group_.allowLooking(true);
