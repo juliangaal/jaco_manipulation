@@ -64,23 +64,23 @@ add_library(grasp_pose_generator
     src/grasp_pose_generator.cpp
 )
 
-# Test client for grasp pose generator
-add_executable(gpg_client src/gpg_client.cc)
+# Test client for grasp pose generator action server
+add_executable(grasp_pose_generator_client_test src/grasp_pose_generator_client_test.cpp)
 
-# Test client for jaco_manipulation
-add_executable(pam_client src/jaco_manipulation_test.cc)
+# Test client for jaco_manipulation action server
+add_executable(jaco_manipulation_client_test src/jaco_manipulation_client_test.cpp)
 
 add_executable(manipulation_server src/manipulation_services_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(gpg_client jaco_manipulation_generate_messages_cpp)
+add_dependencies(grasp_pose_generator_client_test jaco_manipulation_generate_messages_cpp)
 add_dependencies(jaco2_manipulation jaco_manipulation_generate_messages_cpp)
 add_dependencies(grasp_pose_generator jaco_manipulation_generate_messages_cpp)
-add_dependencies(pam_client jaco_manipulation_generate_messages_cpp)
+add_dependencies(jaco_manipulation_client_test jaco_manipulation_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(gpg_client
+target_link_libraries(grasp_pose_generator_client_test
   ${catkin_LIBRARIES}
 )
 
@@ -98,6 +98,6 @@ target_link_libraries(manipulation_server
   jaco2_manipulation
 )
 
-target_link_libraries(pam_client
+target_link_libraries(jaco_manipulation_client_test
   ${catkin_LIBRARIES}
 )
