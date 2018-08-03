@@ -34,7 +34,7 @@ JacoManipulation::JacoManipulation() :
 
   tf_listener_ = boost::shared_ptr<tf::TransformListener>(new tf::TransformListener(ros::Duration(10)));
 
-  move_group_.setPlanningTime(1.0);
+  move_group_.setPlanningTime(0.5);
   move_group_.setPlannerId("RRTstarkConfigDefault");
 
   pam_server_.start();
