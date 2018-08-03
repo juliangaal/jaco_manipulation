@@ -10,7 +10,7 @@
   <include file="$(find jaco_manipulation)/launch/arm.launch" />
   
   <!-- Launches the moveit config for the arm -->
-  <include file="$(find manipulation_launch)/launch/jaco_moveit.launch">
+  <include file="$(find jaco_manipulation)/launch/jaco_moveit.launch">
     <arg name="viz" value="$(arg vizz)" />
   </include>
   
@@ -24,7 +24,7 @@
   <node pkg="tf" type="static_transform_publisher" name="base_link_broadcaster" args="-0.26 0.075 -0.025 -1.5708 0 0 root base_link 50" />
 
   <group if="$(arg use_rviz)">
-    <node name="jaco_rviz" pkg="rviz" type="rviz" args="-d $(find manipulation_launch)/launch/manipulation.rviz"/>
+    <node name="jaco_rviz" pkg="rviz" type="rviz" args="-d $(find jaco_manipulation)/launch/manipulation.rviz"/>
   </group>
 </launch>
 
