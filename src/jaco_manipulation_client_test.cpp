@@ -47,9 +47,9 @@ class Executer {
     ROS_INFO_STREAM("Attempt: " << move.description);
 
     if (move.start.goal.goal_type.empty() && moveArm(move.end)) // start goal emoty: start at current state
-      ROS_SUCCESS("Success : " + move.description);
+      ROS_SUCCESS("Success: " + move.description);
     else if (moveArm(move.start) && moveArm(move.end)) // start and goal state occupied
-      ROS_SUCCESS("Success : " + move.description);
+      ROS_SUCCESS("Success: " + move.description);
     else // if one of start or goal move fails
       ROS_ERROR_STREAM("Fail   : " << move.description);
   }

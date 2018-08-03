@@ -7,7 +7,7 @@
 
   <!-- Launches the driver for the arm  -->
   <!--  include file="$(find wpi_jaco_wrapper)/launch/arm.launch" / -->
-  <include file="$(find manipulation_launch)/launch/arm.launch" />
+  <include file="$(find jaco_manipulation)/launch/arm.launch" />
   
   <!-- Launches the moveit config for the arm -->
   <include file="$(find manipulation_launch)/launch/jaco_moveit.launch">
