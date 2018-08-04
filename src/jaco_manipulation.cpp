@@ -15,6 +15,8 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>
 
  */
+#include <jaco_manipulation/jaco_manipulation.h>
+
 #include "jaco_manipulation/jaco_manipulation.h"
 #include "jaco_manipulation/jaco_boundaries.h"
 
@@ -25,7 +27,7 @@ namespace jaco_manipulation {
 
 JacoManipulation::JacoManipulation() :
     move_group_("arm"),
-    pam_server_(nh_, "plan_and_move_arm", std::bind(&JacoManipulation::processGoal, this, _1), false),
+    pam_server_(nh_, "plan_and_move_arm", boost::bind(&JacoManipulation::processGoal, this, _1), false),
     visual_tools_("root"),
     haa_client_("jaco_arm/home_arm", true) {
   ROS_INFO("Initializing Jaco Manipulation!");
@@ -42,24 +44,37 @@ JacoManipulation::JacoManipulation() :
   prepMoveItVisualTools();
 }
 
+void JacoManipulation::prepMoveItVisualTools() {
+  visual_tools_.deleteAllMarkers();
+  visual_tools_.loadRemoteControl();
+  visual_tools_.trigger();
+}
+
+void JacoManipulation::showPlannedPath() {
+  visual_tools_.deleteAllMarkers();
+  visual_tools_.publishTrajectoryLine(plan_.trajectory_, move_group_.getCurrentState()->getJointModelGroup("arm"));
+  visual_tools_.trigger();
+}
+
 void JacoManipulation::processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
   bool result_value;
 
   if (goal->goal_type.empty()) {
     ROS_ERROR("Goal not set. Returning");
+    result_value = false;
   } else if (goal->goal_type.compare("pose")) {
-    ROS_INFO("Goal received: POSE");
+    ROS_STATUS("Goal received: pose");
     result_value = planAndMove(goal->target_pose);
   } else if (goal->goal_type.compare("joint_state")) {
-    ROS_INFO("Goal received: JOINT STATE");
+    ROS_STATUS("Goal received: joint state");
     result_value = planAndMove(goal->target_joint_state);
   } else {
-    ROS_INFO("Goal received: NAMED TARGET");
+    ROS_STATUS("Goal received: named target");
     result_value = planAndMove(goal->goal_type);
   }
 
   if (result_value) {
-    ROS_INFO("Plan found. Action succeeded.");
+    ROS_SUCCESS("Plan found. Action succeeded.");
     pam_server_.setSucceeded();
   } else {
     ROS_ERROR("NO Plan found. Action aborted/failed.");
@@ -77,8 +92,7 @@ bool JacoManipulation::planAndMove(const PoseStamped &target_pose) {
   move_group_.setPoseReferenceFrame(target_pose.header.frame_id);
   move_group_.setPoseTarget(target_pose);
 
-  const PoseStamped current_pose = move_group_.getCurrentPose("jaco_link_hand");
-
+  const auto& current_pose = move_group_.getCurrentPose("jaco_link_hand");
   showPlannedMoveInfo(current_pose, target_pose);
 
   if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
@@ -92,7 +106,15 @@ bool JacoManipulation::planAndMove(const JointState &target_joint_state) {
   move_group_.allowReplanning(true);
   move_group_.allowLooking(true);
   move_group_.setStartStateToCurrentState();
-  
+  move_group_.setJointValueTarget(target_joint_state);
+
+  const auto& current_joint_state = move_group_.getCurrentJointValues();
+  showPlannedMoveInfo(current_joint_state, target_joint_state);
+
+  if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
+
+  showPlannedPath();
+
   return move_group_.move() ? true : false;
 }
 
@@ -120,38 +142,6 @@ bool JacoManipulation::planAndMove(const std::string &target_pose_string) {
 
     return move_group_.move() ? true : false;
   }
-}
-
-/**
- * Convenience function to plan the pose specified by target_pose
- */
-bool JacoManipulation::plan(const PoseStamped &target_pose) {
-  move_group_.setPoseReferenceFrame(target_pose.header.frame_id);
-  move_group_.setPoseTarget(target_pose);
-  PoseStamped current_pose = move_group_.getCurrentPose();
-
-  ROS_INFO("Planning: The pose now: (%f,%f,%f) ; (%f,%f,%f,%f)",
-           current_pose.pose.position.x,
-           current_pose.pose.position.y,
-           current_pose.pose.position.z,
-           current_pose.pose.orientation.x,
-           current_pose.pose.orientation.y,
-           current_pose.pose.orientation.z,
-           current_pose.pose.orientation.w);
-
-  ROS_INFO("The target pose: (%f,%f,%f) ; (%f,%f,%f,%f)",
-           target_pose.pose.position.x,
-           target_pose.pose.position.y,
-           target_pose.pose.position.z,
-           target_pose.pose.orientation.x,
-           target_pose.pose.orientation.y,
-           target_pose.pose.orientation.z,
-           target_pose.pose.orientation.w);
-
-  bool success = move_group_.plan(plan_) == moveit::planning_interface::MoveItErrorCode::SUCCESS;
-  if (success) showPlannedPath();
-
-  return success;
 }
 
 /**
@@ -241,13 +231,13 @@ void JacoManipulation::addTargetAsObstacle(PoseStamped box_pose) {
 
 void JacoManipulation::removeTable() {
   std::vector<std::string> object_ids;
-  object_ids.push_back("table");
+  object_ids.emplace_back("table");
   planning_scene_interface_.removeCollisionObjects(object_ids);
 }
 
 void JacoManipulation::removeTarget() {
   std::vector<std::string> object_ids;
-  object_ids.push_back("table");
+  object_ids.emplace_back("table");
   planning_scene_interface_.removeCollisionObjects(object_ids);
 }
 
@@ -272,18 +262,6 @@ void JacoManipulation::addBoundaries() {
 
 }
 
-void JacoManipulation::prepMoveItVisualTools() {
-  visual_tools_.deleteAllMarkers();
-  visual_tools_.loadRemoteControl();
-  visual_tools_.trigger();
-}
-
-void JacoManipulation::showPlannedPath() {
-  visual_tools_.deleteAllMarkers();
-  visual_tools_.publishTrajectoryLine(plan_.trajectory_, move_group_.getCurrentState()->getJointModelGroup("arm"));
-  visual_tools_.trigger();
-}
-
 void JacoManipulation::showPlannedMoveInfo(const PoseStamped &start,
                                            const PoseStamped &end) {
   ROS_INFO_STREAM("Frame for Planning := " << move_group_.getPoseReferenceFrame());
@@ -304,6 +282,25 @@ void JacoManipulation::showPlannedMoveInfo(const PoseStamped &start,
            end.pose.orientation.y,
            end.pose.orientation.z,
            end.pose.orientation.w);
+  ROS_INFO_STREAM("FRAME FOR TARGET POSE := " << end.header.frame_id);
+}
+
+void JacoManipulation::showPlannedMoveInfo(const vector<double>& start, const JointState &end) {
+  ROS_INFO_STREAM("Frame for Planning := " << move_group_.getPoseReferenceFrame());
+  ROS_INFO("The joint states now: (%f,%f,%f,%f,%f,%f)",
+           start[JOINT1],
+           start[JOINT2],
+           start[JOINT3],
+           start[JOINT4],
+           start[JOINT5],
+           start[JOINT6]);
+  ROS_INFO("The target joint states: (%f,%f,%f,%f,%f,%f)",
+           end.position[JOINT1],
+           end.position[JOINT2],
+           end.position[JOINT3],
+           end.position[JOINT4],
+           end.position[JOINT5],
+           end.position[JOINT6]);
   ROS_INFO_STREAM("FRAME FOR TARGET POSE := " << end.header.frame_id);
 }
 }

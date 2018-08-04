@@ -39,12 +39,33 @@
 #include <jaco_manipulation/grasp_pose_generator.h>
 #include <wpi_jaco_msgs/HomeArmAction.h>
 
+#include <string>
+#include <vector>
+
 #include "std_msgs/Float32.h"
 #include "sensor_msgs/JointState.h"
+
+#define ROS_STATUS(x) ROS_INFO_STREAM("\033[34m" << (x) << "\033[00m")
+#define ROS_SUCCESS(x) ROS_INFO_STREAM("\033[32m" << (x) << "\033[00m")
 
 using geometry_msgs::Pose;
 using geometry_msgs::PoseStamped;
 using sensor_msgs::JointState;
+using std::string;
+using std::vector;
+
+namespace jaco_move {
+struct Goal {
+  jaco_manipulation::PlanAndMoveArmGoal goal;
+  string description;
+};
+
+struct Move {
+  Goal start;
+  Goal end;
+  string description;
+};
+}
 
 namespace jaco_manipulation {
 /**
@@ -103,6 +124,24 @@ class JacoManipulation {
 
  public:
 
+  /// helper: joint 1
+  constexpr static size_t JOINT1 = 0;
+
+  /// helper: joint 1
+  constexpr static size_t JOINT2 = 1;
+
+  // helper: joint 1
+  constexpr static size_t JOINT3 = 2;
+
+  // helper: joint 1
+  constexpr static size_t JOINT4 = 3;
+
+  // helper: joint 1
+  constexpr static size_t JOINT5 = 4;
+
+  // helper: joint 1
+  constexpr static size_t JOINT6 = 5;
+
   /**
    * The move_group variable.
    */
@@ -129,9 +168,14 @@ class JacoManipulation {
   void showPlannedPath();
 
   /**
-   *
+   * Show planned move from start pose to end pose
    */
   void showPlannedMoveInfo(const PoseStamped& start, const PoseStamped& end);
+
+  /**
+   * Show planned move from start pose to end pose
+   */
+  void showPlannedMoveInfo(const vector<double>& start, const JointState& end);
 
   /**
    * A function to add boundaries (for workspace in Oerebro, for now)
@@ -177,11 +221,6 @@ class JacoManipulation {
    * Convenience function to plan and execute the pose specified by string.
    */
   bool planAndMove(const std::string &target_pose_string);
-
-  /**
-   * Convenience function to plan the pose specified by target_pose.
-   */
-  bool plan(const PoseStamped &target_pose);
 
   /**
    * A function to move doro's grippers.
