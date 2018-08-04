@@ -165,7 +165,7 @@ class JacoManipulation {
   /**
    * A function to visualize planned move in RViz
    */
-  void showPlannedPath(const PoseStamped& target_pose);
+  void showPlannedPath();
 
   /**
    *

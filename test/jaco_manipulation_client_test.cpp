@@ -2,8 +2,6 @@
 #include <jaco_manipulation/PlanAndMoveArmAction.h>
 #include <jaco_manipulation/jaco_manipulation.h>
 
-#define ROS_SUCCESS(x) ROS_INFO_STREAM("\033[32m" << x << "\033[00m")
-
 using std::vector;
 using std::string;
 using PamClient = actionlib::SimpleActionClient<jaco_manipulation::PlanAndMoveArmAction>;
@@ -23,11 +21,10 @@ class Executer {
  public:
   Executer() = delete;
 
-  Executer(PamClient &client) : client_(client) {
+  explicit Executer(PamClient &client) : client_(client) {
     moves.reserve(2);
     client_.waitForServer();
     ROS_INFO("Calling jaco_manipulation...");
-    execute();
   }
 
   ~Executer() = default;
