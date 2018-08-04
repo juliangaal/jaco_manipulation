@@ -57,8 +57,11 @@ include_directories(
 
 ## Declare a cpp library --> DoroManipulation
 add_library(jaco2_manipulation
-    src/jaco_boundaries.cpp
-    src/jaco_manipulation.cpp
+        src/server/jaco_boundaries.cpp
+        src/server/jaco_manipulation.cpp
+        src/goals/pose_goal.cpp
+        src/goals/joint_goal.cpp
+        src/goals/move_it_goal.cpp
 )
 
 add_library(grasp_pose_generator
