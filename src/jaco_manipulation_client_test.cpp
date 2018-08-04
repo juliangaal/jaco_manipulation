@@ -2,6 +2,7 @@
 #include <jaco_manipulation/PlanAndMoveArmAction.h>
 #include <vector>
 #include <string>
+#include <jaco_manipulation/jaco_manipulation.h>
 
 #define ROS_SUCCESS(x) ROS_INFO_STREAM("\033[32m" << x << "\033[00m")
 
@@ -179,6 +180,33 @@ int main(int argn, char *args[]) {
     start_goal.target_pose.pose.orientation.w = 0.341635;
     move.start.goal = start_goal;
     move.start.description = "home pose";
+
+    jaco_manipulation::PlanAndMoveArmGoal end_goal;
+    end_goal.goal_type = "home";
+    move.end.goal = end_goal;
+    move.end.description = "home joint state";
+
+    assert(!move.start.goal.goal_type.empty());
+    assert(!move.end.goal.goal_type.empty());
+
+    exe.addMove(move);
+  }
+
+  {
+    Move move;
+    move.description = "Joint target (manual) -> joint target (MoveIt! config): joint state 1 -> home joint state";
+
+    using jm = jaco_manipulation::JacoManipulation;
+    jaco_manipulation::PlanAndMoveArmGoal start_goal;
+    start_goal.goal_type = "joint_state";
+    start_goal.target_joint_state.position.push_back(-2.6435937802859897);
+    start_goal.target_joint_state.position.push_back(2.478897506888874);
+    start_goal.target_joint_state.position.push_back(1.680057969995632);
+    start_goal.target_joint_state.position.push_back(-2.0813597278055846);
+    start_goal.target_joint_state.position.push_back(1.451960752633381);
+    start_goal.target_joint_state.position.push_back(1.0931317536782839);
+    move.start.goal = start_goal;
+    move.start.description = "joint state 1 (manual)";
 
     jaco_manipulation::PlanAndMoveArmGoal end_goal;
     end_goal.goal_type = "home";

@@ -35,6 +35,8 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PointStamped.h>
 
+#include <vector>
+
 #include <jaco_manipulation/PlanAndMoveArmAction.h>
 #include <jaco_manipulation/grasp_pose_generator.h>
 #include <wpi_jaco_msgs/HomeArmAction.h>
@@ -44,6 +46,8 @@
 
 using geometry_msgs::Pose;
 using geometry_msgs::PoseStamped;
+using sensor_msgs::JointState;
+using std::vector;
 
 namespace jaco_manipulation {
 /**
@@ -101,6 +105,23 @@ class JacoManipulation {
   void processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &_goal);
 
  public:
+  /// helper: joint 1
+  constexpr static size_t JOINT1 = 0;
+
+  /// helper: joint 1
+  constexpr static size_t JOINT2 = 1;
+
+  // helper: joint 1
+  constexpr static size_t JOINT3 = 2;
+
+  // helper: joint 1
+  constexpr static size_t JOINT4 = 3;
+
+  // helper: joint 1
+  constexpr static size_t JOINT5 = 4;
+
+  // helper: joint 1
+  constexpr static size_t JOINT6 = 5;
 
   /**
    * The move_group variable.
@@ -131,6 +152,11 @@ class JacoManipulation {
    *
    */
   void showPlannedMoveInfo(const PoseStamped& start, const PoseStamped& end);
+
+  /**
+ * Show planned move from start pose to end pose
+ */
+  void showPlannedMoveInfo(const vector<double>& start, const JointState& end);
 
   /**
    * A function to add boundaries (for workspace in Oerebro, for now)
@@ -167,6 +193,11 @@ class JacoManipulation {
    * Convenience function to plan and execute the pose specified by target_pose.
    */
   bool planAndMove(const PoseStamped &target_pose);
+
+  /**
+   * Convenience function to plan and execute the joint_state specified by target_joint_state.
+   */
+  bool planAndMove(const JointState &target_joint_state);
 
   /**
    * Convenience function to plan and execute the pose specified by string.

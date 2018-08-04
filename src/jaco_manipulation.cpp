@@ -84,6 +84,22 @@ bool JacoManipulation::planAndMove(const PoseStamped &target_pose) {
   return move_group_.move() ? true : false;
 }
 
+bool JacoManipulation::planAndMove(const JointState &target_joint_state) {
+  move_group_.allowReplanning(true);
+  move_group_.allowLooking(true);
+  move_group_.setStartStateToCurrentState();
+  move_group_.setJointValueTarget(target_joint_state);
+
+  const auto& current_joint_state = move_group_.getCurrentJointValues();
+  //showPlannedMoveInfo(current_joint_state, target_joint_state);
+
+  if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
+
+  //showPlannedPath();
+
+  return move_group_.move() ? true : false;
+}
+
 bool JacoManipulation::planAndMove(const std::string &target_pose_string) {
 
   if (target_pose_string == "open" || target_pose_string == "OPEN") {
