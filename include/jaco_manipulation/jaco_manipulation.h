@@ -44,6 +44,7 @@
 
 using geometry_msgs::Pose;
 using geometry_msgs::PoseStamped;
+using sensor_msgs::JointState;
 
 namespace jaco_manipulation {
 /**
@@ -125,7 +126,7 @@ class JacoManipulation {
   /**
    * A function to visualize planned move in RViz
    */
-  void showPlannedPath(const PoseStamped& target_pose);
+  void showPlannedPath();
 
   /**
    *
@@ -168,6 +169,10 @@ class JacoManipulation {
    */
   bool planAndMove(const PoseStamped &target_pose);
 
+  /**
+   * Convenience function to plan and execute the joint_state specified by target_joint_state.
+   */
+  bool planAndMove(const JointState &target_joint_state);
   /**
    * Convenience function to plan and execute the pose specified by string.
    */

@@ -42,15 +42,20 @@ JacoManipulation::JacoManipulation() :
   prepMoveItVisualTools();
 }
 
-void JacoManipulation::processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &_goal) {
+void JacoManipulation::processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
   bool result_value;
 
-  if (_goal->goal_type.compare("pose") == 0) {
+  if (goal->goal_type.empty()) {
+    ROS_ERROR("Goal not set. Returning");
+  } else if (goal->goal_type.compare("pose")) {
     ROS_INFO("Goal received: POSE");
-    result_value = planAndMove(_goal->target_pose);
+    result_value = planAndMove(goal->target_pose);
+  } else if (goal->goal_type.compare("joint_state")) {
+    ROS_INFO("Goal received: JOINT STATE");
+    result_value = planAndMove(goal->target_joint_state);
   } else {
     ROS_INFO("Goal received: NAMED TARGET");
-    result_value = planAndMove(_goal->goal_type);
+    result_value = planAndMove(goal->goal_type);
   }
 
   if (result_value) {
@@ -66,7 +71,6 @@ void JacoManipulation::processGoal(const jaco_manipulation::PlanAndMoveArmGoalCo
  * Convenience function to plan and execute the pose specified by target_pose
  */
 bool JacoManipulation::planAndMove(const PoseStamped &target_pose) {
-
   move_group_.allowReplanning(true);
   move_group_.allowLooking(true);
   move_group_.setStartStateToCurrentState();
@@ -79,8 +83,16 @@ bool JacoManipulation::planAndMove(const PoseStamped &target_pose) {
 
   if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
 
-  showPlannedPath(target_pose);
+  showPlannedPath();
  
+  return move_group_.move() ? true : false;
+}
+
+bool JacoManipulation::planAndMove(const JointState &target_joint_state) {
+  move_group_.allowReplanning(true);
+  move_group_.allowLooking(true);
+  move_group_.setStartStateToCurrentState();
+  
   return move_group_.move() ? true : false;
 }
 
@@ -104,7 +116,7 @@ bool JacoManipulation::planAndMove(const std::string &target_pose_string) {
 
     if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
 
-    showPlannedPath(move_group_.getPoseTarget());
+    showPlannedPath();
 
     return move_group_.move() ? true : false;
   }
@@ -137,7 +149,7 @@ bool JacoManipulation::plan(const PoseStamped &target_pose) {
            target_pose.pose.orientation.w);
 
   bool success = move_group_.plan(plan_) == moveit::planning_interface::MoveItErrorCode::SUCCESS;
-  if (success) showPlannedPath(target_pose);
+  if (success) showPlannedPath();
 
   return success;
 }
@@ -266,9 +278,8 @@ void JacoManipulation::prepMoveItVisualTools() {
   visual_tools_.trigger();
 }
 
-void JacoManipulation::showPlannedPath(const PoseStamped& target_pose) {
+void JacoManipulation::showPlannedPath() {
   visual_tools_.deleteAllMarkers();
-  visual_tools_.publishAxis(target_pose.pose);
   visual_tools_.publishTrajectoryLine(plan_.trajectory_, move_group_.getCurrentState()->getJointModelGroup("arm"));
   visual_tools_.trigger();
 }
