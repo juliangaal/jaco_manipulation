@@ -1,6 +1,6 @@
 #include <actionlib/client/simple_action_client.h>
 #include <jaco_manipulation/PlanAndMoveArmAction.h>
-#include <jaco_manipulation/jaco_manipulation.h>
+#include <jaco_manipulation/server/jaco_manipulation.h>
 
 using std::vector;
 using std::string;
@@ -144,14 +144,14 @@ int main(int argn, char *args[]) {
 
     jaco_manipulation::PlanAndMoveArmGoal end_goal;
     end_goal.goal_type = "pose";
-    end_goal.target_pose.header.frame_id = planning_frame;
-    end_goal.target_pose.pose.position.x = 0.063846;
-    end_goal.target_pose.pose.position.y = -0.193645;
-    end_goal.target_pose.pose.position.z = 0.509365;
-    end_goal.target_pose.pose.orientation.x = 0.369761;
-    end_goal.target_pose.pose.orientation.y =  -0.555344;
-    end_goal.target_pose.pose.orientation.z = -0.661933;
-    end_goal.target_pose.pose.orientation.w = 0.341635;
+    end_goal.pose_goal.header.frame_id = planning_frame;
+    end_goal.pose_goal.pose.position.x = 0.063846;
+    end_goal.pose_goal.pose.position.y = -0.193645;
+    end_goal.pose_goal.pose.position.z = 0.509365;
+    end_goal.pose_goal.pose.orientation.x = 0.369761;
+    end_goal.pose_goal.pose.orientation.y =  -0.555344;
+    end_goal.pose_goal.pose.orientation.z = -0.661933;
+    end_goal.pose_goal.pose.orientation.w = 0.341635;
     move.end.goal = end_goal;
     move.end.description = "home pose";
 
@@ -168,13 +168,13 @@ int main(int argn, char *args[]) {
     using jm = jaco_manipulation::JacoManipulation;
     jaco_manipulation::PlanAndMoveArmGoal start_goal;
     start_goal.goal_type = "joint_state";
-    start_goal.target_joint_state.header.frame_id = planning_frame;
-    start_goal.target_joint_state.position.push_back(-2.6435937802859897);
-    start_goal.target_joint_state.position.push_back(2.478897506888874);
-    start_goal.target_joint_state.position.push_back(1.680057969995632);
-    start_goal.target_joint_state.position.push_back(-2.0813597278055846);
-    start_goal.target_joint_state.position.push_back(1.451960752633381);
-    start_goal.target_joint_state.position.push_back(1.0931317536782839);
+    start_goal.joint_goal.header.frame_id = planning_frame;
+    start_goal.joint_goal.position.push_back(-2.6435937802859897);
+    start_goal.joint_goal.position.push_back(2.478897506888874);
+    start_goal.joint_goal.position.push_back(1.680057969995632);
+    start_goal.joint_goal.position.push_back(-2.0813597278055846);
+    start_goal.joint_goal.position.push_back(1.451960752633381);
+    start_goal.joint_goal.position.push_back(1.0931317536782839);
     move.start.goal = start_goal;
     move.start.description = "joint state 1 (manual)";
 

@@ -17,7 +17,7 @@
  */
 #include <ros/ros.h>
 #include <jaco_manipulation/grasp_pose_generator.h>
-#include <jaco_manipulation/jaco_manipulation.h>
+#include <jaco_manipulation/server/jaco_manipulation.h>
 //#include <jaco_manipulation/put_down_points_generator.h>
 
 int main(int argn, char* args[])

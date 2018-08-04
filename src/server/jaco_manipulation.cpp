@@ -15,10 +15,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>
 
  */
-#include <jaco_manipulation/jaco_manipulation.h>
-
-#include "jaco_manipulation/jaco_manipulation.h"
-#include "jaco_manipulation/jaco_boundaries.h"
+#include <jaco_manipulation/server/jaco_manipulation.h>
 
 using moveit::planning_interface::MoveItErrorCode;
 namespace rvt = rviz_visual_tools;
@@ -64,10 +61,10 @@ void JacoManipulation::processGoal(const jaco_manipulation::PlanAndMoveArmGoalCo
     result_value = false;
   } else if (goal->goal_type == "pose") {
     ROS_STATUS("Goal received: pose");
-    result_value = planAndMove(goal->target_pose);
+    result_value = planAndMove(goal->pose_goal);
   } else if (goal->goal_type == "joint_state") {
     ROS_STATUS("Goal received: joint state");
-    result_value = planAndMove(goal->target_joint_state);
+    result_value = planAndMove(goal->joint_goal);
   } else {
     ROS_STATUS("Goal received: named target");
     result_value = planAndMove(goal->goal_type);
@@ -82,38 +79,38 @@ void JacoManipulation::processGoal(const jaco_manipulation::PlanAndMoveArmGoalCo
   }
 }
 
-bool JacoManipulation::planAndMove(const PoseStamped &target_pose) {
+bool JacoManipulation::planAndMove(const PoseStamped &pose_goal) {
   move_group_.allowReplanning(true);
   move_group_.allowLooking(true);
   move_group_.setStartStateToCurrentState();
-  move_group_.setPoseReferenceFrame(target_pose.header.frame_id);
-  move_group_.setPoseTarget(target_pose);
+  move_group_.setPoseReferenceFrame(pose_goal.header.frame_id);
+  move_group_.setPoseTarget(pose_goal);
 
   const auto& current_pose = move_group_.getCurrentPose("jaco_link_hand");
 
   if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
 
-  showPlannedMoveInfo(current_pose, target_pose);
+  showPlannedMoveInfo(current_pose, pose_goal);
   showPlannedPath();
  
   return move_group_.move() ? true : false;
 }
 
-bool JacoManipulation::planAndMove(const JointState &target_joint_state) {
+bool JacoManipulation::planAndMove(const JointState &joint_goal) {
   // TODO BUG CAN"T USE SENSOR_MSGS/JOINTSTATE, MAYBE BECAUSE OLY POSITION IS FILLED
   move_group_.allowReplanning(true);
   move_group_.allowLooking(true);
   move_group_.setStartStateToCurrentState();
-  move_group_.setPoseReferenceFrame(target_joint_state.header.frame_id);
+  move_group_.setPoseReferenceFrame(joint_goal.header.frame_id);
   moveit::core::RobotStatePtr current_state = move_group_.getCurrentState();
 
   std::vector<double> joint_group_positions;
-  joint_group_positions.push_back(target_joint_state.position[0]);
-  joint_group_positions.push_back(target_joint_state.position[1]);
-  joint_group_positions.push_back(target_joint_state.position[2]);
-  joint_group_positions.push_back(target_joint_state.position[3]);
-  joint_group_positions.push_back(target_joint_state.position[4]);
-  joint_group_positions.push_back(target_joint_state.position[5]);
+  joint_group_positions.push_back(joint_goal.position[0]);
+  joint_group_positions.push_back(joint_goal.position[1]);
+  joint_group_positions.push_back(joint_goal.position[2]);
+  joint_group_positions.push_back(joint_goal.position[3]);
+  joint_group_positions.push_back(joint_goal.position[4]);
+  joint_group_positions.push_back(joint_goal.position[5]);
 
   move_group_.setJointValueTarget(joint_group_positions);
 
@@ -121,19 +118,19 @@ bool JacoManipulation::planAndMove(const JointState &target_joint_state) {
 
   if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
 
-  showPlannedMoveInfo(current_joint_state, target_joint_state);
+  showPlannedMoveInfo(current_joint_state, joint_goal);
   showPlannedPath();
 
   return move_group_.move() ? true : false;
 }
 
-bool JacoManipulation::planAndMove(const std::string &target_pose_string) {
+bool JacoManipulation::planAndMove(const std::string &pose_goal_string) {
 
-  if (target_pose_string == "open" || target_pose_string == "OPEN") {
+  if (pose_goal_string == "open" || pose_goal_string == "OPEN") {
     moveGripper(0.0);
     sleep(3.0);
     return true;
-  } else if (target_pose_string == "close" || target_pose_string == "CLOSE") {
+  } else if (pose_goal_string == "close" || pose_goal_string == "CLOSE") {
     moveGripper(6500.00);
     sleep(3.0);
     return true;
@@ -141,7 +138,7 @@ bool JacoManipulation::planAndMove(const std::string &target_pose_string) {
     move_group_.allowReplanning(true);
     move_group_.allowLooking(true);
     move_group_.setStartStateToCurrentState();
-    move_group_.setNamedTarget(target_pose_string);
+    move_group_.setNamedTarget(pose_goal_string);
 
     ROS_INFO_STREAM("FRAME FOR PLANNING := " << move_group_.getPoseReferenceFrame());
 
