@@ -39,6 +39,7 @@ add_action_files(
 generate_messages(
   DEPENDENCIES
   geometry_msgs
+  sensor_msgs
   std_msgs
   actionlib_msgs
 )
