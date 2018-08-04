@@ -64,6 +64,8 @@ int main(int argn, char *args[]) {
   PamClient pam_client("plan_and_move_arm", true);
   Executer exe(pam_client);
 
+  static const string planning_frame = "root";
+
   {
     jaco_move::Move move;
     move.description = "Joint target: Initial pos -> home joint state";
@@ -129,7 +131,7 @@ int main(int argn, char *args[]) {
 
     jaco_manipulation::PlanAndMoveArmGoal end_goal;
     end_goal.goal_type = "pose";
-    end_goal.target_pose.header.frame_id = "root";
+    end_goal.target_pose.header.frame_id = planning_frame;
     end_goal.target_pose.pose.position.x = 0.063846;
     end_goal.target_pose.pose.position.y = -0.193645;
     end_goal.target_pose.pose.position.z = 0.509365;
@@ -148,22 +150,24 @@ int main(int argn, char *args[]) {
 
   {
     jaco_move::Move move;
-    move.description = "Joint target (manual) -> joint target (MoveIt! config): joint state 1 -> home joint state";
+    move.description = "Joint target (manual) -> Joint Target: joint state 1 -> home joint state";
 
     using jm = jaco_manipulation::JacoManipulation;
     jaco_manipulation::PlanAndMoveArmGoal start_goal;
     start_goal.goal_type = "joint_state";
-    start_goal.target_joint_state.position[jm::JOINT1] = -2.6435937802859897;
-    start_goal.target_joint_state.position[jm::JOINT2] = 2.478897506888874;
-    start_goal.target_joint_state.position[jm::JOINT3] = 1.680057969995632;
-    start_goal.target_joint_state.position[jm::JOINT4] = -2.0813597278055846;
-    start_goal.target_joint_state.position[jm::JOINT5] = 1.451960752633381;
-    start_goal.target_joint_state.position[jm::JOINT6] = 1.0931317536782839;
+    start_goal.target_joint_state.header.frame_id = planning_frame;
+    start_goal.target_joint_state.position.push_back(-2.6435937802859897);
+    start_goal.target_joint_state.position.push_back(2.478897506888874);
+    start_goal.target_joint_state.position.push_back(1.680057969995632);
+    start_goal.target_joint_state.position.push_back(-2.0813597278055846);
+    start_goal.target_joint_state.position.push_back(1.451960752633381);
+    start_goal.target_joint_state.position.push_back(1.0931317536782839);
     move.start.goal = start_goal;
-    move.start.description = "joint state 2";
+    move.start.description = "joint state 1 (manual)";
 
     jaco_manipulation::PlanAndMoveArmGoal end_goal;
     end_goal.goal_type = "home";
+    move.end.goal = end_goal;
     move.end.description = "home joint state";
 
     assert(!move.start.goal.goal_type.empty());

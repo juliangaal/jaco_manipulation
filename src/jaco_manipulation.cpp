@@ -62,10 +62,10 @@ void JacoManipulation::processGoal(const jaco_manipulation::PlanAndMoveArmGoalCo
   if (goal->goal_type.empty()) {
     ROS_ERROR("Goal not set. Returning");
     result_value = false;
-  } else if (goal->goal_type.compare("pose")) {
+  } else if (goal->goal_type == "pose") {
     ROS_STATUS("Goal received: pose");
     result_value = planAndMove(goal->target_pose);
-  } else if (goal->goal_type.compare("joint_state")) {
+  } else if (goal->goal_type == "joint_state") {
     ROS_STATUS("Goal received: joint state");
     result_value = planAndMove(goal->target_joint_state);
   } else {
@@ -82,9 +82,6 @@ void JacoManipulation::processGoal(const jaco_manipulation::PlanAndMoveArmGoalCo
   }
 }
 
-/**
- * Convenience function to plan and execute the pose specified by target_pose
- */
 bool JacoManipulation::planAndMove(const PoseStamped &target_pose) {
   move_group_.allowReplanning(true);
   move_group_.allowLooking(true);
@@ -93,26 +90,38 @@ bool JacoManipulation::planAndMove(const PoseStamped &target_pose) {
   move_group_.setPoseTarget(target_pose);
 
   const auto& current_pose = move_group_.getCurrentPose("jaco_link_hand");
-  showPlannedMoveInfo(current_pose, target_pose);
 
   if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
 
+  showPlannedMoveInfo(current_pose, target_pose);
   showPlannedPath();
  
   return move_group_.move() ? true : false;
 }
 
 bool JacoManipulation::planAndMove(const JointState &target_joint_state) {
+  // TODO BUG CAN"T USE SENSOR_MSGS/JOINTSTATE, MAYBE BECAUSE OLY POSITION IS FILLED
   move_group_.allowReplanning(true);
   move_group_.allowLooking(true);
   move_group_.setStartStateToCurrentState();
-  move_group_.setJointValueTarget(target_joint_state);
+  move_group_.setPoseReferenceFrame(target_joint_state.header.frame_id);
+  moveit::core::RobotStatePtr current_state = move_group_.getCurrentState();
+
+  std::vector<double> joint_group_positions;
+  joint_group_positions.push_back(target_joint_state.position[0]);
+  joint_group_positions.push_back(target_joint_state.position[1]);
+  joint_group_positions.push_back(target_joint_state.position[2]);
+  joint_group_positions.push_back(target_joint_state.position[3]);
+  joint_group_positions.push_back(target_joint_state.position[4]);
+  joint_group_positions.push_back(target_joint_state.position[5]);
+
+  move_group_.setJointValueTarget(joint_group_positions);
 
   const auto& current_joint_state = move_group_.getCurrentJointValues();
-  showPlannedMoveInfo(current_joint_state, target_joint_state);
 
   if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
 
+  showPlannedMoveInfo(current_joint_state, target_joint_state);
   showPlannedPath();
 
   return move_group_.move() ? true : false;
@@ -286,6 +295,7 @@ void JacoManipulation::showPlannedMoveInfo(const PoseStamped &start,
 }
 
 void JacoManipulation::showPlannedMoveInfo(const vector<double>& start, const JointState &end) {
+  assert(start.size() >= 6);
   ROS_INFO_STREAM("Frame for Planning := " << move_group_.getPoseReferenceFrame());
   ROS_INFO("The joint states now: (%f,%f,%f,%f,%f,%f)",
            start[JOINT1],
