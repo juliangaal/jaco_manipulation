@@ -35,19 +35,37 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PointStamped.h>
 
-#include <vector>
-
 #include <jaco_manipulation/PlanAndMoveArmAction.h>
 #include <jaco_manipulation/grasp_pose_generator.h>
 #include <wpi_jaco_msgs/HomeArmAction.h>
 
+#include <string>
+#include <vector>
+
 #include "std_msgs/Float32.h"
 #include "sensor_msgs/JointState.h"
+
+#define ROS_STATUS(x) ROS_INFO_STREAM("\033[34m" << (x) << "\033[00m")
+#define ROS_SUCCESS(x) ROS_INFO_STREAM("\033[32m" << (x) << "\033[00m")
 
 using geometry_msgs::Pose;
 using geometry_msgs::PoseStamped;
 using sensor_msgs::JointState;
+using std::string;
 using std::vector;
+
+namespace jaco_move {
+struct Goal {
+  jaco_manipulation::PlanAndMoveArmGoal goal;
+  string description;
+};
+
+struct Move {
+  Goal start;
+  Goal end;
+  string description;
+};
+}
 
 namespace jaco_manipulation {
 /**
@@ -105,6 +123,7 @@ class JacoManipulation {
   void processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &_goal);
 
  public:
+
   /// helper: joint 1
   constexpr static size_t JOINT1 = 0;
 
@@ -154,8 +173,8 @@ class JacoManipulation {
   void showPlannedMoveInfo(const PoseStamped& start, const PoseStamped& end);
 
   /**
- * Show planned move from start pose to end pose
- */
+   * Show planned move from start pose to end pose
+   */
   void showPlannedMoveInfo(const vector<double>& start, const JointState& end);
 
   /**
@@ -198,7 +217,6 @@ class JacoManipulation {
    * Convenience function to plan and execute the joint_state specified by target_joint_state.
    */
   bool planAndMove(const JointState &target_joint_state);
-
   /**
    * Convenience function to plan and execute the pose specified by string.
    */
