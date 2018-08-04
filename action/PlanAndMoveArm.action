@@ -1,5 +1,5 @@
 string goal_type
-geometry_msgs/PoseStamped target_pose
-sensor_msgs/JointState target_joint_state
+geometry_msgs/PoseStamped pose_goal
+sensor_msgs/JointState joint_goal
 ---
 ---
