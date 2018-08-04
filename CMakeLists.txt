@@ -65,10 +65,10 @@ add_library(grasp_pose_generator
 )
 
 # Test client for grasp pose generator action server
-add_executable(test/grasp_pose_generator_client_test test/grasp_pose_generator_client_test.cpp)
+add_executable(grasp_pose_generator_client_test test/grasp_pose_generator_client_test.cpp)
 
 # Test client for jaco_manipulation action server
-add_executable(test/jaco_manipulation_client_test test/jaco_manipulation_client_test.cpp)
+add_executable(jaco_manipulation_client_test test/jaco_manipulation_client_test.cpp)
 
 add_executable(manipulation_server src/manipulation_services_node.cpp)
 
