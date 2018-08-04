@@ -25,7 +25,7 @@ namespace jaco_manipulation {
 
 JacoManipulation::JacoManipulation() :
     move_group_("arm"),
-    pam_server_(nh_, "plan_and_move_arm", std::bind(&JacoManipulation::processGoal, this, _1), false),
+    pam_server_(nh_, "plan_and_move_arm", boost::bind(&JacoManipulation::processGoal, this, _1), false),
     visual_tools_("root"),
     haa_client_("jaco_arm/home_arm", true) {
   ROS_INFO("Initializing Jaco Manipulation!");
