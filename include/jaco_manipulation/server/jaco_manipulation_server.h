@@ -48,13 +48,8 @@
 #define ROS_STATUS(x) ROS_INFO_STREAM("\033[34m" << (x) << "\033[00m")
 #define ROS_SUCCESS(x) ROS_INFO_STREAM("\033[32m" << (x) << "\033[00m")
 
-using geometry_msgs::Pose;
-using geometry_msgs::PoseStamped;
-using sensor_msgs::JointState;
-using std::string;
-using std::vector;
-
 namespace jaco_manipulation {
+namespace server {
 /**
  * Convenience class to talk to Moveit-ROS interface.
  */
@@ -117,16 +112,16 @@ class JacoManipulation {
   /// helper: joint 1
   constexpr static size_t JOINT2 = 1;
 
-  // helper: joint 1
+  /// helper: joint 1
   constexpr static size_t JOINT3 = 2;
 
-  // helper: joint 1
+  /// helper: joint 1
   constexpr static size_t JOINT4 = 3;
 
-  // helper: joint 1
+  //// helper: joint 1
   constexpr static size_t JOINT5 = 4;
 
-  // helper: joint 1
+  //// helper: joint 1
   constexpr static size_t JOINT6 = 5;
 
   /**
@@ -157,17 +152,17 @@ class JacoManipulation {
   /**
    * Show planned move info in console from start pose to end pose
    */
-  void showPlannedMoveInfo(const PoseStamped &start, const PoseStamped &end);
+  void showPlannedMoveInfo(const geometry_msgs::PoseStamped &start, const geometry_msgs::PoseStamped &end);
 
   /**
    * Show planned move info in console from start joint to end joint state
    */
-  void showPlannedMoveInfo(const vector<double> &start, const JointState &end);
+  void showPlannedMoveInfo(const std::vector<double> &start, const sensor_msgs::JointState &end);
 
   /**
   * Show planned move info in console from start joint to end joint state
   */
-  void showPlannedMoveInfo(const PoseStamped &start, const string &target);
+  void showPlannedMoveInfo(const geometry_msgs::PoseStamped &start, const std::string &target);
 
   /**
    * A function to add boundaries (for workspace in Oerebro, for now)
@@ -177,12 +172,12 @@ class JacoManipulation {
   /**
    * A function to add the table as an obstacle.
    */
-  void addTableAsObstacle(PoseStamped table_pose);
+  void addTableAsObstacle(geometry_msgs::PoseStamped table_pose);
 
   /**
    * A function to add the target as an obstacle.
    */
-  void addTargetAsObstacle(PoseStamped box_pose);
+  void addTargetAsObstacle(geometry_msgs::PoseStamped box_pose);
 
   /**
    * Remove the Table after task is complete.
@@ -203,12 +198,12 @@ class JacoManipulation {
   /**
    * Convenience function to plan and execute the pose specified by target_pose.
    */
-  bool planAndMove(const PoseStamped &target_pose);
+  bool planAndMove(const geometry_msgs::PoseStamped &target_pose);
 
   /**
    * Convenience function to plan and execute the joint_state specified by target_joint_state.
    */
-  bool planAndMove(const JointState &target_joint_state);
+  bool planAndMove(const sensor_msgs::JointState &target_joint_state);
   /**
    * Convenience function to plan and execute the pose specified by string.
    */
@@ -217,7 +212,7 @@ class JacoManipulation {
   /**
    * Convenience function to plan the pose specified by target_pose.
    */
-  bool plan(const PoseStamped &target_pose);
+  bool plan(const geometry_msgs::PoseStamped &target_pose);
 
   /**
    * A function to move doro's grippers.
@@ -230,5 +225,8 @@ class JacoManipulation {
   void resetValues();
 
 };
-}
+
+} // namespace jaco_manipulation
+} // namespace server
+
 #endif /* JACO_MANIPULATION_H_ */
