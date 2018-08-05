@@ -25,6 +25,8 @@ Start with
 ```cpp
 #include <jaco_manipulation/client/jaco_manipulation_client.h>
 
+using namespace jaco_manipulation::client;
+
 int main(int argn, char *args[]) {
 
   ros::init(argn, args, "pam_client");
@@ -40,7 +42,7 @@ MoveIt! Config file goal "home"
 Joint state goal
 
 ```cpp
-  JointState joint_state;
+  sensor_msgs::JointState joint_state;
   joint_state.position.push_back(-2.6435937802859897);
   joint_state.position.push_back(2.478897506888874);
   joint_state.position.push_back(1.680057969995632);
@@ -55,7 +57,7 @@ Joint state goal
 Pose goal
 
 ```cpp
-  PoseStamped pose;
+  geometry_msgs::PoseStamped pose;
   pose.pose.position.x = 0.063846;
   pose.pose.position.y = -0.193645;
   pose.pose.position.z = 0.509365;

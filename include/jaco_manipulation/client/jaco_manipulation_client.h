@@ -18,9 +18,8 @@
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/PoseStamped.h>
 
-using sensor_msgs::JointState;
-using geometry_msgs::PoseStamped;
-using PamClient = actionlib::SimpleActionClient<jaco_manipulation::PlanAndMoveArmAction>;
+namespace jaco_manipulation {
+namespace client {
 
 /**
  * JacoManipulationClient
@@ -30,7 +29,10 @@ using PamClient = actionlib::SimpleActionClient<jaco_manipulation::PlanAndMoveAr
  */
 class JacoManipulationClient {
  public:
-  /**
+
+  using SimpleActionClient = actionlib::SimpleActionClient<jaco_manipulation::PlanAndMoveArmAction>;
+
+    /**
    * default constructor
    */
   JacoManipulationClient();
@@ -44,25 +46,25 @@ class JacoManipulationClient {
    * Move to MoveIt goal defined in jaco.srdf
    * @param goal name of goal
    */
-  void moveTo(const string &goal);
+  void moveTo(const std::string &goal);
 
   /**
    * Move to Pose goal
    * @param goal pose goal
    */
-  void moveTo(const PoseStamped &goal);
+  void moveTo(const geometry_msgs::PoseStamped &goal);
 
   /**
    * Move to joint goal
    * @param goal joint goal
    */
-  void moveTo(const JointState &goal);
+  void moveTo(const sensor_msgs::JointState &goal);
 
  private:
   /**
    * PlanAndMoveArmAction ROS action server client
    */
-  PamClient client_;
+  SimpleActionClient client_;
 
   /**
    * Executes goal: sends to action server and gets result
@@ -71,5 +73,6 @@ class JacoManipulationClient {
   void execute(const Goal& goal);
 
 };
-
+}
+}
 #endif //PROJECT_JACOMANIPULATIONCLIENT_H
