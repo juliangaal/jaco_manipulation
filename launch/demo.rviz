@@ -1,257 +1,257 @@
 Panels:
-  - Class: rviz/Displays
-    Help Height: 78
-    Name: Displays
-    Property Tree Widget:
-      Expanded:
-        - /Global Options1
-        - /Status1
-        - /TF1
-        - /TF1/Frames1
-      Splitter Ratio: 0.5
-    Tree Height: 707
-  - Class: rviz/Selection
-    Name: Selection
-  - Class: rviz/Tool Properties
+- Class: rviz/Displays
+  Help Height: 78
+  Name: Displays
+  Property Tree Widget:
     Expanded:
-      - /2D Pose Estimate1
-      - /2D Nav Goal1
-      - /Publish Point1
-    Name: Tool Properties
-    Splitter Ratio: 0.588679
-  - Class: rviz/Views
-    Expanded:
-      - /Current View1
-    Name: Views
+    - /Global Options1
+    - /Status1
+    - /TF1
+    - /TF1/Frames1
     Splitter Ratio: 0.5
-  - Class: rviz/Time
-    Experimental: false
-    Name: Time
-    SyncMode: 0
-    SyncSource: ""
+  Tree Height: 707
+- Class: rviz/Selection
+  Name: Selection
+- Class: rviz/Tool Properties
+  Expanded:
+  - /2D Pose Estimate1
+  - /2D Nav Goal1
+  - /Publish Point1
+  Name: Tool Properties
+  Splitter Ratio: 0.588679
+- Class: rviz/Views
+  Expanded:
+  - /Current View1
+  Name: Views
+  Splitter Ratio: 0.5
+- Class: rviz/Time
+  Experimental: false
+  Name: Time
+  SyncMode: 0
+  SyncSource: ""
 Visualization Manager:
   Class: ""
   Displays:
-    - Alpha: 0.5
-      Cell Size: 1
-      Class: rviz/Grid
-      Color: 160; 160; 164
-      Enabled: true
-      Line Style:
-        Line Width: 0.03
-        Value: Lines
-      Name: Grid
-      Normal Cell Count: 0
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Plane: XY
-      Plane Cell Count: 10
-      Reference Frame: <Fixed Frame>
-      Value: true
-    - Alpha: 1
-      Class: rviz/RobotModel
-      Collision Enabled: false
-      Enabled: true
-      Links:
-        All Links Enabled: true
-        Expand Joint Details: false
-        Expand Link Details: false
-        Expand Tree: false
-        Link Tree Style: Links in Alphabetic Order
-        jaco_large_ring_cover_1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_large_ring_cover_2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_large_ring_cover_3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_link_1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_link_2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_link_3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_link_4:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_link_5:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_link_base:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_link_finger_1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_link_finger_2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_link_finger_3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_link_finger_tip_1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_link_finger_tip_2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_link_finger_tip_3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_link_hand:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_small_ring_cover_1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_small_ring_cover_2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        jaco_small_ring_cover_3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        root:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-      Name: RobotModel
-      Robot Description: robot_description
-      TF Prefix: ""
-      Update Interval: 0
-      Value: true
-      Visual Enabled: true
-    - Class: rviz/TF
-      Enabled: true
-      Frame Timeout: 15
-      Frames:
-        All Enabled: false
+  - Alpha: 0.5
+    Cell Size: 1
+    Class: rviz/Grid
+    Color: 160; 160; 164
+    Enabled: true
+    Line Style:
+      Line Width: 0.03
+      Value: Lines
+    Name: Grid
+    Normal Cell Count: 0
+    Offset:
+      X: 0
+      Y: 0
+      Z: 0
+    Plane: XY
+    Plane Cell Count: 10
+    Reference Frame: <Fixed Frame>
+    Value: true
+  - Alpha: 1
+    Class: rviz/RobotModel
+    Collision Enabled: false
+    Enabled: true
+    Links:
+      All Links Enabled: true
+      Expand Joint Details: false
+      Expand Link Details: false
+      Expand Tree: false
+      Link Tree Style: Links in Alphabetic Order
+      jaco_large_ring_cover_1:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_large_ring_cover_2:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_large_ring_cover_3:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_link_1:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_link_2:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_link_3:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_link_4:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_link_5:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_link_base:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_link_finger_1:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_link_finger_2:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_link_finger_3:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_link_finger_tip_1:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_link_finger_tip_2:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_link_finger_tip_3:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_link_hand:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_small_ring_cover_1:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_small_ring_cover_2:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      jaco_small_ring_cover_3:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      root:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+    Name: RobotModel
+    Robot Description: robot_description
+    TF Prefix: ""
+    Update Interval: 0
+    Value: true
+    Visual Enabled: true
+  - Class: rviz/TF
+    Enabled: true
+    Frame Timeout: 15
+    Frames:
+      All Enabled: false
+      base_link:
+        Value: true
+      jaco_large_ring_cover_1:
+        Value: false
+      jaco_large_ring_cover_2:
+        Value: false
+      jaco_large_ring_cover_3:
+        Value: false
+      jaco_link_1:
+        Value: true
+      jaco_link_2:
+        Value: true
+      jaco_link_3:
+        Value: true
+      jaco_link_4:
+        Value: true
+      jaco_link_5:
+        Value: true
+      jaco_link_base:
+        Value: true
+      jaco_link_finger_1:
+        Value: false
+      jaco_link_finger_2:
+        Value: false
+      jaco_link_finger_3:
+        Value: false
+      jaco_link_finger_tip_1:
+        Value: false
+      jaco_link_finger_tip_2:
+        Value: false
+      jaco_link_finger_tip_3:
+        Value: false
+      jaco_link_hand:
+        Value: true
+      jaco_small_ring_cover_1:
+        Value: false
+      jaco_small_ring_cover_2:
+        Value: false
+      jaco_small_ring_cover_3:
+        Value: false
+      root:
+        Value: true
+    Marker Scale: 0.5
+    Name: TF
+    Show Arrows: true
+    Show Axes: true
+    Show Names: true
+    Tree:
+      root:
         base_link:
-          Value: true
-        jaco_large_ring_cover_1:
-          Value: false
-        jaco_large_ring_cover_2:
-          Value: false
-        jaco_large_ring_cover_3:
-          Value: false
-        jaco_link_1:
-          Value: true
-        jaco_link_2:
-          Value: true
-        jaco_link_3:
-          Value: true
-        jaco_link_4:
-          Value: true
-        jaco_link_5:
-          Value: true
+          {}
         jaco_link_base:
-          Value: true
-        jaco_link_finger_1:
-          Value: false
-        jaco_link_finger_2:
-          Value: false
-        jaco_link_finger_3:
-          Value: false
-        jaco_link_finger_tip_1:
-          Value: false
-        jaco_link_finger_tip_2:
-          Value: false
-        jaco_link_finger_tip_3:
-          Value: false
-        jaco_link_hand:
-          Value: true
-        jaco_small_ring_cover_1:
-          Value: false
-        jaco_small_ring_cover_2:
-          Value: false
-        jaco_small_ring_cover_3:
-          Value: false
-        root:
-          Value: true
-      Marker Scale: 0.5
-      Name: TF
-      Show Arrows: true
-      Show Axes: true
-      Show Names: true
-      Tree:
-        root:
-          base_link:
+          jaco_large_ring_cover_1:
             {}
-          jaco_link_base:
-            jaco_large_ring_cover_1:
+          jaco_link_1:
+            jaco_large_ring_cover_2:
               {}
-            jaco_link_1:
-              jaco_large_ring_cover_2:
+            jaco_link_2:
+              jaco_large_ring_cover_3:
                 {}
-              jaco_link_2:
-                jaco_large_ring_cover_3:
-                  {}
-                jaco_link_3:
-                  jaco_link_4:
-                    jaco_link_5:
-                      jaco_link_hand:
-                        jaco_link_finger_1:
-                          jaco_link_finger_tip_1:
-                            {}
-                        jaco_link_finger_2:
-                          jaco_link_finger_tip_2:
-                            {}
-                        jaco_link_finger_3:
-                          jaco_link_finger_tip_3:
-                            {}
-                      jaco_small_ring_cover_3:
-                        {}
-                    jaco_small_ring_cover_2:
+              jaco_link_3:
+                jaco_link_4:
+                  jaco_link_5:
+                    jaco_link_hand:
+                      jaco_link_finger_1:
+                        jaco_link_finger_tip_1:
+                          {}
+                      jaco_link_finger_2:
+                        jaco_link_finger_tip_2:
+                          {}
+                      jaco_link_finger_3:
+                        jaco_link_finger_tip_3:
+                          {}
+                    jaco_small_ring_cover_3:
                       {}
-                  jaco_small_ring_cover_1:
+                  jaco_small_ring_cover_2:
                     {}
-      Update Interval: 0
-      Value: true
+                jaco_small_ring_cover_1:
+                  {}
+    Update Interval: 0
+    Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -259,19 +259,19 @@ Visualization Manager:
     Frame Rate: 30
   Name: root
   Tools:
-    - Class: rviz/Interact
-      Hide Inactive Objects: true
-    - Class: rviz/MoveCamera
-    - Class: rviz/Select
-    - Class: rviz/FocusCamera
-    - Class: rviz/Measure
-    - Class: rviz/SetInitialPose
-      Topic: /initialpose
-    - Class: rviz/SetGoal
-      Topic: /move_base_simple/goal
-    - Class: rviz/PublishPoint
-      Single click: true
-      Topic: /clicked_point
+  - Class: rviz/Interact
+    Hide Inactive Objects: true
+  - Class: rviz/MoveCamera
+  - Class: rviz/Select
+  - Class: rviz/FocusCamera
+  - Class: rviz/Measure
+  - Class: rviz/SetInitialPose
+    Topic: /initialpose
+  - Class: rviz/SetGoal
+    Topic: /move_base_simple/goal
+  - Class: rviz/PublishPoint
+    Single click: true
+    Topic: /clicked_point
   Value: true
   Views:
     Current:

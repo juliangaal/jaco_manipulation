@@ -2,29 +2,30 @@
 
 <launch>
 
-  <arg name="vizz" default="false" />
-  <arg name="use_rviz" default="true" />
+    <arg name="vizz" default="false"/>
+    <arg name="use_rviz" default="true"/>
 
-  <!-- Launches the driver for the arm  -->
-  <!--  include file="$(find wpi_jaco_wrapper)/launch/arm.launch" / -->
-  <include file="$(find jaco_manipulation)/launch/arm.launch" />
-  
-  <!-- Launches the moveit config for the arm -->
-  <include file="$(find jaco_manipulation)/launch/jaco_moveit.launch">
-    <arg name="viz" value="$(arg vizz)" />
-  </include>
-  
-  <!-- Launches jaco_manipulation node -->
-  <node name="manipulation_server" type="manipulation_server" pkg="jaco_manipulation" output="screen"/>
-  
-  <!-- Launches the pick_up_action server -->
-  <node name="pick_up_action_server" type="pick_up_action_server" pkg="pick_up_action" />
-  
-  <!--  Static transform publisher -->
-  <node pkg="tf" type="static_transform_publisher" name="base_link_broadcaster" args="-0.26 0.075 -0.025 -1.5708 0 0 root base_link 50" />
+    <!-- Launches the driver for the arm  -->
+    <!--  include file="$(find wpi_jaco_wrapper)/launch/arm.launch" / -->
+    <include file="$(find jaco_manipulation)/launch/arm.launch"/>
 
-  <group if="$(arg use_rviz)">
-    <node name="jaco_rviz" pkg="rviz" type="rviz" args="-d $(find jaco_manipulation)/launch/manipulation.rviz"/>
-  </group>
+    <!-- Launches the moveit config for the arm -->
+    <include file="$(find jaco_manipulation)/launch/jaco_moveit.launch">
+        <arg name="viz" value="$(arg vizz)"/>
+    </include>
+
+    <!-- Launches jaco_manipulation node -->
+    <node name="manipulation_server" type="manipulation_server" pkg="jaco_manipulation" output="screen"/>
+
+    <!-- Launches the pick_up_action server -->
+    <node name="pick_up_action_server" type="pick_up_action_server" pkg="pick_up_action"/>
+
+    <!--  Static transform publisher -->
+    <node pkg="tf" type="static_transform_publisher" name="base_link_broadcaster"
+          args="-0.26 0.075 -0.025 -1.5708 0 0 root base_link 50"/>
+
+    <group if="$(arg use_rviz)">
+        <node name="jaco_rviz" pkg="rviz" type="rviz" args="-d $(find jaco_manipulation)/launch/manipulation.rviz"/>
+    </group>
 </launch>
 
