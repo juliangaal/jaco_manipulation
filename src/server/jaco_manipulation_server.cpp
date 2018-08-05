@@ -15,7 +15,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>
 
  */
-#include <jaco_manipulation/server/jaco_manipulation.h>
+#include <jaco_manipulation/server/jaco_manipulation_server.h>
 
 using moveit::planning_interface::MoveItErrorCode;
 namespace rvt = rviz_visual_tools;
@@ -56,17 +56,14 @@ void JacoManipulation::showPlannedPath() {
 void JacoManipulation::processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
   bool result_value;
 
-  if (goal->goal_type.empty()) {
-    ROS_ERROR("Goal not set. Returning");
+  if (goal->goal_type.empty() || goal->goal_type == "goal") {
+    ROS_ERROR("Goal not set or configured correctly. Returning");
     result_value = false;
   } else if (goal->goal_type == "pose") {
-    ROS_STATUS("Goal received: pose");
     result_value = planAndMove(goal->pose_goal);
   } else if (goal->goal_type == "joint_state") {
-    ROS_STATUS("Goal received: joint state");
     result_value = planAndMove(goal->joint_goal);
   } else {
-    ROS_STATUS("Goal received: named target");
     result_value = planAndMove(goal->goal_type);
   }
 
@@ -80,17 +77,26 @@ void JacoManipulation::processGoal(const jaco_manipulation::PlanAndMoveArmGoalCo
 }
 
 bool JacoManipulation::planAndMove(const PoseStamped &pose_goal) {
+  ROS_STATUS("Goal received: pose");
+
   move_group_.allowReplanning(true);
   move_group_.allowLooking(true);
   move_group_.setStartStateToCurrentState();
   move_group_.setPoseReferenceFrame(pose_goal.header.frame_id);
+  PoseStamped pose;
+  pose.header.frame_id = "root";
+  pose.pose.position.x = 0.063846;
+  pose.pose.position.y = -0.193645;
+  pose.pose.position.z = 0.509365;
+  pose.pose.orientation.x = 0.369761;
+  pose.pose.orientation.y = -0.555344;
+  pose.pose.orientation.z = -0.661933;
+  pose.pose.orientation.w = 0.341635;
   move_group_.setPoseTarget(pose_goal);
-
-  const auto &current_pose = move_group_.getCurrentPose("jaco_link_hand");
 
   if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
 
-  showPlannedMoveInfo(current_pose, pose_goal);
+  showPlannedMoveInfo(move_group_.getCurrentPose("jaco_link_hand"), pose_goal);
   showPlannedPath();
 
   return move_group_.move() ? true : false;
@@ -98,33 +104,24 @@ bool JacoManipulation::planAndMove(const PoseStamped &pose_goal) {
 
 bool JacoManipulation::planAndMove(const JointState &joint_goal) {
   // TODO BUG CAN"T USE SENSOR_MSGS/JOINTSTATE, MAYBE BECAUSE OLY POSITION IS FILLED
+  ROS_STATUS("Goal received: joint state");
+
   move_group_.allowReplanning(true);
   move_group_.allowLooking(true);
   move_group_.setStartStateToCurrentState();
   move_group_.setPoseReferenceFrame(joint_goal.header.frame_id);
-  moveit::core::RobotStatePtr current_state = move_group_.getCurrentState();
-
-  std::vector<double> joint_group_positions;
-  joint_group_positions.push_back(joint_goal.position[0]);
-  joint_group_positions.push_back(joint_goal.position[1]);
-  joint_group_positions.push_back(joint_goal.position[2]);
-  joint_group_positions.push_back(joint_goal.position[3]);
-  joint_group_positions.push_back(joint_goal.position[4]);
-  joint_group_positions.push_back(joint_goal.position[5]);
-
-  move_group_.setJointValueTarget(joint_group_positions);
-
-  const auto &current_joint_state = move_group_.getCurrentJointValues();
+  move_group_.setJointValueTarget(joint_goal.position);
 
   if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
 
-  showPlannedMoveInfo(current_joint_state, joint_goal);
+  showPlannedMoveInfo(move_group_.getCurrentJointValues(), joint_goal);
   showPlannedPath();
 
   return move_group_.move() ? true : false;
 }
 
 bool JacoManipulation::planAndMove(const std::string &pose_goal_string) {
+  ROS_STATUS("Goal received: named target");
 
   if (pose_goal_string == "open" || pose_goal_string == "OPEN") {
     moveGripper(0.0);
@@ -144,6 +141,7 @@ bool JacoManipulation::planAndMove(const std::string &pose_goal_string) {
 
     if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
 
+    showPlannedMoveInfo(move_group_.getCurrentPose("jaco_link_hand"), pose_goal_string);
     showPlannedPath();
 
     return move_group_.move() ? true : false;
@@ -309,5 +307,19 @@ void JacoManipulation::showPlannedMoveInfo(const vector<double> &start, const Jo
            end.position[JOINT5],
            end.position[JOINT6]);
   ROS_INFO_STREAM("FRAME FOR TARGET POSE := " << end.header.frame_id);
+}
+
+void JacoManipulation::showPlannedMoveInfo(const PoseStamped &start, const string &target) {
+  ROS_INFO_STREAM("Frame for Planning := " << move_group_.getPoseReferenceFrame());
+  ROS_INFO("The pose now: (%f,%f,%f) ; (%f,%f,%f,%f)",
+           start.pose.position.x,
+           start.pose.position.y,
+           start.pose.position.z,
+           start.pose.orientation.x,
+           start.pose.orientation.y,
+           start.pose.orientation.z,
+           start.pose.orientation.w);
+  ROS_INFO_STREAM("Frame for current Pose := " << start.header.frame_id);
+  ROS_INFO_STREAM("The moveit config target pose: " << target);
 }
 }
