@@ -8,6 +8,21 @@ JacoManipulationClient::JacoManipulationClient() : client_("plan_and_move_arm", 
   client_.waitForServer();
 }
 
+void JacoManipulationClient::moveTo(const string &moveit_goal) {
+  MoveItGoal goal(moveit_goal);
+  execute(goal);
+}
+
+void JacoManipulationClient::moveTo(const PoseStamped &pose_goal) {
+  PoseGoal goal(pose_goal);
+  execute(goal);
+}
+
+void JacoManipulationClient::moveTo(const JointState &joint_goal) {
+  JointGoal goal(joint_goal.position);
+  execute(goal);
+}
+
 void JacoManipulationClient::execute(const Goal &goal_wrapper) {
   const auto& goal = goal_wrapper.getGoal();
 
@@ -22,13 +37,4 @@ void JacoManipulationClient::execute(const Goal &goal_wrapper) {
   } else {
     ROS_ERROR_STREAM("Status : Move to " << goal.goal_type << " failed.");
   }
-}
-void JacoManipulationClient::moveTo(string goal) {
-
-}
-void JacoManipulationClient::moveTo(const PoseStamped &goal) {
-
-}
-void JacoManipulationClient::moveTo(const JointState &goal) {
-
 }

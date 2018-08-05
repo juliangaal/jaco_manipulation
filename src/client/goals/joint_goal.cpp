@@ -14,7 +14,3 @@ JointGoal::JointGoal(const vector<double> &joint_goal) {
 jaco_manipulation::PlanAndMoveArmGoal JointGoal::getGoal() const {
   return goal;
 }
-
-void JointGoal::setGoal(const vector<double> &joint_goal) {
-  goal.joint_goal.position = joint_goal;
-}

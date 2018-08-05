@@ -83,15 +83,6 @@ bool JacoManipulation::planAndMove(const PoseStamped &pose_goal) {
   move_group_.allowLooking(true);
   move_group_.setStartStateToCurrentState();
   move_group_.setPoseReferenceFrame(pose_goal.header.frame_id);
-  PoseStamped pose;
-  pose.header.frame_id = "root";
-  pose.pose.position.x = 0.063846;
-  pose.pose.position.y = -0.193645;
-  pose.pose.position.z = 0.509365;
-  pose.pose.orientation.x = 0.369761;
-  pose.pose.orientation.y = -0.555344;
-  pose.pose.orientation.z = -0.661933;
-  pose.pose.orientation.w = 0.341635;
   move_group_.setPoseTarget(pose_goal);
 
   if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
