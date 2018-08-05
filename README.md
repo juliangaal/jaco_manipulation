@@ -35,13 +35,13 @@ int main(int argn, char *args[]) {
 ```
 MoveIt! Config file goal "home"
 
-```cpp
+```go
   jmc.moveTo("home");
 ```
 
 Joint state goal
 
-```cpp
+```go
   sensor_msgs::JointState joint_state;
   joint_state.position.push_back(-2.6435937802859897);
   joint_state.position.push_back(2.478897506888874);
@@ -56,7 +56,7 @@ Joint state goal
 ```
 Pose goal
 
-```cpp
+```go
   geometry_msgs::PoseStamped pose;
   pose.pose.position.x = 0.063846;
   pose.pose.position.y = -0.193645;
