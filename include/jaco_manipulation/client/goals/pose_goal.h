@@ -7,6 +7,10 @@
 
 #include "goal.h"
 
+namespace jaco_manipulation {
+namespace client {
+namespace goals {
+
 /**
  * PoseGoal
  * class to define a pose goal for MoveIt! execution
@@ -22,7 +26,7 @@ class PoseGoal : public Goal {
    * deleted constructor
    * @param name future goal_type
    */
-  PoseGoal(const string &name) = delete;
+  PoseGoal(const std::string &name) = delete;
 
   /**
    * constructor
@@ -41,5 +45,9 @@ class PoseGoal : public Goal {
  */
   virtual jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;
 };
+
+} // namespace jaco_manipulation
+} // namespace client
+} // namespace goals
 
 #endif //PROJECT_POSEGOAL_H

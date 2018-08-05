@@ -8,7 +8,9 @@
 #include <vector>
 #include "goal.h"
 
-using std::vector;
+namespace jaco_manipulation {
+namespace client {
+namespace goals {
 
 /**
  * JointGoal
@@ -25,13 +27,13 @@ class JointGoal : public Goal {
    * deleted constructor
    * @param name future goal_type
    */
-  JointGoal(const string &name) = delete;
+  JointGoal(const std::string &name) = delete;
 
   /**
    * constructor
    * @param joint_goal joint goal that will be tried to move to
    */
-  explicit JointGoal(const vector<double> &joint_goal);
+  explicit JointGoal(const std::vector<double> &joint_goal);
 
   /**
    * virtual default destructor
@@ -44,5 +46,9 @@ class JointGoal : public Goal {
  */
   virtual jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;
 };
+
+} // namespace jaco_manipulation
+} // namespace client
+} // namespace goals
 
 #endif //PROJECT_JOINTGOAL_H
