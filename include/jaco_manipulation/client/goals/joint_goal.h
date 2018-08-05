@@ -5,15 +5,16 @@
 #ifndef PROJECT_JOINTGOAL_H
 #define PROJECT_JOINTGOAL_H
 
-#include "move_it_goal.h"
 #include <vector>
+#include "goal.h"
 
 using std::vector;
 
-class JointGoal : public MoveItGoal {
+class JointGoal : public Goal {
+ public:
   JointGoal() = delete;
-  JointGoal(const string &name);
-  JointGoal(const string &name, const vector<double> &joint_goal);
+  JointGoal(const string &name) = delete;
+  explicit JointGoal(const vector<double> &joint_goal);
   virtual ~JointGoal() = default;
 
   virtual jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;

@@ -9,22 +9,20 @@
 #include <jaco_manipulation/PlanAndMoveArmAction.h>
 #include <jaco_manipulation/server/jaco_manipulation_server.h>
 #include <string>
+#include "goal.h"
 
 using std::string;
 
 using PamClient = actionlib::SimpleActionClient<jaco_manipulation::PlanAndMoveArmAction>;
 
-class MoveItGoal {
+class MoveItGoal : public Goal {
  public:
-  MoveItGoal();
-  MoveItGoal(const string &name);
+  MoveItGoal() = delete;
+  explicit MoveItGoal(const string &name);
   virtual ~MoveItGoal() = default;
 
-  virtual jaco_manipulation::PlanAndMoveArmGoal getGoal() const;
+  virtual jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;
 
- protected:
-  jaco_manipulation::PlanAndMoveArmGoal goal;
-  const string planning_frame;
 };
 
 #endif //PROJECT_MOVEITGOAL_H

@@ -5,17 +5,16 @@
 #ifndef PROJECT_POSEGOAL_H
 #define PROJECT_POSEGOAL_H
 
-#include "jaco_manipulation/client/goals/move_it_goal.h"
+#include "goal.h"
 
-class PoseGoal : public MoveItGoal {
+class PoseGoal : public Goal {
+ public:
   PoseGoal() = delete;
-  PoseGoal(const string &name);
-  PoseGoal(const string &name, const geometry_msgs::PoseStamped &pose);
+  PoseGoal(const string &name) = delete;
+  explicit PoseGoal(const geometry_msgs::PoseStamped &pose);
   virtual ~PoseGoal() = default;
 
   virtual jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;
-
-  void setGoal(const geometry_msgs::PoseStamped &pose);
 };
 
 #endif //PROJECT_POSEGOAL_H

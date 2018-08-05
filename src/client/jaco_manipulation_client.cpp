@@ -2,24 +2,19 @@
 // Created by julian on 05.08.18.
 //
 
-#include "jaco_manipulation/client/client.h"
+#include <jaco_manipulation/client/jaco_manipulation_client.h>
 
-namespace Moveit {
-
-Client::Client() : client_("plan_and_move_arm", true) {
+JacoManipulationClient::JacoManipulationClient() : client_("plan_and_move_arm", true) {
   client_.waitForServer();
 }
 
-Client::~Client() {
-  client_.stopTrackingGoal();
-  client_.cancelAllGoals();
-}
+void JacoManipulationClient::execute(const Goal &goal_wrapper) {
+  const auto& goal = goal_wrapper.getGoal();
 
-template<typename T>
-void Client::execute(const T &goal) {
   ROS_INFO("----");
   ROS_INFO_STREAM("Attempt: Move to " << goal.goal_type);
-  client_.sendGoal(goal.getGoal());
+
+  client_.sendGoal(goal);
   client_.waitForResult();
 
   if (client_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
@@ -28,4 +23,12 @@ void Client::execute(const T &goal) {
     ROS_ERROR_STREAM("Status : Move to " << goal.goal_type << " failed.");
   }
 }
+void JacoManipulationClient::moveTo(string goal) {
+
+}
+void JacoManipulationClient::moveTo(const PoseStamped &goal) {
+
+}
+void JacoManipulationClient::moveTo(const JointState &goal) {
+
 }
