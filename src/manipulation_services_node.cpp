@@ -17,11 +17,10 @@
  */
 #include <ros/ros.h>
 #include <jaco_manipulation/grasp_pose_generator.h>
-#include <jaco_manipulation/server/jaco_manipulation.h>
+#include <jaco_manipulation/server/jaco_manipulation_server.h>
 //#include <jaco_manipulation/put_down_points_generator.h>
 
-int main(int argn, char* args[])
-{
+int main(int argn, char *args[]) {
   ros::init(argn, args, "manipulation_server");
   ros::MultiThreadedSpinner m_t_spinner(4);
 
