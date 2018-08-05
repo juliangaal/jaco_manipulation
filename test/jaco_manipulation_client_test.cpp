@@ -2,20 +2,20 @@
 #include <jaco_manipulation/PlanAndMoveArmAction.h>
 #include <jaco_manipulation/server/jaco_manipulation.h>
 
-using std::vector;
-using std::string;
 using PamClient = actionlib::SimpleActionClient<jaco_manipulation::PlanAndMoveArmAction>;
 
-struct Goal {
-  jaco_manipulation::PlanAndMoveArmGoal goal;
-  string description;
-};
+namespace jaco_move {
+    struct Goal {
+        jaco_manipulation::PlanAndMoveArmGoal goal;
+        string description;
+    };
 
-struct Move {
-  Goal start;
-  Goal end;
-  string description;
-};
+    struct Move {
+        Goal start;
+        Goal end;
+        string description;
+    };
+}
 
 class Executer {
  public:

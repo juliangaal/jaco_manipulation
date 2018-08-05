@@ -54,19 +54,6 @@ using sensor_msgs::JointState;
 using std::string;
 using std::vector;
 
-namespace jaco_move {
-struct Goal {
-  jaco_manipulation::PlanAndMoveArmGoal goal;
-  string description;
-};
-
-struct Move {
-  Goal start;
-  Goal end;
-  string description;
-};
-}
-
 namespace jaco_manipulation {
 /**
  * Convenience class to talk to Moveit-ROS interface.
