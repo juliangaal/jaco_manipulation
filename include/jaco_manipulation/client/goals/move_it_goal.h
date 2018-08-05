@@ -5,22 +5,32 @@
 #ifndef PROJECT_MOVEITGOAL_H
 #define PROJECT_MOVEITGOAL_H
 
-#include <actionlib/client/simple_action_client.h>
-#include <jaco_manipulation/PlanAndMoveArmAction.h>
-#include <jaco_manipulation/server/jaco_manipulation_server.h>
-#include <string>
 #include "goal.h"
 
 using std::string;
 
-using PamClient = actionlib::SimpleActionClient<jaco_manipulation::PlanAndMoveArmAction>;
-
 class MoveItGoal : public Goal {
  public:
+  /**
+   * deleted default constructor
+  */
   MoveItGoal() = delete;
+
+  /**
+   * constructor
+   * @param name future goal_type
+   */
   explicit MoveItGoal(const string &name);
+
+  /**
+   * virtual default destructor
+   */
   virtual ~MoveItGoal() = default;
 
+  /**
+    * get goal that was created
+    * @return jaco_manipulation::PlanAndMoveArmGoal
+  */
   virtual jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;
 
 };
