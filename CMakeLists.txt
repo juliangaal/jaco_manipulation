@@ -7,63 +7,66 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  actionlib
-  actionlib_msgs
-  cmake_modules
-  geometry_msgs
-  moveit_core
-  moveit_ros_planning_interface
-  moveit_visual_tools
-  pluginlib
-  roscpp
-  std_msgs
-  tf
-  message_generation
-  wpi_jaco_msgs
+        actionlib
+        actionlib_msgs
+        cmake_modules
+        geometry_msgs
+        moveit_core
+        moveit_ros_planning_interface
+        moveit_visual_tools
+        pluginlib
+        roscpp
+        std_msgs
+        tf
+        message_generation
+        wpi_jaco_msgs
 )
 
 ## Generate services in the 'srv' folder
 add_service_files(
-  FILES
-  GenerateGraspPoses.srv
-  GeneratePutDownPoints.srv
+        FILES
+        GenerateGraspPoses.srv
+        GeneratePutDownPoints.srv
 )
 
 ## Generate actions in the 'action' folder
 add_action_files(
-  FILES
-  PlanAndMoveArm.action
+        FILES
+        PlanAndMoveArm.action
 )
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
-  DEPENDENCIES
-  geometry_msgs
-  sensor_msgs
-  std_msgs
-  actionlib_msgs
+        DEPENDENCIES
+        geometry_msgs
+        sensor_msgs
+        std_msgs
+        actionlib_msgs
 )
 
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES jaco2_manipulation grasp_pose_generator
-  CATKIN_DEPENDS actionlib actionlib_msgs cmake_modules geometry_msgs moveit_core moveit_ros_planning_interface pluginlib roscpp std_msgs tf message_runtime wpi_jaco_msgs
+        INCLUDE_DIRS include
+        LIBRARIES jaco2_manipulation grasp_pose_generator
+        CATKIN_DEPENDS actionlib actionlib_msgs cmake_modules geometry_msgs moveit_core moveit_ros_planning_interface pluginlib roscpp std_msgs tf message_runtime wpi_jaco_msgs
 )
 
 include_directories(include)
 include_directories(
-  ${catkin_INCLUDE_DIRS}
+        ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library --> DoroManipulation
 add_library(jaco2_manipulation
         src/server/jaco_boundaries.cpp
-        src/server/jaco_manipulation.cpp
-        src/client/client.cpp
+        src/server/jaco_manipulation_server.cpp
+        src/client/jaco_manipulation_client.cpp
+        src/client/goals/move_it_goal.cpp
+        src/client/goals/pose_goal.cpp
+        src/client/goals/joint_goal.cpp
 )
 
 add_library(grasp_pose_generator
-    src/grasp_pose_generator.cpp
+        src/grasp_pose_generator.cpp
 )
 
 # Test client for grasp pose generator action server
@@ -83,23 +86,24 @@ add_dependencies(jaco_manipulation_client_test jaco_manipulation_generate_messag
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(grasp_pose_generator_client_test
-  ${catkin_LIBRARIES}
+        ${catkin_LIBRARIES}
 )
 
 target_link_libraries(jaco2_manipulation
-  ${catkin_LIBRARIES}
+        ${catkin_LIBRARIES}
 )
 
 target_link_libraries(grasp_pose_generator
-  ${catkin_LIBRARIES}
+        ${catkin_LIBRARIES}
 )
 
 target_link_libraries(manipulation_server
-  ${catkin_LIBRARIES}
-  grasp_pose_generator
-  jaco2_manipulation
+        ${catkin_LIBRARIES}
+        grasp_pose_generator
+        jaco2_manipulation
 )
 
 target_link_libraries(jaco_manipulation_client_test
-  ${catkin_LIBRARIES}
+        ${catkin_LIBRARIES}
+        jaco2_manipulation
 )
