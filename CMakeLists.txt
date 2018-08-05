@@ -59,9 +59,7 @@ include_directories(
 add_library(jaco2_manipulation
         src/server/jaco_boundaries.cpp
         src/server/jaco_manipulation.cpp
-        src/goals/pose_goal.cpp
-        src/goals/joint_goal.cpp
-        src/goals/move_it_goal.cpp
+        src/client/client.cpp
 )
 
 add_library(grasp_pose_generator
