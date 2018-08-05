@@ -17,18 +17,17 @@ using PamClient = actionlib::SimpleActionClient<jaco_manipulation::PlanAndMoveAr
 
 namespace Moveit {
 
-    class Client {
-    public:
-        explicit Client();
+class Client {
+ public:
+  explicit Client();
 
-        ~Client();
+  ~Client();
 
-        template <typename T>
-        void execute(const T &goal);
-    private:
-        PamClient client_;
-    };
+  template<typename T>
+  void execute(const T &goal);
+ private:
+  PamClient client_;
+};
 }
-
 
 #endif //PROJECT_CLIENT_H

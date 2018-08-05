@@ -157,12 +157,12 @@ class JacoManipulation {
   /**
    *
    */
-  void showPlannedMoveInfo(const PoseStamped& start, const PoseStamped& end);
+  void showPlannedMoveInfo(const PoseStamped &start, const PoseStamped &end);
 
   /**
    * Show planned move from start pose to end pose
    */
-  void showPlannedMoveInfo(const vector<double>& start, const JointState& end);
+  void showPlannedMoveInfo(const vector<double> &start, const JointState &end);
 
   /**
    * A function to add boundaries (for workspace in Oerebro, for now)
