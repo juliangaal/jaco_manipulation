@@ -2,7 +2,7 @@
 // Created by julian on 04.08.18.
 //
 
-#include "../../include/jaco_manipulation/goals/pose_goal.h"
+#include "../../include/jaco_manipulation/client/pose_goal.h"
 
 PoseGoal::PoseGoal(const string &name) {
     goal.goal_type = name;

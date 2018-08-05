@@ -2,7 +2,7 @@
 // Created by julian on 04.08.18.
 //
 
-#include "../../include/jaco_manipulation/goals/joint_goal.h"
+#include "../../include/jaco_manipulation/client/joint_goal.h"
 
 JointGoal::JointGoal(const string &name) {
     goal.goal_type = name;

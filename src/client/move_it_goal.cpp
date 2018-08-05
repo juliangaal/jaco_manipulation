@@ -2,7 +2,7 @@
 // Created by julian on 04.08.18.
 //
 
-#include "../../include/jaco_manipulation/goals/move_it_goal.h"
+#include "../../include/jaco_manipulation/client/move_it_goal.h"
 
 MoveItGoal::MoveItGoal() : planning_frame("root") {
     goal.goal_type = "home";
