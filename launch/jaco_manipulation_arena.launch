@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<launch>
+    <arg name="use_rviz" default="true"/>
+
+    <!-- Launches jacp_manipulation -->
+    <include file="$(find jaco_manipulation)/launch/jaco_manipulation.launch">
+        <arg name="use_rviz" value="false"/>
+    </include>
+
+    <!-- launches kinect2 driver -->
+    <include file="$(find kinect2_bridge)/launch/kinect2_bridge.launch" />
+
+    <!-- static transform for kinect -->
+    <node pkg="tf" type="static_transform_publisher" name="kinect_rotate_tf" args="0 0 0 -1.570796327 0 -1.570796327 kinect_rotate_link kinect2_link 10" />
+    <node pkg="tf" type="static_transform_publisher" name="kinect_tilt_tf" args="0 0 0.08 0 0 0 kinect_tilt_link kinect_rotate_link 10" />
+    <node pkg="tf" type="static_transform_publisher" name="kinect_base_tf" args="0 0 0.5 0 0.4363 0 kinect_base_link kinect_tilt_link 10" />
+    <node pkg="tf" type="static_transform_publisher" name="table_tf" args="1.2 0.36 0 3.1415 0 0 base_link kinect_base_link 10" />
+
+    <!-- launch rviz -->
+    <group if="$(arg use_rviz)">
+        <node name="jaco_rviz" pkg="rviz" type="rviz" args="-d $(find jaco_manipulation)/launch/manipulation.rviz"/>
+    </group>
+</launch>
