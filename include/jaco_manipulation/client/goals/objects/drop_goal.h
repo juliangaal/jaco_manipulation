@@ -5,7 +5,7 @@
 #ifndef PROJECT_DROP_GOAL_H
 #define PROJECT_DROP_GOAL_H
 
-#include "grasp_goal.h"
+#include "jaco_manipulation/client/goals/objects/grasp_goal.h"
 
 namespace jaco_manipulation {
 namespace client {
@@ -44,11 +44,10 @@ class DropGoal : public GraspGoal {
    * @return std::string description
  */
   const std::string& getDescription() const final;
-
 };
 
-} // namespace jaco_manipulation
-} // namespace client
 } // namespace goals
+} // namespace client
+} // namespace jaco_manipulation
 
 #endif //PROJECT_DROP_GOAL_H

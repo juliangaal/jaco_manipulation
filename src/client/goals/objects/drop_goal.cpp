@@ -2,7 +2,7 @@
 // Created by julian on 06.08.18.
 //
 
-#include <jaco_manipulation/client/goals/drop_goal.h>
+#include <jaco_manipulation/client/goals/objects/drop_goal.h>
 #include <ros/console.h>
 
 using namespace jaco_manipulation::client::goals;

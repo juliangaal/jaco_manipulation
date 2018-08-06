@@ -2,17 +2,17 @@
 // Created by julian on 8/6/18.
 //
 
-#include <jaco_manipulation/client/goals/grasp_goal.h>
+#include <jaco_manipulation/client/goals/objects/object_goal.h>
 #include <ros/console.h>
 
-using namespace jaco_manipulation::client::goals;
+using namespace jaco_manipulation::client::goals::objects;
 
-GraspGoal::GraspGoal(const grasp_helper::GraspPose &grasp_pose_goal, const std::string &description) {
+ObjectGoal::ObjectGoal(const grasp_helper::GraspPose &grasp_pose_goal, const std::string &description) {
   ROS_INFO("----");
   ROS_INFO_STREAM("Attempt: Move to " << description);
   description_ = description;
 
-  goal_.goal_type = "grasp_pose";
+  goal_.goal_type = "goal";
   goal_.pose_goal.pose.position.x = grasp_pose_goal.x;
   goal_.pose_goal.pose.position.y = grasp_pose_goal.y;
   goal_.pose_goal.pose.position.z = grasp_pose_goal.z;
@@ -30,16 +30,16 @@ GraspGoal::GraspGoal(const grasp_helper::GraspPose &grasp_pose_goal, const std::
   goal_.pose_goal.header.frame_id = planning_frame_;
 }
 
-GraspGoal::GraspGoal(const grasp_helper::Object &object_goal, const std::string &description) {
+ObjectGoal::ObjectGoal(const grasp_helper::Object &object_goal, const std::string &description) {
   ROS_INFO("----");
   ROS_INFO_STREAM("Attempt: Move to " << description << ": " << object_goal.description);
 
   description_ = description;
 
-  goal_.goal_type = "grasp_pose";
+  goal_.goal_type = "goal";
 
-  GraspGoal::adjustPoseToCenterOfObject(object_goal);
-  PoseGoal::adjustHeight();
+  ObjectGoal::adjustPoseToCenterOfObject(object_goal);
+  ObjectGoal::adjustHeight();
 
   goal_.pose_goal.pose.orientation.x = default_rot_x_;
   goal_.pose_goal.pose.orientation.y = default_rot_y_;
@@ -49,21 +49,21 @@ GraspGoal::GraspGoal(const grasp_helper::Object &object_goal, const std::string 
 }
 
 
-void GraspGoal::adjustPoseToCenterOfObject(const grasp_helper::Object &object) {
+void ObjectGoal::adjustPoseToCenterOfObject(const grasp_helper::Object &object) {
   ROS_INFO("Status  : Adjusting pose to center of object");
   goal_.pose_goal.pose.position.x = object.width * 1.5;
   goal_.pose_goal.pose.position.y = object.length * 1.5;
   goal_.pose_goal.pose.position.z = object.height;
 }
 
-void GraspGoal::adjustHeight() {
+void ObjectGoal::adjustHeight() {
   PoseGoal::adjustHeight();
 }
 
-jaco_manipulation::PlanAndMoveArmGoal GraspGoal::getGoal() const {
-  return Goal::getGoal();
+jaco_manipulation::PlanAndMoveArmGoal ObjectGoal::getGoal() const {
+  return PoseGoal::getGoal();
 }
 
-const std::string &GraspGoal::getDescription() const {
-  return Goal::getDescription();
+const std::string &ObjectGoal::getDescription() const {
+  return PoseGoal::getDescription();
 }

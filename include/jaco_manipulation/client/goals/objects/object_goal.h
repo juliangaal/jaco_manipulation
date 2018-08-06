@@ -2,9 +2,9 @@
 // Created by chitt on 8/6/18.
 //
 
-#ifndef PROJECT_GRASPGOAL_HPP
-#define PROJECT_GRASPGOAL_HPP
-#include "pose_goal.h"
+#ifndef PROJECT_OBJECTGOAL_HPP
+#define PROJECT_OBJECTGOAL_HPP
+#include "jaco_manipulation/client/goals/pose_goal.h"
 
 namespace jaco_manipulation {
 namespace client {
@@ -30,16 +30,16 @@ struct GraspPose {
   double z;
   double rotation;
 };
-
-
 }
 
+namespace objects {
+
 /*!
- * GraspGoal
+ * ObjectGoal
  * Represent a severely limited pose for grasping objects
  * Limited in height, and rotation around x and y axis
  */
-class GraspGoal : public PoseGoal {
+class ObjectGoal: public PoseGoal {
  public:
 
   /**
@@ -47,15 +47,15 @@ class GraspGoal : public PoseGoal {
    * @param grasp_pose_goal grasp pose goal
    * @param description descritpion with additional info
    */
-  explicit GraspGoal(const grasp_helper::GraspPose &grasp_pose_goal, const std::string &description="grasp goal");
+  explicit ObjectGoal(const grasp_helper::GraspPose &grasp_pose_goal, const std::string &description = "grasp goal");
 
 
-  explicit GraspGoal(const grasp_helper::Object &object_goal, const std::string &description="grasp box goal");
+  explicit ObjectGoal(const grasp_helper::Object &object_goal, const std::string &description = "grasp box goal");
 
   /**
    * default destructor
    */
-  virtual ~GraspGoal() override = default;
+  virtual ~ObjectGoal() override = default;
 
   /**
    * get created goal
@@ -66,19 +66,19 @@ class GraspGoal : public PoseGoal {
    * get description of goal
    * @return std::string description
   */
-  virtual const std::string& getDescription() const override;
+  virtual const std::string &getDescription() const override;
 
  protected:
 
   /**
    * protected default constructor
   */
-  GraspGoal() = default;
+  ObjectGoal() = default;
 
   /**
    * Adjust height
    */
-  void adjustHeight() final;
+  virtual void adjustHeight() override;
 
   /**
    * Adjusts the Pose to Center of Object
@@ -107,8 +107,9 @@ class GraspGoal : public PoseGoal {
   constexpr static double default_rot_z_ = -0.737370;
 };
 
-} // namespace jaco_manipulation
-} // namespace client
+} // namespace objects
 } // namespace goals
+} // namespace client
+} // namespace jaco_manipulation
 
-#endif //PROJECT_GRASPGOAL_HPP
+#endif //PROJECT_OBJECTGOAL_HPP
