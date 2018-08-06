@@ -16,6 +16,6 @@ jaco_manipulation::PlanAndMoveArmGoal Goal::getGoal() const {
   return goal_;
 }
 
-const std::string &Goal::getDescription() const {
+const std::string& Goal::getDescription() const {
   return description_;
 }

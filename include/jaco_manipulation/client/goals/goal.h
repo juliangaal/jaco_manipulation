@@ -65,8 +65,8 @@ class Goal {
   std::string description_;
 };
 
-} // namespace jaco_manipulation
-} // namespace client
 } // namespace goals
+} // namespace client
+} // namespace jaco_manipulation
 
 #endif //PROJECT_GOAL_H

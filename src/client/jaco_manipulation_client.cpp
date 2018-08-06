@@ -3,7 +3,8 @@
 //
 
 #include <jaco_manipulation/client/jaco_manipulation_client.h>
-#include <jaco_manipulation/client/goals/grasp_goal.h>
+#include <jaco_manipulation/client/goals/objects/grasp_goal.h>
+#include <jaco_manipulation/client/goals/objects/drop_goal.h>
 
 using namespace jaco_manipulation::client;
 
@@ -16,8 +17,7 @@ void JacoManipulationClient::moveTo(const std::string &moveit_goal, const std::s
   execute(goal);
 }
 
-void JacoManipulationClient::moveTo(const geometry_msgs::PoseStamped &pose_goal, 
-                                    const std::string &description) {
+void JacoManipulationClient::moveTo(const geometry_msgs::PoseStamped &pose_goal, const std::string &description) {
   goals::PoseGoal goal(pose_goal, description);
   execute(goal);
 }
@@ -28,9 +28,15 @@ void JacoManipulationClient::moveTo(const sensor_msgs::JointState &joint_goal, c
 }
 
 void JacoManipulationClient::grasp(const goals::grasp_helper::GraspPose &grasp_pose_goal, const std::string &description) {
-  goals::GraspGoal goal(grasp_pose_goal, description);
+  goals::objects::GraspGoal goal(grasp_pose_goal, description);
   execute(goal);
 }
+
+void JacoManipulationClient::drop(const goals::grasp_helper::GraspPose &drop_pose_goal, const std::string &description) {
+  goals::objects::DropGoal goal(drop_pose_goal, description);
+  execute(goal);
+}
+
 
 void JacoManipulationClient::execute(const goals::Goal &goal_wrapper) {
   const auto& goal = goal_wrapper.getGoal();
@@ -39,7 +45,7 @@ void JacoManipulationClient::execute(const goals::Goal &goal_wrapper) {
   client_.waitForResult();
 
   if (client_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-    ROS_SUCCESS("Status : Move to " + goal_wrapper.getDescription()+ " succeeded.");
+    ROS_SUCCESS("Status : Move to " + goal_wrapper.getDescription() + " succeeded.");
   } else {
     ROS_ERROR_STREAM("Status : Move to " <<  goal_wrapper.getDescription()<< " failed.");
   }

@@ -66,8 +66,8 @@ class PoseGoal : public Goal {
   constexpr static double min_height = 0.175026;
 };
 
-} // namespace jaco_manipulation
-} // namespace client
 } // namespace goals
+} // namespace client
+} // namespace jaco_manipulation
 
 #endif //PROJECT_POSEGOAL_H

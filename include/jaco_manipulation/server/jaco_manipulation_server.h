@@ -247,7 +247,7 @@ class JacoManipulationServer {
 
 };
 
-} // namespace jaco_manipulation
 } // namespace server
+} // namespace jaco_manipulation
 
 #endif /* JACO_MANIPULATION_H_*/

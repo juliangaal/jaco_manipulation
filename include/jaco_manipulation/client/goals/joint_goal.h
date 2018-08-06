@@ -54,8 +54,8 @@ class JointGoal : public Goal {
   const std::string& getDescription() const final;
 };
 
-} // namespace jaco_manipulation
-} // namespace client
 } // namespace goals
+} // namespace client
+} // namespace jaco_manipulation
 
 #endif //PROJECT_JOINTGOAL_H

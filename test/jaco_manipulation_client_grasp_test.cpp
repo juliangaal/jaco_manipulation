@@ -11,20 +11,22 @@ int main(int argn, char *args[]) {
   ros::init(argn, args, "pam_client");
 
   JacoManipulationClient jmc;
-  jmc.moveTo("home");
+//  jmc.moveTo("home");
+
+  using namespace goals;
 
   {
-    goals::grasp_helper::GraspPose pose;
-    pose.x = 0.0;
-    pose.y = -0.4;
+    grasp_helper::GraspPose pose;
+    pose.x = 0.03;
+    pose.y = -0.60;
     pose.rotation = 0.674663;
-    jmc.grasp(pose, "grasp home state");
+    jmc.drop(pose);
   }
 
   {
-    goals::grasp_helper::GraspPose pose;
-    pose.x = 0.03;
-    pose.y = -0.60;
+    grasp_helper::GraspPose pose;
+    pose.x = 0.0;
+    pose.y = -0.4;
     pose.rotation = 0.674663;
     jmc.grasp(pose);
   }

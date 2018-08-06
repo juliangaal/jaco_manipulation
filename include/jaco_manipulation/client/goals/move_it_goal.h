@@ -48,8 +48,8 @@ class MoveItGoal : public Goal {
 
 };
 
-} // namespace jaco_manipulation
-} // namespace client
 } // namespace goals
+} // namespace client
+} // namespace jaco_manipulation
 
 #endif //PROJECT_MOVEITGOAL_H

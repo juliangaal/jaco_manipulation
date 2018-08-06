@@ -11,7 +11,7 @@
 #include <jaco_manipulation/PlanAndMoveArmAction.h>
 
 #include <jaco_manipulation/client/goals/goal.h>
-#include <jaco_manipulation/client/goals/grasp_goal.h>
+#include <jaco_manipulation/client/goals/objects/grasp_goal.h>
 #include <jaco_manipulation/client/goals/joint_goal.h>
 #include <jaco_manipulation/client/goals/move_it_goal.h>
 #include <jaco_manipulation/client/goals/pose_goal.h>
@@ -71,6 +71,13 @@ class JacoManipulationClient {
     */
   void grasp(const goals::grasp_helper::GraspPose &grasp_pose_goal, const std::string &description="grasp goal");
 
+  /**
+  * Move to drop goal
+  * @param goal drop pose goal
+  * @param description description of move
+  */
+  void drop(const goals::grasp_helper::GraspPose &drop_pose_goal, const std::string &description="drop goal");
+
  private:
   /**
    * PlanAndMoveArmAction ROS action server client
@@ -85,7 +92,7 @@ class JacoManipulationClient {
 
 };
 
-} // namespace jaco_manipulation
 } // namespace client
+} // namespace jaco_manipulation
 
 #endif //PROJECT_JACOMANIPULATIONCLIENT_H

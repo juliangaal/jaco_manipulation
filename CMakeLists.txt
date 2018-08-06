@@ -63,8 +63,9 @@ set(SERVER_SOURCES
 set(CLIENT_SOURCES
         src/client/jaco_manipulation_client.cpp
         src/client/goals/goal.cpp
-        src/client/goals/grasp_goal.cpp
-        src/client/goals/drop_goal.cpp
+        src/client/goals/objects/object_goal.cpp
+        src/client/goals/objects/grasp_goal.cpp
+        src/client/goals/objects/drop_goal.cpp
         src/client/goals/move_it_goal.cpp
         src/client/goals/pose_goal.cpp
         src/client/goals/joint_goal.cpp
