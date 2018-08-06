@@ -4,7 +4,9 @@
 
 #include <jaco_manipulation/client/goals/move_it_goal.h>
 
-MoveItGoal::MoveItGoal(const string &name) {
+using namespace jaco_manipulation::client::goals;
+
+MoveItGoal::MoveItGoal(const std::string &name) {
   goal.goal_type = name;
 }
 

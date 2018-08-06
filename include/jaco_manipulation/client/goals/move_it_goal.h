@@ -7,7 +7,9 @@
 
 #include "goal.h"
 
-using std::string;
+namespace jaco_manipulation {
+namespace client {
+namespace goals {
 
 class MoveItGoal : public Goal {
  public:
@@ -20,7 +22,7 @@ class MoveItGoal : public Goal {
    * constructor
    * @param name future goal_type
    */
-  explicit MoveItGoal(const string &name);
+  explicit MoveItGoal(const std::string &name);
 
   /**
    * virtual default destructor
@@ -34,5 +36,9 @@ class MoveItGoal : public Goal {
   virtual jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;
 
 };
+
+} // namespace jaco_manipulation
+} // namespace client
+} // namespace goals
 
 #endif //PROJECT_MOVEITGOAL_H

@@ -9,7 +9,9 @@
 #include <string>
 #include "goal.h"
 
-using std::string;
+namespace jaco_manipulation {
+namespace client {
+namespace goals {
 
 /**
  * Goal defines the base class for a goal we can send the Jaco Robotic Arm via MoveIt.
@@ -26,7 +28,7 @@ class Goal {
   /**
    * deleted constructor
    */
-  Goal(const string &name) = delete;
+  Goal(const std::string &name) = delete;
 
   /**
    * virtual defaul destructor
@@ -48,7 +50,11 @@ class Goal {
   /**
    * planning frame for MoveIt! plans
    */
-  const string planning_frame;
+  const std::string planning_frame;
 };
+
+} // namespace jaco_manipulation
+} // namespace client
+} // namespace goals
 
 #endif //PROJECT_GOAL_H

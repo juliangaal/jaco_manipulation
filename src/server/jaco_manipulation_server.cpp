@@ -18,9 +18,9 @@
 #include <jaco_manipulation/server/jaco_manipulation_server.h>
 
 using moveit::planning_interface::MoveItErrorCode;
+using namespace jaco_manipulation::server;
 namespace rvt = rviz_visual_tools;
 
-namespace jaco_manipulation {
 
 JacoManipulation::JacoManipulation() :
     move_group_("arm"),
@@ -76,7 +76,7 @@ void JacoManipulation::processGoal(const jaco_manipulation::PlanAndMoveArmGoalCo
   }
 }
 
-bool JacoManipulation::planAndMove(const PoseStamped &pose_goal) {
+bool JacoManipulation::planAndMove(const geometry_msgs::PoseStamped &pose_goal) {
   ROS_STATUS("Goal received: pose");
 
   move_group_.allowReplanning(true);
@@ -93,7 +93,7 @@ bool JacoManipulation::planAndMove(const PoseStamped &pose_goal) {
   return move_group_.move() ? true : false;
 }
 
-bool JacoManipulation::planAndMove(const JointState &joint_goal) {
+bool JacoManipulation::planAndMove(const sensor_msgs::JointState &joint_goal) {
   // TODO BUG CAN"T USE SENSOR_MSGS/JOINTSTATE, MAYBE BECAUSE OLY POSITION IS FILLED
   ROS_STATUS("Goal received: joint state");
 
@@ -142,7 +142,7 @@ bool JacoManipulation::planAndMove(const std::string &pose_goal_string) {
 /**
  * Attaches the table obstacle to the planning scene interface.
  */
-void JacoManipulation::addTableAsObstacle(PoseStamped table_pose) {
+void JacoManipulation::addTableAsObstacle(geometry_msgs::PoseStamped table_pose) {
   ros::param::set("/plane_extraction_enable", true);
 
   while (table_pose.pose.position.x == table_pose.pose.position.y &&
@@ -190,7 +190,7 @@ void JacoManipulation::addTableAsObstacle(PoseStamped table_pose) {
 /**
  * Attaches the object that is going to be picked up as obstacle.
  */
-void JacoManipulation::addTargetAsObstacle(PoseStamped box_pose) {
+void JacoManipulation::addTargetAsObstacle(geometry_msgs::PoseStamped box_pose) {
   moveit_msgs::CollisionObject collision_object;
   collision_object.header.frame_id = move_group_.getPlanningFrame();
 
@@ -257,8 +257,8 @@ void JacoManipulation::addBoundaries() {
 
 }
 
-void JacoManipulation::showPlannedMoveInfo(const PoseStamped &start,
-                                           const PoseStamped &end) {
+void JacoManipulation::showPlannedMoveInfo(const geometry_msgs::PoseStamped &start,
+                                           const geometry_msgs::PoseStamped &end) {
   ROS_INFO_STREAM("Frame for Planning := " << move_group_.getPoseReferenceFrame());
   ROS_INFO("The pose now: (%f,%f,%f) ; (%f,%f,%f,%f)",
            start.pose.position.x,
@@ -280,7 +280,7 @@ void JacoManipulation::showPlannedMoveInfo(const PoseStamped &start,
   ROS_INFO_STREAM("FRAME FOR TARGET POSE := " << end.header.frame_id);
 }
 
-void JacoManipulation::showPlannedMoveInfo(const vector<double> &start, const JointState &end) {
+void JacoManipulation::showPlannedMoveInfo(const std::vector<double> &start, const sensor_msgs::JointState &end) {
   assert(start.size() >= 6);
   ROS_INFO_STREAM("Frame for Planning := " << move_group_.getPoseReferenceFrame());
   ROS_INFO("The joint states now: (%f,%f,%f,%f,%f,%f)",
@@ -300,7 +300,7 @@ void JacoManipulation::showPlannedMoveInfo(const vector<double> &start, const Jo
   ROS_INFO_STREAM("FRAME FOR TARGET POSE := " << end.header.frame_id);
 }
 
-void JacoManipulation::showPlannedMoveInfo(const PoseStamped &start, const string &target) {
+void JacoManipulation::showPlannedMoveInfo(const geometry_msgs::PoseStamped &start, const std::string &target) {
   ROS_INFO_STREAM("Frame for Planning := " << move_group_.getPoseReferenceFrame());
   ROS_INFO("The pose now: (%f,%f,%f) ; (%f,%f,%f,%f)",
            start.pose.position.x,
@@ -312,5 +312,4 @@ void JacoManipulation::showPlannedMoveInfo(const PoseStamped &start, const strin
            start.pose.orientation.w);
   ROS_INFO_STREAM("Frame for current Pose := " << start.header.frame_id);
   ROS_INFO_STREAM("The moveit config target pose: " << target);
-}
 }
