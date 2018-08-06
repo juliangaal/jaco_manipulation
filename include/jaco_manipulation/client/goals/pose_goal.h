@@ -31,19 +31,26 @@ class PoseGoal : public Goal {
   /**
    * constructor
    * @param pose geometry_msgs::PoseStamped to move to
+   * @param description description to make client console output more clear
    */
-  explicit PoseGoal(const geometry_msgs::PoseStamped &pose);
+  explicit PoseGoal(const geometry_msgs::PoseStamped &pose, const std::string &description="pose goal");
 
   /**
    * virtual default destructor
    */
-  virtual ~PoseGoal() = default;
+  ~PoseGoal() final = default;
 
   /**
    * get goal that was created
    * @return jaco_manipulation::PlanAndMoveArmGoal
  */
-  virtual jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;
+  jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;
+
+  /**
+   * get description of goal
+   * @return std::string description
+   */
+   const std::string& getDescription() const final;
 };
 
 } // namespace jaco_manipulation

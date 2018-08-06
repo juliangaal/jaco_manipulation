@@ -18,7 +18,7 @@ int main(int argn, char *args[]) {
     pose.x = 0.0;
     pose.y = -0.4;
     pose.rotation = 0.674663;
-    jmc.moveTo(pose);
+    jmc.moveTo(pose, "grasp home state");
   }
 
   {

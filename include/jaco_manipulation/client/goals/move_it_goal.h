@@ -20,20 +20,27 @@ class MoveItGoal : public Goal {
 
   /**
    * constructor
-   * @param name future goal_type
-   */
-  explicit MoveItGoal(const std::string &name);
+   * @param goal_name name of goal_type in moveit config
+   * @param description description to make client console output more clear
+  */
+  explicit MoveItGoal(const std::string &goal_name, const std::string &description="movit config file goal");
 
   /**
    * virtual default destructor
    */
-  virtual ~MoveItGoal() = default;
+  ~MoveItGoal() final = default;
 
   /**
     * get goal that was created
     * @return jaco_manipulation::PlanAndMoveArmGoal
   */
-  virtual jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;
+  jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;
+
+  /**
+   * get description of goal
+   * @return std::string description
+ */
+  const std::string& getDescription() const final;
 
 };
 

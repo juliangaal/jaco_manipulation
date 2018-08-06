@@ -7,15 +7,21 @@
 
 using namespace jaco_manipulation::client::goals;
 
-PoseGoal::PoseGoal(const geometry_msgs::PoseStamped &goal_pose) {
-  goal.goal_type = "pose";
-  goal.pose_goal = goal_pose;
-  goal.pose_goal.header.frame_id = planning_frame;
+PoseGoal::PoseGoal(const geometry_msgs::PoseStamped &goal_pose, const std::string &description) {
+  description_ = description;
+
+  goal_.goal_type = "pose";
+  goal_.pose_goal = goal_pose;
+  goal_.pose_goal.header.frame_id = planning_frame_;
 
   ROS_INFO("----");
-  ROS_INFO_STREAM("Attempt: Move to " << goal.goal_type);
+  ROS_INFO_STREAM("Attempt: Move to " << description_);
 }
 
 jaco_manipulation::PlanAndMoveArmGoal PoseGoal::getGoal() const {
-  return goal;
+  return Goal::getGoal();
+}
+
+const std::string &PoseGoal::getDescription() const {
+  return Goal::getDescription();
 }

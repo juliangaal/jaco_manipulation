@@ -11,23 +11,24 @@ JacoManipulationClient::JacoManipulationClient() : client_("plan_and_move_arm", 
   client_.waitForServer();
 }
 
-void JacoManipulationClient::moveTo(const std::string &moveit_goal) {
-  goals::MoveItGoal goal(moveit_goal);
+void JacoManipulationClient::moveTo(const std::string &moveit_goal, const std::string &description) {
+  goals::MoveItGoal goal(moveit_goal, description);
   execute(goal);
 }
 
-void JacoManipulationClient::moveTo(const geometry_msgs::PoseStamped &pose_goal) {
-  goals::PoseGoal goal(pose_goal);
+void JacoManipulationClient::moveTo(const geometry_msgs::PoseStamped &pose_goal, 
+                                    const std::string &description) {
+  goals::PoseGoal goal(pose_goal, description);
   execute(goal);
 }
 
-void JacoManipulationClient::moveTo(const sensor_msgs::JointState &joint_goal) {
-  goals::JointGoal goal(joint_goal.position);
+void JacoManipulationClient::moveTo(const sensor_msgs::JointState &joint_goal, const std::string &description) {
+  goals::JointGoal goal(joint_goal.position, description);
   execute(goal);
 }
 
-void JacoManipulationClient::moveTo(const goals::GraspGoal::GraspPose &grasp_pose_goal) {
-  goals::GraspGoal goal(grasp_pose_goal);
+void JacoManipulationClient::moveTo(const goals::GraspGoal::GraspPose &grasp_pose_goal, const std::string &description) {
+  goals::GraspGoal goal(grasp_pose_goal, description);
   execute(goal);
 }
 
@@ -38,8 +39,8 @@ void JacoManipulationClient::execute(const goals::Goal &goal_wrapper) {
   client_.waitForResult();
 
   if (client_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-    ROS_SUCCESS("Status : Move to " + goal.goal_type + " succeeded.");
+    ROS_SUCCESS("Status : Move to " + goal_wrapper.getDescription()+ " succeeded.");
   } else {
-    ROS_ERROR_STREAM("Status : Move to " << goal.goal_type << " failed.");
+    ROS_ERROR_STREAM("Status : Move to " <<  goal_wrapper.getDescription()<< " failed.");
   }
 }

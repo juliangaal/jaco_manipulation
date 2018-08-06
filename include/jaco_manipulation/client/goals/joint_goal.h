@@ -32,19 +32,26 @@ class JointGoal : public Goal {
   /**
    * constructor
    * @param joint_goal joint goal that will be tried to move to
+   * @param description description to make client console output more clear
    */
-  explicit JointGoal(const std::vector<double> &joint_goal);
+  explicit JointGoal(const std::vector<double> &joint_goal, const std::string &description = "joint goal");
 
   /**
    * virtual default destructor
    */
-  virtual ~JointGoal() = default;
+   ~JointGoal() final = default;
 
   /**
- * get goal that was created
- * @return jaco_manipulation::PlanAndMoveArmGoal
- */
-  virtual jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;
+   * get goal that was created
+   * @return jaco_manipulation::PlanAndMoveArmGoal
+  */
+  jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;
+
+  /**
+   * get description of goal
+   * @return std::string description
+   */
+  const std::string& getDescription() const final;
 };
 
 } // namespace jaco_manipulation

@@ -40,17 +40,27 @@ class Goal {
    * @return jaco_manipulation::PlanAndMoveArmGoal
    */
   virtual jaco_manipulation::PlanAndMoveArmGoal getGoal() const;
+  /**
+   * get description of goal
+   * @return std::string description
+ */
+  virtual const std::string& getDescription() const;
 
  protected:
   /**
    * jaco_manipulation::PlanAndMoveArmGoal goal that will be created
    */
-  jaco_manipulation::PlanAndMoveArmGoal goal;
+  jaco_manipulation::PlanAndMoveArmGoal goal_;
 
   /**
    * planning frame for MoveIt! plans
    */
-  const std::string planning_frame;
+  const std::string planning_frame_;
+
+  /**
+   * description to make client output more clear
+   */
+   std::string description_;
 };
 
 } // namespace jaco_manipulation

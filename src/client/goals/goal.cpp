@@ -6,10 +6,15 @@
 
 using namespace jaco_manipulation::client::goals;
 
-Goal::Goal() : planning_frame("root") {
-  goal.goal_type = "goal";
+Goal::Goal() : planning_frame_("root") {
+  goal_.goal_type = "goal";
+  description_ = goal_.goal_type;
 }
 
 jaco_manipulation::PlanAndMoveArmGoal Goal::getGoal() const {
-  return goal;
+  return goal_;
+}
+
+const std::string &Goal::getDescription() const {
+  return description_;
 }

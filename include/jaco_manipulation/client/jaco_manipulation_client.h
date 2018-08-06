@@ -46,26 +46,30 @@ class JacoManipulationClient {
   /**
    * Move to MoveIt goal defined in jaco.srdf
    * @param goal name of goal
+   * @param description description of move
    */
-  void moveTo(const std::string &goal);
+  void moveTo(const std::string &goal, const std::string &description="MoveIt! config goal");
 
   /**
    * Move to Pose goal
    * @param goal pose goal
+   * @param description description of move
    */
-  void moveTo(const geometry_msgs::PoseStamped &goal);
+  void moveTo(const geometry_msgs::PoseStamped &goal, const std::string &description="pose goal");
 
   /**
    * Move to joint goal
    * @param goal joint goal
+   * @param description description of move
    */
-  void moveTo(const sensor_msgs::JointState &goal);
+  void moveTo(const sensor_msgs::JointState &goal, const std::string &description="joint state goal");
 
   /**
     * Move to grasp goal
     * @param goal grasp pose goal
+    * @param description description of move
     */
-  void moveTo(const goals::GraspGoal::GraspPose &grasp_pose_goal);
+  void moveTo(const goals::GraspGoal::GraspPose &grasp_pose_goal, const std::string &description="grasp goal");
 
  private:
   /**
