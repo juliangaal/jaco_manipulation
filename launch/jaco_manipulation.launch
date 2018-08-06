@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-
 <launch>
 
     <arg name="vizz" default="false"/>
     <arg name="use_rviz" default="true"/>
+    <arg name="rviz_config" default="manipulation.rviz" />
 
     <!-- Launches the driver for the arm  -->
     <!--  include file="$(find wpi_jaco_wrapper)/launch/arm.launch" / -->
@@ -25,7 +25,7 @@
           args="-0.26 0.075 -0.025 -1.5708 0 0 root base_link 50"/>
 
     <group if="$(arg use_rviz)">
-        <node name="jaco_rviz" pkg="rviz" type="rviz" args="-d $(find jaco_manipulation)/launch/manipulation.rviz"/>
+        <node name="jaco_rviz" pkg="rviz" type="rviz" args="-d $(find jaco_manipulation)/launch/$(arg rviz_config)"/>
     </group>
 </launch>
 
