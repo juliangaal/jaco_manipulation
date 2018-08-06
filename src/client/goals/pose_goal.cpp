@@ -3,6 +3,7 @@
 //
 
 #include <jaco_manipulation/client/goals/pose_goal.h>
+#include <ros/console.h>
 
 using namespace jaco_manipulation::client::goals;
 
@@ -10,6 +11,9 @@ PoseGoal::PoseGoal(const geometry_msgs::PoseStamped &goal_pose) {
   goal.goal_type = "pose";
   goal.pose_goal = goal_pose;
   goal.pose_goal.header.frame_id = planning_frame;
+
+  ROS_INFO("----");
+  ROS_INFO_STREAM("Attempt: Move to " << goal.goal_type);
 }
 
 jaco_manipulation::PlanAndMoveArmGoal PoseGoal::getGoal() const {

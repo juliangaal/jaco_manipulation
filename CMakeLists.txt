@@ -61,6 +61,7 @@ add_library(jaco2_manipulation
         src/server/jaco_manipulation_server.cpp
         src/client/jaco_manipulation_client.cpp
         src/client/goals/goal.cpp
+        src/client/goals/grasp_goal.cpp
         src/client/goals/move_it_goal.cpp
         src/client/goals/pose_goal.cpp
         src/client/goals/joint_goal.cpp
@@ -75,6 +76,9 @@ add_executable(grasp_pose_generator_client_test test/grasp_pose_generator_client
 
 # Test client for jaco_manipulation action server
 add_executable(jaco_manipulation_client_test test/jaco_manipulation_client_test.cpp)
+
+# Test client for jaco_manipulation grasping
+add_executable(jaco_manipulation_client_grasp_test test/jaco_manipulation_client_grasp_test.cpp)
 
 add_executable(manipulation_server src/manipulation_services_node.cpp)
 
@@ -105,6 +109,11 @@ target_link_libraries(manipulation_server
 )
 
 target_link_libraries(jaco_manipulation_client_test
+        ${catkin_LIBRARIES}
+        jaco2_manipulation
+)
+
+target_link_libraries(jaco_manipulation_client_grasp_test
         ${catkin_LIBRARIES}
         jaco2_manipulation
 )

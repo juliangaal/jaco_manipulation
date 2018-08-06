@@ -3,6 +3,7 @@
 //
 
 #include <jaco_manipulation/client/jaco_manipulation_client.h>
+#include <jaco_manipulation/client/goals/grasp_goal.h>
 
 using namespace jaco_manipulation::client;
 
@@ -25,11 +26,13 @@ void JacoManipulationClient::moveTo(const sensor_msgs::JointState &joint_goal) {
   execute(goal);
 }
 
+void JacoManipulationClient::moveTo(const goals::GraspGoal::GraspPose &grasp_pose_goal) {
+  goals::GraspGoal goal(grasp_pose_goal);
+  execute(goal);
+}
+
 void JacoManipulationClient::execute(const goals::Goal &goal_wrapper) {
   const auto& goal = goal_wrapper.getGoal();
-
-  ROS_INFO("----");
-  ROS_INFO_STREAM("Attempt: Move to " << goal.goal_type);
 
   client_.sendGoal(goal);
   client_.waitForResult();

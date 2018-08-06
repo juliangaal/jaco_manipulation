@@ -11,6 +11,7 @@
 #include <jaco_manipulation/PlanAndMoveArmAction.h>
 
 #include <jaco_manipulation/client/goals/goal.h>
+#include <jaco_manipulation/client/goals/grasp_goal.h>
 #include <jaco_manipulation/client/goals/joint_goal.h>
 #include <jaco_manipulation/client/goals/move_it_goal.h>
 #include <jaco_manipulation/client/goals/pose_goal.h>
@@ -59,6 +60,12 @@ class JacoManipulationClient {
    * @param goal joint goal
    */
   void moveTo(const sensor_msgs::JointState &goal);
+
+  /**
+    * Move to grasp goal
+    * @param goal grasp pose goal
+    */
+  void moveTo(const goals::GraspGoal::GraspPose &grasp_pose_goal);
 
  private:
   /**
