@@ -22,9 +22,9 @@ using namespace jaco_manipulation::server;
 namespace rvt = rviz_visual_tools;
 
 
-JacoManipulation::JacoManipulation() :
+JacoManipulationServer::JacoManipulationServer() :
     move_group_("arm"),
-    pam_server_(nh_, "plan_and_move_arm", boost::bind(&JacoManipulation::processGoal, this, _1), false),
+    pam_server_(nh_, "plan_and_move_arm", boost::bind(&JacoManipulationServer::processGoal, this, _1), false),
     visual_tools_("root"),
     haa_client_("jaco_arm/home_arm", true) {
   ROS_INFO("Initializing Jaco Manipulation!");
@@ -41,19 +41,19 @@ JacoManipulation::JacoManipulation() :
   prepMoveItVisualTools();
 }
 
-void JacoManipulation::prepMoveItVisualTools() {
+void JacoManipulationServer::prepMoveItVisualTools() {
   visual_tools_.deleteAllMarkers();
   visual_tools_.loadRemoteControl();
   visual_tools_.trigger();
 }
 
-void JacoManipulation::showPlannedPath() {
+void JacoManipulationServer::showPlannedPath() {
   visual_tools_.deleteAllMarkers();
   visual_tools_.publishTrajectoryLine(plan_.trajectory_, move_group_.getCurrentState()->getJointModelGroup("arm"));
   visual_tools_.trigger();
 }
 
-void JacoManipulation::processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
+void JacoManipulationServer::processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
   bool result_value;
 
   if (goal->goal_type.empty() || goal->goal_type == "goal") {
@@ -63,6 +63,10 @@ void JacoManipulation::processGoal(const jaco_manipulation::PlanAndMoveArmGoalCo
     result_value = planAndMove(goal->pose_goal);
   } else if (goal->goal_type == "joint_state") {
     result_value = planAndMove(goal->joint_goal);
+  } else if (goal->goal_type == "grasp_pose") {
+    result_value = planAndMoveAndGrasp(goal->pose_goal);
+  } else if (goal->goal_type == "drop_pose") {
+    result_value = planAndMoveAndDrop(goal->pose_goal);
   } else {
     result_value = planAndMove(goal->goal_type);
   }
@@ -76,7 +80,7 @@ void JacoManipulation::processGoal(const jaco_manipulation::PlanAndMoveArmGoalCo
   }
 }
 
-bool JacoManipulation::planAndMove(const geometry_msgs::PoseStamped &pose_goal) {
+bool JacoManipulationServer::planAndMove(const geometry_msgs::PoseStamped &pose_goal) {
   ROS_STATUS("Goal received: pose");
 
   move_group_.allowReplanning(true);
@@ -93,7 +97,7 @@ bool JacoManipulation::planAndMove(const geometry_msgs::PoseStamped &pose_goal) 
   return move_group_.move() ? true : false;
 }
 
-bool JacoManipulation::planAndMove(const sensor_msgs::JointState &joint_goal) {
+bool JacoManipulationServer::planAndMove(const sensor_msgs::JointState &joint_goal) {
   // TODO BUG CAN"T USE SENSOR_MSGS/JOINTSTATE, MAYBE BECAUSE OLY POSITION IS FILLED
   ROS_STATUS("Goal received: joint state");
 
@@ -111,38 +115,44 @@ bool JacoManipulation::planAndMove(const sensor_msgs::JointState &joint_goal) {
   return move_group_.move() ? true : false;
 }
 
-bool JacoManipulation::planAndMove(const std::string &pose_goal_string) {
+bool JacoManipulationServer::planAndMove(const std::string &pose_goal_string) {
   ROS_STATUS("Goal received: named target");
 
-  if (pose_goal_string == "open" || pose_goal_string == "OPEN") {
-    moveGripper(0.0);
-    sleep(3.0);
-    return true;
-  } else if (pose_goal_string == "close" || pose_goal_string == "CLOSE") {
-    moveGripper(6500.00);
-    sleep(3.0);
-    return true;
-  } else {
-    move_group_.allowReplanning(true);
-    move_group_.allowLooking(true);
-    move_group_.setStartStateToCurrentState();
-    move_group_.setNamedTarget(pose_goal_string);
+  move_group_.allowReplanning(true);
+  move_group_.allowLooking(true);
+  move_group_.setStartStateToCurrentState();
+  move_group_.setNamedTarget(pose_goal_string);
 
-    ROS_INFO_STREAM("FRAME FOR PLANNING := " << move_group_.getPoseReferenceFrame());
+  ROS_INFO_STREAM("FRAME FOR PLANNING := " << move_group_.getPoseReferenceFrame());
 
-    if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
+  if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
 
-    showPlannedMoveInfo(move_group_.getCurrentPose("jaco_link_hand"), pose_goal_string);
-    showPlannedPath();
+  showPlannedMoveInfo(move_group_.getCurrentPose("jaco_link_hand"), pose_goal_string);
+  showPlannedPath();
 
-    return move_group_.move() ? true : false;
-  }
+  return move_group_.move() ? true : false;
+}
+
+bool JacoManipulationServer::planAndMoveAndGrasp(const geometry_msgs::PoseStamped &target_pose) {
+  bool moved = planAndMove(target_pose);
+  if (moved)
+    closeGripper();
+
+  ROS_STATUS("Gripper closed. Object grasped.");
+}
+
+bool JacoManipulationServer::planAndMoveAndDrop(const geometry_msgs::PoseStamped &target_pose) {
+  bool moved = planAndMove(target_pose);
+  if (moved)
+    openGripper();
+
+  ROS_STATUS("Gripper opened. Object dropped.");
 }
 
 /**
  * Attaches the table obstacle to the planning scene interface.
  */
-void JacoManipulation::addTableAsObstacle(geometry_msgs::PoseStamped table_pose) {
+void JacoManipulationServer::addTableAsObstacle(geometry_msgs::PoseStamped table_pose) {
   ros::param::set("/plane_extraction_enable", true);
 
   while (table_pose.pose.position.x == table_pose.pose.position.y &&
@@ -190,7 +200,7 @@ void JacoManipulation::addTableAsObstacle(geometry_msgs::PoseStamped table_pose)
 /**
  * Attaches the object that is going to be picked up as obstacle.
  */
-void JacoManipulation::addTargetAsObstacle(geometry_msgs::PoseStamped box_pose) {
+void JacoManipulationServer::addTargetAsObstacle(geometry_msgs::PoseStamped box_pose) {
   moveit_msgs::CollisionObject collision_object;
   collision_object.header.frame_id = move_group_.getPlanningFrame();
 
@@ -224,40 +234,50 @@ void JacoManipulation::addTargetAsObstacle(geometry_msgs::PoseStamped box_pose) 
   ROS_INFO("The box was added as a collision object!");
 }
 
-void JacoManipulation::removeTable() {
+void JacoManipulationServer::removeTable() {
   std::vector<std::string> object_ids;
   object_ids.emplace_back("table");
   planning_scene_interface_.removeCollisionObjects(object_ids);
 }
 
-void JacoManipulation::removeTarget() {
+void JacoManipulationServer::removeTarget() {
   std::vector<std::string> object_ids;
   object_ids.emplace_back("table");
   planning_scene_interface_.removeCollisionObjects(object_ids);
 }
 
-void JacoManipulation::attachTarget() {
+void JacoManipulationServer::attachTarget() {
   move_group_.attachObject("pill_box");
   ROS_INFO("Pill box is in gripper now.");
 }
 
-void JacoManipulation::detachTarget() {
+void JacoManipulationServer::detachTarget() {
   move_group_.detachObject("pill_box");
   removeTarget();
   ROS_INFO("Pill box removed.");
 }
 
-void JacoManipulation::moveGripper(float value) {
+void JacoManipulationServer::moveGripper(float value) {
   std_msgs::Float32 FP;
   FP.data = value;
   finger_pub_.publish(FP);
+  sleep(3.0);
 }
 
-void JacoManipulation::addBoundaries() {
+void JacoManipulationServer::closeGripper() {
+  moveGripper(0.0);
+}
+
+
+void JacoManipulationServer::openGripper() {
+  moveGripper(6500.0);
+}
+
+void JacoManipulationServer::addBoundaries() {
 
 }
 
-void JacoManipulation::showPlannedMoveInfo(const geometry_msgs::PoseStamped &start,
+void JacoManipulationServer::showPlannedMoveInfo(const geometry_msgs::PoseStamped &start,
                                            const geometry_msgs::PoseStamped &end) {
   ROS_INFO_STREAM("Frame for Planning := " << move_group_.getPoseReferenceFrame());
   ROS_INFO("The pose now: (%f,%f,%f) ; (%f,%f,%f,%f)",
@@ -280,7 +300,7 @@ void JacoManipulation::showPlannedMoveInfo(const geometry_msgs::PoseStamped &sta
   ROS_INFO_STREAM("FRAME FOR TARGET POSE := " << end.header.frame_id);
 }
 
-void JacoManipulation::showPlannedMoveInfo(const std::vector<double> &start, const sensor_msgs::JointState &end) {
+void JacoManipulationServer::showPlannedMoveInfo(const std::vector<double> &start, const sensor_msgs::JointState &end) {
   assert(start.size() >= 6);
   ROS_INFO_STREAM("Frame for Planning := " << move_group_.getPoseReferenceFrame());
   ROS_INFO("The joint states now: (%f,%f,%f,%f,%f,%f)",
@@ -300,7 +320,7 @@ void JacoManipulation::showPlannedMoveInfo(const std::vector<double> &start, con
   ROS_INFO_STREAM("FRAME FOR TARGET POSE := " << end.header.frame_id);
 }
 
-void JacoManipulation::showPlannedMoveInfo(const geometry_msgs::PoseStamped &start, const std::string &target) {
+void JacoManipulationServer::showPlannedMoveInfo(const geometry_msgs::PoseStamped &start, const std::string &target) {
   ROS_INFO_STREAM("Frame for Planning := " << move_group_.getPoseReferenceFrame());
   ROS_INFO("The pose now: (%f,%f,%f) ; (%f,%f,%f,%f)",
            start.pose.position.x,

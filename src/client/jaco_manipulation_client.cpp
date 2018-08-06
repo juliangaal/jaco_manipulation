@@ -27,7 +27,7 @@ void JacoManipulationClient::moveTo(const sensor_msgs::JointState &joint_goal, c
   execute(goal);
 }
 
-void JacoManipulationClient::moveTo(const goals::GraspGoal::GraspPose &grasp_pose_goal, const std::string &description) {
+void JacoManipulationClient::grasp(const goals::grasp_helper::GraspPose &grasp_pose_goal, const std::string &description) {
   goals::GraspGoal goal(grasp_pose_goal, description);
   execute(goal);
 }

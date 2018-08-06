@@ -13,17 +13,13 @@ namespace jaco_manipulation {
 namespace client {
 namespace goals {
 
-/**
+/*!
  * Goal defines the base class for a goal we can send the Jaco Robotic Arm via MoveIt.
  * That can either be a goal from the movit config (jaco.srdf) ("MoveItGoal" class),
  * a joint state goal ("JointGoal" class), or a pose goal ("PoseGoal" class)
  */
 class Goal {
  public:
-  /**
-   * default constructor
-   */
-  Goal();
 
   /**
    * deleted constructor
@@ -47,6 +43,12 @@ class Goal {
   virtual const std::string& getDescription() const;
 
  protected:
+
+  /**
+   * default constructor
+  */
+  Goal();
+
   /**
    * jaco_manipulation::PlanAndMoveArmGoal goal that will be created
    */
@@ -59,8 +61,8 @@ class Goal {
 
   /**
    * description to make client output more clear
-   */
-   std::string description_;
+  */
+  std::string description_;
 };
 
 } // namespace jaco_manipulation

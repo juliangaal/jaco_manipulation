@@ -11,6 +11,10 @@ namespace jaco_manipulation {
 namespace client {
 namespace goals {
 
+/*!
+ * MoveItGoal
+ * wrapper class MoveIt! Goal defined in config file
+ */
 class MoveItGoal : public Goal {
  public:
   /**

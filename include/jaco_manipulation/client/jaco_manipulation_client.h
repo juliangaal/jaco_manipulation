@@ -22,7 +22,7 @@
 namespace jaco_manipulation {
 namespace client {
 
-/**
+/*!
  * JacoManipulationClient
  * Simple but convenient wrapper around ROS action server SimpleActionClient, tuned for Jaco Robot Arm
  * Joint-, Pose- and MoveItGoals can be sent to the SimpleActionServer.
@@ -69,7 +69,7 @@ class JacoManipulationClient {
     * @param goal grasp pose goal
     * @param description description of move
     */
-  void moveTo(const goals::GraspGoal::GraspPose &grasp_pose_goal, const std::string &description="grasp goal");
+  void grasp(const goals::grasp_helper::GraspPose &grasp_pose_goal, const std::string &description="grasp goal");
 
  private:
   /**

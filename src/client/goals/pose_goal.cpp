@@ -14,8 +14,18 @@ PoseGoal::PoseGoal(const geometry_msgs::PoseStamped &goal_pose, const std::strin
   goal_.pose_goal = goal_pose;
   goal_.pose_goal.header.frame_id = planning_frame_;
 
+  adjustHeight();
+
   ROS_INFO("----");
   ROS_INFO_STREAM("Attempt: Move to " << description_);
+}
+
+void PoseGoal::adjustHeight() {
+  auto &height = goal_.pose_goal.pose.position.z;
+  if (height < min_height) {
+    ROS_WARN_STREAM("Status : Grasp pose to low. Correcting height to " << min_height);
+    height = min_height;
+  }
 }
 
 jaco_manipulation::PlanAndMoveArmGoal PoseGoal::getGoal() const {

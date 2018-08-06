@@ -11,16 +11,12 @@ namespace jaco_manipulation {
 namespace client {
 namespace goals {
 
-/**
+/*!
  * PoseGoal
  * class to define a pose goal for MoveIt! execution
- */
+*/
 class PoseGoal : public Goal {
  public:
-  /**
-   * deleted default constructor
-   */
-  PoseGoal() = delete;
 
   /**
    * deleted constructor
@@ -38,19 +34,36 @@ class PoseGoal : public Goal {
   /**
    * virtual default destructor
    */
-  ~PoseGoal() final = default;
+  virtual ~PoseGoal() override = default;
 
   /**
    * get goal that was created
    * @return jaco_manipulation::PlanAndMoveArmGoal
  */
-  jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;
+  virtual jaco_manipulation::PlanAndMoveArmGoal getGoal() const override;
 
   /**
    * get description of goal
    * @return std::string description
    */
-   const std::string& getDescription() const final;
+  virtual const std::string& getDescription() const override;
+
+ protected:
+
+  /**
+   * protected default constructor
+  */
+  PoseGoal() = default;
+
+  /**
+   * Adjusts height for poses that are too low
+  */
+  virtual void adjustHeight();
+
+  /**
+   * Minimum height for pose
+  */
+  constexpr static double min_height = 0.175026;
 };
 
 } // namespace jaco_manipulation

@@ -11,6 +11,11 @@ namespace jaco_manipulation {
 namespace client {
 namespace goals {
 
+/*!
+ * DropGoal
+ * Represent a severely limited pose for dropping objects
+ * Limited in height, and rotation around x and y axis
+ */
 class DropGoal : public GraspGoal {
  public:
 

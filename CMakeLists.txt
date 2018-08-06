@@ -55,16 +55,25 @@ include_directories(
         ${catkin_INCLUDE_DIRS}
 )
 
-## Declare a cpp library --> DoroManipulation
-add_library(jaco2_manipulation
+set(SERVER_SOURCES
         src/server/jaco_boundaries.cpp
         src/server/jaco_manipulation_server.cpp
+)
+
+set(CLIENT_SOURCES
         src/client/jaco_manipulation_client.cpp
         src/client/goals/goal.cpp
         src/client/goals/grasp_goal.cpp
+        src/client/goals/drop_goal.cpp
         src/client/goals/move_it_goal.cpp
         src/client/goals/pose_goal.cpp
         src/client/goals/joint_goal.cpp
+)
+
+## Declare a cpp library --> DoroManipulation
+add_library(jaco2_manipulation
+        ${SERVER_SOURCES}
+        ${CLIENT_SOURCES}
 )
 
 add_library(grasp_pose_generator

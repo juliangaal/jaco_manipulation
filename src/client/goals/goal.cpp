@@ -3,6 +3,7 @@
 //
 
 #include <jaco_manipulation/client/goals/goal.h>
+#include <ros/console.h>
 
 using namespace jaco_manipulation::client::goals;
 

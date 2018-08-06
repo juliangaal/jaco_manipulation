@@ -12,7 +12,7 @@ namespace jaco_manipulation {
 namespace client {
 namespace goals {
 
-/**
+/*!
  * JointGoal
  * class to define a joint state goal for MoveIt! execution
  */

@@ -14,19 +14,19 @@ int main(int argn, char *args[]) {
   jmc.moveTo("home");
 
   {
-    goals::GraspGoal::GraspPose pose;
+    goals::grasp_helper::GraspPose pose;
     pose.x = 0.0;
     pose.y = -0.4;
     pose.rotation = 0.674663;
-    jmc.moveTo(pose, "grasp home state");
+    jmc.grasp(pose, "grasp home state");
   }
 
   {
-    goals::GraspGoal::GraspPose pose;
+    goals::grasp_helper::GraspPose pose;
     pose.x = 0.03;
     pose.y = -0.60;
     pose.rotation = 0.674663;
-    jmc.moveTo(pose);
+    jmc.grasp(pose);
   }
 
   jmc.moveTo("home");

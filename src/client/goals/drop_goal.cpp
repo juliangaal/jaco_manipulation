@@ -25,7 +25,7 @@ DropGoal::DropGoal(const grasp_helper::GraspPose &drop_pose_goal, const std::str
   goal_.pose_goal.pose.orientation.w = default_orientation_;
 
   if (default_orientation_ != drop_pose_goal.rotation && drop_pose_goal.rotation != 0.0)
-    goal_.pose_goal.pose.orientation = drop_pose_goal.rotation;
+    goal_.pose_goal.pose.orientation.w = drop_pose_goal.rotation;
 
   goal_.pose_goal.header.frame_id = planning_frame_;
 }
@@ -38,22 +38,14 @@ DropGoal::DropGoal(const grasp_helper::Object &object_goal, const std::string &d
 
   goal_.goal_type = "drop_pose";
 
-  adjustPoseToCenterOfObject(object_goal);
-  PoseGoal::adjustHeight();
+  GraspGoal::adjustPoseToCenterOfObject(object_goal);
+  GraspGoal::adjustHeight();
 
   goal_.pose_goal.pose.orientation.x = default_rot_x_;
   goal_.pose_goal.pose.orientation.y = default_rot_y_;
   goal_.pose_goal.pose.orientation.z = default_rot_z_;
   goal_.pose_goal.pose.orientation.w = default_orientation_;
   goal_.pose_goal.header.frame_id = planning_frame_;
-}
-
-
-void DropGoal::adjustPoseToCenterOfObject(const grasp_helper::Object &object) {
-  ROS_INFO("Status  : Adjusting pose to center of object");
-  goal_.pose_goal.pose.position.x = object.width * 1.5;
-  goal_.pose_goal.pose.position.y = object.length * 1.5;
-  goal_.pose_goal.pose.position.z = object.height;
 }
 
 jaco_manipulation::PlanAndMoveArmGoal DropGoal::getGoal() const {
