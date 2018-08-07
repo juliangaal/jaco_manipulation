@@ -5,7 +5,7 @@
 #ifndef PROJECT_JACOMANIPULATIONCLIENT_H
 #define PROJECT_JACOMANIPULATIONCLIENT_H
 
-#define ROS_SUCCESS(x) ROS_INFO_STREAM("\033[32m" << (x) << "\033[00m")
+#define ROS_SUCCESS(x) ROS_INFO_STREAM("\033[32m" << x << "\033[00m")
 
 #include <actionlib/client/simple_action_client.h>
 #include <jaco_manipulation/PlanAndMoveArmAction.h>
@@ -69,14 +69,14 @@ class JacoManipulationClient {
     * @param goal grasp pose goal
     * @param description description of move
     */
-  void grasp(const goals::grasp_helper::GraspPose &grasp_pose_goal, const std::string &description="grasp goal");
+  void grasp(const goals::object_helper::LimitedPose &grasp_pose_goal, const std::string &description="grasp goal");
 
   /**
   * Move to drop goal
   * @param goal drop pose goal
   * @param description description of move
   */
-  void drop(const goals::grasp_helper::GraspPose &drop_pose_goal, const std::string &description="drop goal");
+  void drop(const goals::object_helper::LimitedPose &drop_pose_goal, const std::string &description="drop goal");
 
  private:
   /**
@@ -90,6 +90,12 @@ class JacoManipulationClient {
    */
   void execute(const goals::Goal& goal);
 
+  /**
+   * Convenience function to get all relevant info from goal
+   * @param goal goal that will be moved to
+   * @return information about move goal
+   */
+  const std::string info(const goals::Goal &goal_wrapper) const;
 };
 
 } // namespace client

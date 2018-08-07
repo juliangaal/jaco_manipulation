@@ -25,10 +25,10 @@ class DropGoal: public ObjectGoal {
    * @param drop_pose_goal drop pose goal
    * @param description descritpion with additional info
    */
-  explicit DropGoal(const grasp_helper::GraspPose &drop_pose_goal, const std::string &description = "drop goal");
+  explicit DropGoal(const object_helper::LimitedPose &drop_pose_goal, const std::string &description = "drop goal");
 
 
-  explicit DropGoal(const grasp_helper::Object &object_goal, const std::string &description = "drop box goal");
+  explicit DropGoal(const object_helper::Object &object_goal, const std::string &description = "drop box goal");
 
   /**
    * default destructor
@@ -38,13 +38,7 @@ class DropGoal: public ObjectGoal {
   /**
    * get created goal
    */
-  jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;
-
-  /**
-   * get description of goal
-   * @return std::string description
- */
-  const std::string &getDescription() const final;
+  jaco_manipulation::PlanAndMoveArmGoal goal() const final;
 };
 
 } // namespace objects

@@ -12,10 +12,10 @@ Goal::Goal() : planning_frame_("root") {
   description_ = goal_.goal_type;
 }
 
-jaco_manipulation::PlanAndMoveArmGoal Goal::getGoal() const {
+jaco_manipulation::PlanAndMoveArmGoal Goal::goal() const {
   return goal_;
 }
 
-const std::string& Goal::getDescription() const {
-  return description_;
+const std::string Goal::info() const {
+  return description_ + " \"" + goal_.goal_type + "\"";
 }

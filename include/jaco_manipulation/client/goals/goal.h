@@ -35,12 +35,13 @@ class Goal {
    * get goal that was created
    * @return jaco_manipulation::PlanAndMoveArmGoal
    */
-  virtual jaco_manipulation::PlanAndMoveArmGoal getGoal() const;
+  virtual jaco_manipulation::PlanAndMoveArmGoal goal() const;
+
   /**
    * get description of goal
    * @return std::string description
- */
-  virtual const std::string& getDescription() const;
+  */
+  virtual const std::string info() const;
 
  protected:
 

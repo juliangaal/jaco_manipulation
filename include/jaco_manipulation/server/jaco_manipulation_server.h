@@ -29,6 +29,7 @@
 
 #include <actionlib/server/simple_action_server.h>
 #include <actionlib/client/simple_action_client.h>
+
 #include <ros/ros.h>
 #include <tf/tf.h>
 #include <tf/transform_listener.h>
@@ -45,8 +46,8 @@
 #include "std_msgs/Float32.h"
 #include "sensor_msgs/JointState.h"
 
-#define ROS_STATUS(x) ROS_INFO_STREAM("\033[34m" << (x) << "\033[00m")
-#define ROS_SUCCESS(x) ROS_INFO_STREAM("\033[32m" << (x) << "\033[00m")
+#define ROS_STATUS(x) ROS_INFO_STREAM("\033[34m" << x << "\033[00m")
+#define ROS_SUCCESS(x) ROS_INFO_STREAM("\033[32m" << x << "\033[00m")
 
 namespace jaco_manipulation {
 namespace server {
@@ -103,7 +104,7 @@ class JacoManipulationServer {
   /**
    * Callback for the action server.
   */
-  void processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &_goal);
+  void processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
  public:
 
@@ -144,6 +145,11 @@ class JacoManipulationServer {
    * A function to prepare MoveIt! Visual Tools in RViz
   */
   void prepMoveItVisualTools();
+
+  /**
+   * A function to prepare MoveIt movegroup and cofigure it for all future plans
+  */
+  void prepMoveItMoveGroup();
 
   /**
    * A function to visualize planned move in RViz

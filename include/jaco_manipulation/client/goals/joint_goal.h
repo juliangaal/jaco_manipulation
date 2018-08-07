@@ -45,13 +45,7 @@ class JointGoal : public Goal {
    * get goal that was created
    * @return jaco_manipulation::PlanAndMoveArmGoal
   */
-  jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;
-
-  /**
-   * get description of goal
-   * @return std::string description
-   */
-  const std::string& getDescription() const final;
+  jaco_manipulation::PlanAndMoveArmGoal goal() const final;
 };
 
 } // namespace goals

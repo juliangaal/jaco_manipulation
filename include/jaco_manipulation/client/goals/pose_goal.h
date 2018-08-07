@@ -40,13 +40,7 @@ class PoseGoal : public Goal {
    * get goal that was created
    * @return jaco_manipulation::PlanAndMoveArmGoal
  */
-  virtual jaco_manipulation::PlanAndMoveArmGoal getGoal() const override;
-
-  /**
-   * get description of goal
-   * @return std::string description
-   */
-  virtual const std::string& getDescription() const override;
+  virtual jaco_manipulation::PlanAndMoveArmGoal goal() const override;
 
  protected:
 
@@ -58,7 +52,7 @@ class PoseGoal : public Goal {
   /**
    * Adjusts height for poses that are too low
   */
-  virtual void adjustHeight();
+  void adjustHeight();
 
   /**
    * Minimum height for pose

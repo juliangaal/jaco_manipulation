@@ -33,12 +33,17 @@ JacoManipulationServer::JacoManipulationServer() :
 
   tf_listener_ = boost::shared_ptr<tf::TransformListener>(new tf::TransformListener(ros::Duration(10)));
 
-  move_group_.setPlanningTime(0.5);
-  move_group_.setPlannerId("RRTstarkConfigDefault");
-
   pam_server_.start();
 
+  prepMoveItMoveGroup();
   prepMoveItVisualTools();
+}
+
+void JacoManipulationServer::prepMoveItMoveGroup() {
+  move_group_.setPlanningTime(0.5);
+  move_group_.setPlannerId("RRTstarkConfigDefault");
+  move_group_.allowReplanning(true);
+  move_group_.allowLooking(true);
 }
 
 void JacoManipulationServer::prepMoveItVisualTools() {
@@ -72,7 +77,7 @@ void JacoManipulationServer::processGoal(const jaco_manipulation::PlanAndMoveArm
   }
 
   if (result_value) {
-    ROS_SUCCESS("Plan found. Action succeeded.");
+    ROS_SUCCESS("Plan found. Action succeeded." << goal->goal_type);
     pam_server_.setSucceeded();
   } else {
     ROS_ERROR("NO Plan found. Action aborted/failed.");
@@ -83,8 +88,6 @@ void JacoManipulationServer::processGoal(const jaco_manipulation::PlanAndMoveArm
 bool JacoManipulationServer::planAndMove(const geometry_msgs::PoseStamped &pose_goal) {
   ROS_STATUS("Goal received: pose");
 
-  move_group_.allowReplanning(true);
-  move_group_.allowLooking(true);
   move_group_.setStartStateToCurrentState();
   move_group_.setPoseReferenceFrame(pose_goal.header.frame_id);
   move_group_.setPoseTarget(pose_goal);
@@ -101,8 +104,6 @@ bool JacoManipulationServer::planAndMove(const sensor_msgs::JointState &joint_go
   // TODO BUG CAN"T USE SENSOR_MSGS/JOINTSTATE, MAYBE BECAUSE OLY POSITION IS FILLED
   ROS_STATUS("Goal received: joint state");
 
-  move_group_.allowReplanning(true);
-  move_group_.allowLooking(true);
   move_group_.setStartStateToCurrentState();
   move_group_.setPoseReferenceFrame(joint_goal.header.frame_id);
   move_group_.setJointValueTarget(joint_goal.position);
@@ -118,8 +119,10 @@ bool JacoManipulationServer::planAndMove(const sensor_msgs::JointState &joint_go
 bool JacoManipulationServer::planAndMove(const std::string &pose_goal_string) {
   ROS_STATUS("Goal received: named target");
 
-  move_group_.allowReplanning(true);
-  move_group_.allowLooking(true);
+  // Open gripper, just in case wanting to go home
+  if (pose_goal_string == "home")
+    openGripper();
+
   move_group_.setStartStateToCurrentState();
   move_group_.setNamedTarget(pose_goal_string);
 
@@ -134,6 +137,7 @@ bool JacoManipulationServer::planAndMove(const std::string &pose_goal_string) {
 }
 
 bool JacoManipulationServer::planAndMoveAndGrasp(const geometry_msgs::PoseStamped &target_pose) {
+  openGripper();
   bool moved = planAndMove(target_pose);
   if (moved)
     closeGripper();
@@ -265,12 +269,12 @@ void JacoManipulationServer::moveGripper(float value) {
 }
 
 void JacoManipulationServer::closeGripper() {
-  moveGripper(0.0);
+  moveGripper(6500.0);
 }
 
 
 void JacoManipulationServer::openGripper() {
-  moveGripper(6500.0);
+  moveGripper(0.0);
 }
 
 void JacoManipulationServer::addBoundaries() {

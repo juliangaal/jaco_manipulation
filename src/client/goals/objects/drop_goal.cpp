@@ -7,20 +7,22 @@
 
 using namespace jaco_manipulation::client::goals::objects;
 
-DropGoal::DropGoal(const grasp_helper::GraspPose &drop_pose_goal, const std::string &description)
+DropGoal::DropGoal(const object_helper::LimitedPose &drop_pose_goal, const std::string &description)
 : ObjectGoal(drop_pose_goal, description) {
   goal_.goal_type = "drop_pose";
+
+  ROS_INFO("----");
+  ROS_INFO_STREAM("Attempt: Move to " << info());
 }
 
-DropGoal::DropGoal(const grasp_helper::Object &object_goal, const std::string &description)
+DropGoal::DropGoal(const object_helper::Object &object_goal, const std::string &description)
 : ObjectGoal(object_goal, description) {
   goal_.goal_type = "drop_pose";
+
+  ROS_INFO("----");
+  ROS_INFO_STREAM("Attempt: Move to " << info());
 }
 
-jaco_manipulation::PlanAndMoveArmGoal DropGoal::getGoal() const {
-  return ObjectGoal::getGoal();
-}
-
-const std::string &DropGoal::getDescription() const {
-  return ObjectGoal::getDescription();
+jaco_manipulation::PlanAndMoveArmGoal DropGoal::goal() const {
+  return ObjectGoal::goal();
 }

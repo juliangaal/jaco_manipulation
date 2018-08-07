@@ -9,7 +9,7 @@
 namespace jaco_manipulation {
 namespace client {
 namespace goals {
-namespace grasp_helper {
+namespace object_helper {
 
 /**
  * Object to grasp, defined by bounding box
@@ -24,12 +24,13 @@ struct Object {
 /**
  * additional layer of security: grasp_helper::GraspPose allows only to change properties on pose that are not dangerous
  */
-struct GraspPose {
+struct LimitedPose {
   double x;
   double y;
   double z;
   double rotation;
 };
+
 }
 
 namespace objects {
@@ -47,10 +48,10 @@ class ObjectGoal: public PoseGoal {
    * @param grasp_pose_goal grasp pose goal
    * @param description descritpion with additional info
    */
-  explicit ObjectGoal(const grasp_helper::GraspPose &grasp_pose_goal, const std::string &description = "grasp goal");
+  explicit ObjectGoal(const object_helper::LimitedPose &grasp_pose_goal, const std::string &description = "grasp goal");
 
 
-  explicit ObjectGoal(const grasp_helper::Object &object_goal, const std::string &description = "grasp box goal");
+  explicit ObjectGoal(const object_helper::Object &object_goal, const std::string &description = "grasp box goal");
 
   /**
    * default destructor
@@ -60,13 +61,7 @@ class ObjectGoal: public PoseGoal {
   /**
    * get created goal
    */
-  virtual jaco_manipulation::PlanAndMoveArmGoal getGoal() const override;
-
-  /**
-   * get description of goal
-   * @return std::string description
-  */
-  virtual const std::string &getDescription() const override;
+  virtual jaco_manipulation::PlanAndMoveArmGoal goal() const override;
 
  protected:
 
@@ -76,15 +71,10 @@ class ObjectGoal: public PoseGoal {
   ObjectGoal() = default;
 
   /**
-   * Adjust height
-   */
-  virtual void adjustHeight() override;
-
-  /**
    * Adjusts the Pose to Center of Object
    * @param grasp_helper::Object object defined by bounding box
    */
-  void adjustPoseToCenterOfObject(const grasp_helper::Object &object);
+  void adjustPoseToCenterOfObject(const object_helper::Object &object);
 
   /**
    * Default rotation for posw

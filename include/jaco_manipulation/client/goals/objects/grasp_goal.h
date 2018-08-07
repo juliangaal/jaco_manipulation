@@ -29,10 +29,10 @@ class GraspGoal: public ObjectGoal {
    * @param grasp_pose_goal grasp pose goal
    * @param description descritpion with additional info
    */
-  explicit GraspGoal(const grasp_helper::GraspPose &grasp_pose_goal, const std::string &description = "grasp goal");
+  explicit GraspGoal(const object_helper::LimitedPose &grasp_pose_goal, const std::string &description = "grasp goal");
 
 
-  explicit GraspGoal(const grasp_helper::Object &object_goal, const std::string &description = "grasp box goal");
+  explicit GraspGoal(const object_helper::Object &object_goal, const std::string &description = "grasp box goal");
 
   /**
    * default destructor
@@ -42,13 +42,7 @@ class GraspGoal: public ObjectGoal {
   /**
    * get created goal
    */
-  jaco_manipulation::PlanAndMoveArmGoal getGoal() const final;
-
-  /**
-   * get description of goal
-   * @return std::string description
-  */
-  const std::string &getDescription() const final;
+  jaco_manipulation::PlanAndMoveArmGoal goal() const final;
 };
 
 } // namespace objects

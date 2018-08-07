@@ -8,17 +8,13 @@
 using namespace jaco_manipulation::client::goals;
 
 MoveItGoal::MoveItGoal(const std::string &name, const std::string &description) {
-  ROS_INFO("----");
-  ROS_INFO_STREAM("Attempt: Move to " << description);
-
   description_ = description;
   goal_.goal_type = name;
+
+  ROS_INFO("----");
+  ROS_INFO_STREAM("Attempt: Move to " << info());
 }
 
-jaco_manipulation::PlanAndMoveArmGoal MoveItGoal::getGoal() const {
-  return Goal::getGoal();
-}
-
-const std::string &MoveItGoal::getDescription() const {
-  return Goal::getDescription();
+jaco_manipulation::PlanAndMoveArmGoal MoveItGoal::goal() const {
+  return Goal::goal();
 }

@@ -7,9 +7,7 @@
 
 using namespace jaco_manipulation::client::goals::objects;
 
-ObjectGoal::ObjectGoal(const grasp_helper::GraspPose &grasp_pose_goal, const std::string &description) {
-  ROS_INFO("----");
-  ROS_INFO_STREAM("Attempt: Move to " << description);
+ObjectGoal::ObjectGoal(const object_helper::LimitedPose &grasp_pose_goal, const std::string &description) {
   description_ = description;
 
   goal_.goal_type = "goal";
@@ -30,16 +28,12 @@ ObjectGoal::ObjectGoal(const grasp_helper::GraspPose &grasp_pose_goal, const std
   goal_.pose_goal.header.frame_id = planning_frame_;
 }
 
-ObjectGoal::ObjectGoal(const grasp_helper::Object &object_goal, const std::string &description) {
-  ROS_INFO("----");
-  ROS_INFO_STREAM("Attempt: Move to " << description << ": " << object_goal.description);
-
+ObjectGoal::ObjectGoal(const object_helper::Object &object_goal, const std::string &description) {
   description_ = description;
-
   goal_.goal_type = "goal";
 
-  ObjectGoal::adjustPoseToCenterOfObject(object_goal);
-  ObjectGoal::adjustHeight();
+  adjustPoseToCenterOfObject(object_goal);
+  PoseGoal::adjustHeight();
 
   goal_.pose_goal.pose.orientation.x = default_rot_x_;
   goal_.pose_goal.pose.orientation.y = default_rot_y_;
@@ -49,21 +43,13 @@ ObjectGoal::ObjectGoal(const grasp_helper::Object &object_goal, const std::strin
 }
 
 
-void ObjectGoal::adjustPoseToCenterOfObject(const grasp_helper::Object &object) {
+void ObjectGoal::adjustPoseToCenterOfObject(const object_helper::Object &object) {
   ROS_INFO("Status  : Adjusting pose to center of object");
   goal_.pose_goal.pose.position.x = object.width * 1.5;
   goal_.pose_goal.pose.position.y = object.length * 1.5;
   goal_.pose_goal.pose.position.z = object.height;
 }
 
-void ObjectGoal::adjustHeight() {
-  PoseGoal::adjustHeight();
-}
-
-jaco_manipulation::PlanAndMoveArmGoal ObjectGoal::getGoal() const {
-  return PoseGoal::getGoal();
-}
-
-const std::string &ObjectGoal::getDescription() const {
-  return PoseGoal::getDescription();
+jaco_manipulation::PlanAndMoveArmGoal ObjectGoal::goal() const {
+  return PoseGoal::goal();
 }
