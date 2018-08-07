@@ -13,8 +13,7 @@ JointGoal::JointGoal(const std::vector<double> &joint_goal, const std::string &d
   goal_.joint_goal.position = joint_goal;
   goal_.joint_goal.header.frame_id = planning_frame_;
 
-  ROS_INFO("----");
-  ROS_INFO_STREAM("Attempt: Move to " << info());
+  ROS_INFO_STREAM("Attempt : Move to " << info());
 }
 
 jaco_manipulation::PlanAndMoveArmGoal JointGoal::goal() const {

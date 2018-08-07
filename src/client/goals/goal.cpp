@@ -17,5 +17,5 @@ jaco_manipulation::PlanAndMoveArmGoal Goal::goal() const {
 }
 
 const std::string Goal::info() const {
-  return description_ + " \"" + goal_.goal_type + "\"";
+  return description_ + " [goal_type=\"" + goal_.goal_type + "\"]";
 }

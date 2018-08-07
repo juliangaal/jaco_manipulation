@@ -7,7 +7,7 @@
 
 using namespace jaco_manipulation::client::goals::objects;
 
-ObjectGoal::ObjectGoal(const object_helper::LimitedPose &grasp_pose_goal, const std::string &description) {
+ObjectGoal::ObjectGoal(const kinect_goal::LimitedPose &grasp_pose_goal, const std::string &description) {
   description_ = description;
 
   goal_.goal_type = "goal";
@@ -28,11 +28,11 @@ ObjectGoal::ObjectGoal(const object_helper::LimitedPose &grasp_pose_goal, const 
   goal_.pose_goal.header.frame_id = planning_frame_;
 }
 
-ObjectGoal::ObjectGoal(const object_helper::Object &object_goal, const std::string &description) {
-  description_ = description;
+ObjectGoal::ObjectGoal(const kinect_goal::BoundingBox &bounding_box_goal, const std::string &description) {
+  description_ = description + " \"" + bounding_box_goal.description + "\"";
   goal_.goal_type = "goal";
 
-  adjustPoseToCenterOfObject(object_goal);
+  adjustPoseToCenterOfObject(bounding_box_goal);
   PoseGoal::adjustHeight();
 
   goal_.pose_goal.pose.orientation.x = default_rot_x_;
@@ -43,11 +43,37 @@ ObjectGoal::ObjectGoal(const object_helper::Object &object_goal, const std::stri
 }
 
 
-void ObjectGoal::adjustPoseToCenterOfObject(const object_helper::Object &object) {
+void ObjectGoal::adjustPoseToCenterOfObject(const kinect_goal::BoundingBox &bounding_box) {
   ROS_INFO("Status  : Adjusting pose to center of object");
-  goal_.pose_goal.pose.position.x = object.width * 1.5;
-  goal_.pose_goal.pose.position.y = object.length * 1.5;
-  goal_.pose_goal.pose.position.z = object.height;
+
+  goal_.pose_goal.pose.position.x = bounding_box.x;
+  goal_.pose_goal.pose.position.y = bounding_box.y;
+  goal_.pose_goal.pose.position.z = bounding_box.height;
+
+  const double width_adj = bounding_box.width * 0.5;
+  const double length_adj = bounding_box.length * 0.5;
+  double height_adj = bounding_box.height;
+  if ((bounding_box.z + bounding_box.height) <= min_height_)
+    height_adj += min_height_;
+
+  if (height_adj != bounding_box.z)
+    ROS_WARN("Goal Fix: Object too low. Correcting to minimum height.");
+
+  goal_.pose_goal.pose.position.x += (bounding_box.x >= 0.0) ? -width_adj : width_adj;
+  goal_.pose_goal.pose.position.y += (bounding_box.y >= 0.0) ? -length_adj : length_adj;
+  goal_.pose_goal.pose.position.z += height_adj;
+//  // if entered height is tall enough
+//  if ((bounding_box.z + bounding_box.height) >= min_height_)
+//    goal_.pose_goal.pose.position.z = bounding_box.z + bounding_box.height;
+//  else
+//    goal_.pose_goal.pose.position.z = min_height_ + bounding_box.z + bounding_box.height;
+  ROS_INFO("Goal Fix: (%f %f %f) -> (%f %f %f)",
+                                      bounding_box.x,
+                                      bounding_box.y,
+                                      bounding_box.z,
+                                      goal_.pose_goal.pose.position.x,
+                                      goal_.pose_goal.pose.position.y,
+                                      goal_.pose_goal.pose.position.z);
 }
 
 jaco_manipulation::PlanAndMoveArmGoal ObjectGoal::goal() const {

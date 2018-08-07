@@ -7,20 +7,18 @@
 
 using namespace jaco_manipulation::client::goals::objects;
 
-DropGoal::DropGoal(const object_helper::LimitedPose &drop_pose_goal, const std::string &description)
+DropGoal::DropGoal(const kinect_goal::LimitedPose &drop_pose_goal, const std::string &description)
 : ObjectGoal(drop_pose_goal, description) {
   goal_.goal_type = "drop_pose";
 
-  ROS_INFO("----");
-  ROS_INFO_STREAM("Attempt: Move to " << info());
+  ROS_INFO_STREAM("Attempt : Move to " << info());
 }
 
-DropGoal::DropGoal(const object_helper::Object &object_goal, const std::string &description)
-: ObjectGoal(object_goal, description) {
+DropGoal::DropGoal(const kinect_goal::BoundingBox &bounding_box_goal, const std::string &description)
+: ObjectGoal(bounding_box_goal, description) {
   goal_.goal_type = "drop_pose";
 
-  ROS_INFO("----");
-  ROS_INFO_STREAM("Attempt: Move to " << info());
+  ROS_INFO_STREAM("Attempt : Move to " << info());
 }
 
 jaco_manipulation::PlanAndMoveArmGoal DropGoal::goal() const {

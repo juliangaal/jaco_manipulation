@@ -9,13 +9,18 @@
 namespace jaco_manipulation {
 namespace client {
 namespace goals {
-namespace object_helper {
+namespace kinect_goal {
 
 /**
  * Object to grasp, defined by bounding box
  */
-struct Object {
+struct BoundingBox {
   std::string description;
+
+  double x;
+  double y;
+  double z;
+
   double height;
   double width;
   double length;
@@ -48,10 +53,14 @@ class ObjectGoal: public PoseGoal {
    * @param grasp_pose_goal grasp pose goal
    * @param description descritpion with additional info
    */
-  explicit ObjectGoal(const object_helper::LimitedPose &grasp_pose_goal, const std::string &description = "grasp goal");
+  explicit ObjectGoal(const kinect_goal::LimitedPose &grasp_pose_goal, const std::string &description = "grasp goal");
 
-
-  explicit ObjectGoal(const object_helper::Object &object_goal, const std::string &description = "grasp box goal");
+  /**
+   * Constructor
+   * @param bounding_box_goal bounding box to drop something at
+   * @param description descritpion with additional info
+   */
+  explicit ObjectGoal(const kinect_goal::BoundingBox &bounding_box_goal, const std::string &description = "grasp box goal");
 
   /**
    * default destructor
@@ -72,9 +81,9 @@ class ObjectGoal: public PoseGoal {
 
   /**
    * Adjusts the Pose to Center of Object
-   * @param grasp_helper::Object object defined by bounding box
+   * @param bounding_box bounding box to center pose around
    */
-  void adjustPoseToCenterOfObject(const object_helper::Object &object);
+  void adjustPoseToCenterOfObject(const kinect_goal::BoundingBox &bounding_box);
 
   /**
    * Default rotation for posw

@@ -40,7 +40,7 @@ JacoManipulationServer::JacoManipulationServer() :
 }
 
 void JacoManipulationServer::prepMoveItMoveGroup() {
-  move_group_.setPlanningTime(0.5);
+  move_group_.setPlanningTime(0.3);
   move_group_.setPlannerId("RRTstarkConfigDefault");
   move_group_.allowReplanning(true);
   move_group_.allowLooking(true);
@@ -77,7 +77,7 @@ void JacoManipulationServer::processGoal(const jaco_manipulation::PlanAndMoveArm
   }
 
   if (result_value) {
-    ROS_SUCCESS("Plan found. Action succeeded." << goal->goal_type);
+    ROS_SUCCESS("Plan found. Action succeeded.");
     pam_server_.setSucceeded();
   } else {
     ROS_ERROR("NO Plan found. Action aborted/failed.");
@@ -92,10 +92,10 @@ bool JacoManipulationServer::planAndMove(const geometry_msgs::PoseStamped &pose_
   move_group_.setPoseReferenceFrame(pose_goal.header.frame_id);
   move_group_.setPoseTarget(pose_goal);
 
-  if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
-
   showPlannedMoveInfo(move_group_.getCurrentPose("jaco_link_hand"), pose_goal);
-  showPlannedPath();
+
+  if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
+  else showPlannedPath();
 
   return move_group_.move() ? true : false;
 }
@@ -108,10 +108,10 @@ bool JacoManipulationServer::planAndMove(const sensor_msgs::JointState &joint_go
   move_group_.setPoseReferenceFrame(joint_goal.header.frame_id);
   move_group_.setJointValueTarget(joint_goal.position);
 
-  if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
-
   showPlannedMoveInfo(move_group_.getCurrentJointValues(), joint_goal);
-  showPlannedPath();
+
+  if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
+  else showPlannedPath();
 
   return move_group_.move() ? true : false;
 }
@@ -119,38 +119,42 @@ bool JacoManipulationServer::planAndMove(const sensor_msgs::JointState &joint_go
 bool JacoManipulationServer::planAndMove(const std::string &pose_goal_string) {
   ROS_STATUS("Goal received: named target");
 
-  // Open gripper, just in case wanting to go home
-  if (pose_goal_string == "home")
-    openGripper();
-
   move_group_.setStartStateToCurrentState();
   move_group_.setNamedTarget(pose_goal_string);
 
-  ROS_INFO_STREAM("FRAME FOR PLANNING := " << move_group_.getPoseReferenceFrame());
+  showPlannedMoveInfo(move_group_.getCurrentPose("jaco_link_hand"), pose_goal_string);
 
   if (move_group_.plan(plan_) != MoveItErrorCode::SUCCESS) return false;
-
-  showPlannedMoveInfo(move_group_.getCurrentPose("jaco_link_hand"), pose_goal_string);
-  showPlannedPath();
+  else showPlannedPath();
 
   return move_group_.move() ? true : false;
 }
 
 bool JacoManipulationServer::planAndMoveAndGrasp(const geometry_msgs::PoseStamped &target_pose) {
+  ROS_STATUS("Grasp request received");
+
   openGripper();
   bool moved = planAndMove(target_pose);
-  if (moved)
-    closeGripper();
+  if (!moved) return false;
+
+  closeGripper();
 
   ROS_STATUS("Gripper closed. Object grasped.");
+
+  return true;
 }
 
 bool JacoManipulationServer::planAndMoveAndDrop(const geometry_msgs::PoseStamped &target_pose) {
+  ROS_STATUS("Drop request received");
+
   bool moved = planAndMove(target_pose);
-  if (moved)
-    openGripper();
+  if (!moved) return false;
+
+  openGripper();
 
   ROS_STATUS("Gripper opened. Object dropped.");
+
+  return true;
 }
 
 /**

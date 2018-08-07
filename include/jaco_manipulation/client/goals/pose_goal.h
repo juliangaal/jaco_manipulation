@@ -57,7 +57,7 @@ class PoseGoal : public Goal {
   /**
    * Minimum height for pose
   */
-  constexpr static double min_height = 0.175026;
+  constexpr static double min_height_ = 0.175026;
 };
 
 } // namespace goals

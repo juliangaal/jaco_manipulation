@@ -61,7 +61,7 @@ class JacoManipulationClient {
    * Move to joint goal
    * @param goal joint goal
    * @param description description of move
-   */
+  */
   void moveTo(const sensor_msgs::JointState &goal, const std::string &description="joint state goal");
 
   /**
@@ -69,14 +69,30 @@ class JacoManipulationClient {
     * @param goal grasp pose goal
     * @param description description of move
     */
-  void grasp(const goals::object_helper::LimitedPose &grasp_pose_goal, const std::string &description="grasp goal");
+  void graspAt(const goals::kinect_goal::LimitedPose &grasp_pose_goal, const std::string &description = "grasp goal");
 
   /**
-  * Move to drop goal
-  * @param goal drop pose goal
-  * @param description description of move
+    * Move to grasp goal according to bounding box
+    * @param bounding_box_goal bounding box to drop something at
+    * @param description description of move
+    */
+  void graspAt(const goals::kinect_goal::BoundingBox &bounding_box_goal,
+               const std::string &description = "grasp box goal");
+
+  /**
+   * Move to drop goal
+   * @param goal drop pose goal
+   * @param description description of move
   */
-  void drop(const goals::object_helper::LimitedPose &drop_pose_goal, const std::string &description="drop goal");
+  void dropAt(const goals::kinect_goal::LimitedPose &drop_pose_goal, const std::string &description = "drop goal");
+
+  /**
+   * Move to drop goal according to bounding box
+   * @param bounding_box_goal bounding box to drop something at
+   * @param description description of move
+  */
+  void dropAt(const goals::kinect_goal::BoundingBox &bounding_box_goal,
+              const std::string &description = "drop box goal");
 
  private:
   /**
@@ -89,13 +105,6 @@ class JacoManipulationClient {
    * @param goal MoveItGoal, JointGoal, or PoseGoal
    */
   void execute(const goals::Goal& goal);
-
-  /**
-   * Convenience function to get all relevant info from goal
-   * @param goal goal that will be moved to
-   * @return information about move goal
-   */
-  const std::string info(const goals::Goal &goal_wrapper) const;
 };
 
 } // namespace client

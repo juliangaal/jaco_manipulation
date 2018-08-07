@@ -1,5 +1,5 @@
 //
-// Created by chitt on 8/6/18.
+// Created by chitt bn 8/6/18.
 //
 
 #include <jaco_manipulation/client/jaco_manipulation_client.h>
@@ -13,23 +13,25 @@ int main(int argn, char *args[]) {
   JacoManipulationClient jmc;
   jmc.moveTo("home");
 
-  using namespace goals::object_helper;
+  using namespace goals::kinect_goal;
 
   {
     LimitedPose pose;
     pose.x = 0.0;
     pose.y = -0.4;
     pose.rotation = 0.674663;
-    jmc.grasp(pose);
+    jmc.graspAt(pose);
   }
 
   {
-    LimitedPose pose;
-    pose.x = 0.0;
-    pose.y = -0.65;
-    pose.z = 0.35;
-    pose.rotation = 0.674663;
-    jmc.drop(pose);
+    BoundingBox b;
+    b.description = "mug";
+    b.x = 0.045;
+    b.y = -0.695;
+    b.length = 0.09;
+    b.width = 0.09;
+    b.height = 0.11;
+    jmc.dropAt(b);
   }
 
   jmc.moveTo("home");

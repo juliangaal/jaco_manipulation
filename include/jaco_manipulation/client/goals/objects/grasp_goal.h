@@ -29,10 +29,14 @@ class GraspGoal: public ObjectGoal {
    * @param grasp_pose_goal grasp pose goal
    * @param description descritpion with additional info
    */
-  explicit GraspGoal(const object_helper::LimitedPose &grasp_pose_goal, const std::string &description = "grasp goal");
+  explicit GraspGoal(const kinect_goal::LimitedPose &grasp_pose_goal, const std::string &description = "grasp goal");
 
-
-  explicit GraspGoal(const object_helper::Object &object_goal, const std::string &description = "grasp box goal");
+  /**
+   * Constructor
+   * @param bounding_box_goal bounding box to drop something at
+   * @param description descritpion with additional info
+   */
+  explicit GraspGoal(const kinect_goal::BoundingBox &bounding_box_goal, const std::string &description = "grasp box goal");
 
   /**
    * default destructor

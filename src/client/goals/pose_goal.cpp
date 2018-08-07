@@ -16,14 +16,14 @@ PoseGoal::PoseGoal(const geometry_msgs::PoseStamped &goal_pose, const std::strin
 
   adjustHeight();
 
-  ROS_INFO("----");
-  ROS_INFO_STREAM("Attempt: Move to " << info());
+  ROS_INFO_STREAM("Attempt : Move to " << info());
 }
 
 void PoseGoal::adjustHeight() {
   auto &height = goal_.pose_goal.pose.position.z;
-  if (height < min_height) {
-    height = min_height;
+  if (height < min_height_) {
+    ROS_WARN("Goal Fix: Height to low. Corrected to minimum height");
+    height = min_height_;
   }
 }
 

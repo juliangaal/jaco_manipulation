@@ -27,16 +27,30 @@ void JacoManipulationClient::moveTo(const sensor_msgs::JointState &joint_goal, c
   execute(goal);
 }
 
-void JacoManipulationClient::grasp(const goals::object_helper::LimitedPose &grasp_pose_goal, const std::string &description) {
+void JacoManipulationClient::graspAt(const goals::kinect_goal::LimitedPose &grasp_pose_goal,
+                                     const std::string &description) {
   goals::objects::GraspGoal goal(grasp_pose_goal, description);
   execute(goal);
 }
 
-void JacoManipulationClient::drop(const goals::object_helper::LimitedPose &drop_pose_goal, const std::string &description) {
+
+void JacoManipulationClient::graspAt(const goals::kinect_goal::BoundingBox &bounding_box_goal,
+                                     const std::string &description) {
+  goals::objects::GraspGoal goal(bounding_box_goal, description);
+  execute(goal);
+}
+
+void JacoManipulationClient::dropAt(const goals::kinect_goal::LimitedPose &drop_pose_goal,
+                                    const std::string &description) {
   goals::objects::DropGoal goal(drop_pose_goal, description);
   execute(goal);
 }
 
+void JacoManipulationClient::dropAt(const goals::kinect_goal::BoundingBox &bounding_box_goal,
+                                    const std::string &description) {
+  goals::objects::DropGoal goal(bounding_box_goal, description);
+  execute(goal);
+}
 
 void JacoManipulationClient::execute(const goals::Goal &goal_wrapper) {
   const auto& goal = goal_wrapper.goal();
@@ -45,8 +59,9 @@ void JacoManipulationClient::execute(const goals::Goal &goal_wrapper) {
   client_.waitForResult();
 
   if (client_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-    ROS_SUCCESS("Status : Move to " << goal_wrapper.info() << " succeeded.");
+    ROS_SUCCESS("Status  : Move to " << goal_wrapper.info() << " succeeded.");
   } else {
-    ROS_ERROR_STREAM("Status : Move to " << goal_wrapper.info() << " failed.");
+    ROS_ERROR_STREAM("Status  : Move to " << goal_wrapper.info() << " failed.");
   }
+  std::cout << "\n";
 }

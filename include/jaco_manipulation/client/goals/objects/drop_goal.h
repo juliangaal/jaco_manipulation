@@ -25,10 +25,14 @@ class DropGoal: public ObjectGoal {
    * @param drop_pose_goal drop pose goal
    * @param description descritpion with additional info
    */
-  explicit DropGoal(const object_helper::LimitedPose &drop_pose_goal, const std::string &description = "drop goal");
+  explicit DropGoal(const kinect_goal::LimitedPose &drop_pose_goal, const std::string &description = "drop goal");
 
-
-  explicit DropGoal(const object_helper::Object &object_goal, const std::string &description = "drop box goal");
+  /**
+   * Constructor
+   * @param bounding_box_goal bounding box to drop something at
+   * @param description descritpion with additional info
+   */
+  explicit DropGoal(const kinect_goal::BoundingBox &bounding_box_goal, const std::string &description = "drop box goal");
 
   /**
    * default destructor
