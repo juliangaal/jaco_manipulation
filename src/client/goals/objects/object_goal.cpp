@@ -76,8 +76,8 @@ void ObjectGoal::adjustPoseToCenterOfObject(const kinect_goal::BoundingBox &boun
     }
   }
 
-  goal_.pose_goal.pose.position.x += (bounding_box.x >= 0.0) ? -width_adj : width_adj;
-  goal_.pose_goal.pose.position.y += (bounding_box.y >= 0.0) ? length_adj : -length_adj;
+  goal_.pose_goal.pose.position.x += (bounding_box.x >= 0.0) ? width_adj : -width_adj;
+  goal_.pose_goal.pose.position.y += (bounding_box.y >= 0.0) ? -length_adj : length_adj;
   goal_.pose_goal.pose.position.z += height_adj;
 
   ROS_INFO("Goal Fix: (%f %f %f) -> (%f %f %f)",

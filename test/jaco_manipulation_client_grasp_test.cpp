@@ -17,8 +17,8 @@ int main(int argn, char *args[]) {
 
   {
     LimitedPose pose;
-    pose.x = 0.0;
-    pose.y = -0.4;
+    pose.x = 0.4;
+    pose.y = 0.0;
     pose.rotation = 0.674663;
     jmc.graspAt(pose);
   }
@@ -26,8 +26,8 @@ int main(int argn, char *args[]) {
   {
     BoundingBox b;
     b.description = "mug";
-    b.x = -0.045;
-    b.y = -0.605;
+    b.x = 0.605;
+    b.y = -0.045;
     b.length = 0.09;
     b.width = 0.09;
     b.height = 0.11;

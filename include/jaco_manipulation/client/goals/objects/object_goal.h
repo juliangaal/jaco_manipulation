@@ -88,22 +88,22 @@ class ObjectGoal: public PoseGoal {
   /**
    * Default rotation for posw
   */
-  constexpr static double default_orientation_ = 0.674663;
+  constexpr static double default_orientation_ = 0.999663;
 
   /**
    * Default rotation value x axis
   */
-  constexpr static double default_rot_x_ = 0.033245;
+  constexpr static double default_rot_x_ = 0.018401;
 
   /**
    * Default rotation value y axis
   */
-  constexpr static double default_rot_y_ = -0.003230;
+  constexpr static double default_rot_y_ = 0.006966;
 
   /**
    * Default rotation value z axis
   */
-  constexpr static double default_rot_z_ = -0.737370;
+  constexpr static double default_rot_z_ = -0.016914;
 
   /**
    * Default dropping offset: tiny lift (5cm) + distance from jaco_lowest point (is marked on robot) to jaco palm (6cm)
