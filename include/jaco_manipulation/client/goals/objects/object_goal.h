@@ -9,7 +9,7 @@
 namespace jaco_manipulation {
 namespace client {
 namespace goals {
-namespace kinect_goal {
+namespace kinect_goal_definitions {
 
 /**
  * Object to grasp, defined by bounding box
@@ -45,7 +45,7 @@ namespace objects {
  * Represent a severely limited pose for grasping objects
  * Limited in height, and rotation around x and y axis
  */
-class ObjectGoal: public PoseGoal {
+class KinectGoal: public PoseGoal {
  public:
 
   /**
@@ -53,19 +53,19 @@ class ObjectGoal: public PoseGoal {
    * @param grasp_pose_goal grasp pose goal
    * @param description descritpion with additional info
    */
-  explicit ObjectGoal(const kinect_goal::LimitedPose &grasp_pose_goal, const std::string &description = "grasp goal");
+  explicit KinectGoal(const kinect_goal_definitions::LimitedPose &grasp_pose_goal, const std::string &description = "grasp goal");
 
   /**
    * Constructor
    * @param bounding_box_goal bounding box to drop something at
    * @param description descritpion with additional info
    */
-  explicit ObjectGoal(const kinect_goal::BoundingBox &bounding_box_goal, const std::string &description = "grasp box goal");
+  explicit KinectGoal(const kinect_goal_definitions::BoundingBox &bounding_box_goal, const std::string &description = "grasp box goal");
 
   /**
    * default destructor
    */
-  virtual ~ObjectGoal() override = default;
+  virtual ~KinectGoal() override = default;
 
   /**
    * get created goal
@@ -77,13 +77,7 @@ class ObjectGoal: public PoseGoal {
   /**
    * protected default constructor
   */
-  ObjectGoal() = default;
-
-  /**
-   * Adjusts the Pose to Center of Object
-   * @param bounding_box bounding box to center pose around
-   */
-  virtual void adjustPoseToCenterOfObject(const kinect_goal::BoundingBox &bounding_box);
+  KinectGoal() = default;
 
   /**
    * Default rotation for posw
@@ -109,7 +103,20 @@ class ObjectGoal: public PoseGoal {
    * Default dropping offset: tiny lift (5cm) + distance from jaco_lowest point (is marked on robot) to jaco palm (6cm)
    */
   constexpr static double dropping_offset_ = 0.16;
-};
+
+ private:
+  /**
+   * Adjusts the Pose to Center of Object
+   * @param bounding_box bounding box to center pose around
+  */
+  void adjustPoseToCenterOfObject(const kinect_goal_definitions::BoundingBox &bounding_box);
+
+  /**
+   * Adjusts gripper pose orientation to absolute orientation relative to root
+   */
+  void adjustPoseOrientationToAbsoluteOrientation();
+
+  };
 
 } // namespace objects
 } // namespace goals

@@ -16,7 +16,7 @@ namespace objects {
  * Represent a severely limited pose for grasping objects
  * Limited in height, and rotation around x and y axis
  */
-class GraspGoal: public ObjectGoal {
+class GraspGoal: public KinectGoal {
  public:
 
   /**
@@ -29,14 +29,14 @@ class GraspGoal: public ObjectGoal {
    * @param grasp_pose_goal grasp pose goal
    * @param description descritpion with additional info
    */
-  explicit GraspGoal(const kinect_goal::LimitedPose &grasp_pose_goal, const std::string &description = "grasp goal");
+  explicit GraspGoal(const kinect_goal_definitions::LimitedPose &grasp_pose_goal, const std::string &description = "grasp goal");
 
   /**
    * Constructor
    * @param bounding_box_goal bounding box to drop something at
    * @param description descritpion with additional info
    */
-  explicit GraspGoal(const kinect_goal::BoundingBox &bounding_box_goal, const std::string &description = "grasp box goal");
+  explicit GraspGoal(const kinect_goal_definitions::BoundingBox &bounding_box_goal, const std::string &description = "grasp box goal");
 
   /**
    * default destructor

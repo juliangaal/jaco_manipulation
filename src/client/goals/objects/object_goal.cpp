@@ -4,13 +4,16 @@
 
 #include <jaco_manipulation/client/goals/objects/object_goal.h>
 #include <ros/console.h>
+#include <tf/tf.h>
 
 using namespace jaco_manipulation::client::goals::objects;
 
-ObjectGoal::ObjectGoal(const kinect_goal::LimitedPose &grasp_pose_goal, const std::string &description) {
+KinectGoal::KinectGoal(const kinect_goal_definitions::LimitedPose &grasp_pose_goal, const std::string &description) {
   description_ = description;
 
+  goal_.pose_goal.header.frame_id = planning_frame_;
   goal_.goal_type = "goal";
+
   goal_.pose_goal.pose.position.x = grasp_pose_goal.x;
   goal_.pose_goal.pose.position.y = grasp_pose_goal.y;
   goal_.pose_goal.pose.position.z = grasp_pose_goal.z;
@@ -24,12 +27,13 @@ ObjectGoal::ObjectGoal(const kinect_goal::LimitedPose &grasp_pose_goal, const st
 
   if (default_orientation_ != grasp_pose_goal.rotation && grasp_pose_goal.rotation != 0.0)
     goal_.pose_goal.pose.orientation.w = grasp_pose_goal.rotation;
-
-  goal_.pose_goal.header.frame_id = planning_frame_;
+  adjustPoseOrientationToAbsoluteOrientation();
 }
 
-ObjectGoal::ObjectGoal(const kinect_goal::BoundingBox &bounding_box_goal, const std::string &description) {
+KinectGoal::KinectGoal(const kinect_goal_definitions::BoundingBox &bounding_box_goal, const std::string &description) {
   description_ = description + " \"" + bounding_box_goal.description + "\"";
+
+  goal_.pose_goal.header.frame_id = planning_frame_;
   goal_.goal_type = "goal";
 
   adjustPoseToCenterOfObject(bounding_box_goal);
@@ -39,11 +43,14 @@ ObjectGoal::ObjectGoal(const kinect_goal::BoundingBox &bounding_box_goal, const 
   goal_.pose_goal.pose.orientation.y = default_rot_y_;
   goal_.pose_goal.pose.orientation.z = default_rot_z_;
   goal_.pose_goal.pose.orientation.w = default_orientation_;
-  goal_.pose_goal.header.frame_id = planning_frame_;
+  adjustPoseOrientationToAbsoluteOrientation();
 }
 
+jaco_manipulation::PlanAndMoveArmGoal KinectGoal::goal() const {
+  return PoseGoal::goal();
+}
 
-void ObjectGoal::adjustPoseToCenterOfObject(const kinect_goal::BoundingBox &bounding_box) {
+void KinectGoal::adjustPoseToCenterOfObject(const kinect_goal_definitions::BoundingBox &bounding_box) {
   // TODO BOUNDING BOX CALCULATED BY TOP RIGHT CORNER IN COORDINATE SYSTEM. CHANGE AFTER FEEDBACK WITH ANDREAS
   ROS_INFO("Status  : Adjusting pose to center of object");
 
@@ -89,6 +96,47 @@ void ObjectGoal::adjustPoseToCenterOfObject(const kinect_goal::BoundingBox &boun
                                       goal_.pose_goal.pose.position.z);
 }
 
-jaco_manipulation::PlanAndMoveArmGoal ObjectGoal::goal() const {
-  return PoseGoal::goal();
+void KinectGoal::adjustPoseOrientationToAbsoluteOrientation() {
+  auto& pose = goal_.pose_goal;
+  // Direction vector of z-axis. Should match root z-axis orientation
+  tf::Vector3 z_axis(
+      0,
+      0,
+      1
+  );
+
+  /**
+   * Direction vector of our new x-axis, defined in relation to y and z. Dynamically calculated with current Pose.
+   * z is ignored, because we want the grasp pose to always be horizontal
+  */
+  tf::Vector3 x_axis(
+      pose.pose.position.x,
+      -pose.pose.position.y, // invert the y-position, because it inverts when the gripper moves towards the table top
+      0
+  );
+  x_axis.normalize();
+
+  // Calculate missing y-axis from defined z and x axis
+  tf::Vector3 y_axis;
+  y_axis = z_axis.cross(x_axis);
+
+  tf::Matrix3x3 top_grasp_orientation(
+      x_axis.x(), x_axis.y(), x_axis.z(),
+      y_axis.x(), y_axis.y(), y_axis.z(),
+      z_axis.x(), z_axis.y(), z_axis.z()
+  );
+
+  // convert orientation matrix to quaternion
+  tf::Quaternion top_grasp_quaternion;
+  top_grasp_orientation.getRotation(top_grasp_quaternion);
+  tf::quaternionTFToMsg(top_grasp_quaternion, pose.pose.orientation);
+
+  ROS_WARN("Goal Fix: Pose now (%f,%f,%f) ; (%f,%f,%f,%f)",
+           pose.pose.position.x,
+           pose.pose.position.y,
+           pose.pose.position.z,
+           pose.pose.orientation.x,
+           pose.pose.orientation.y,
+           pose.pose.orientation.z,
+           pose.pose.orientation.w);
 }

@@ -17,7 +17,7 @@ namespace objects {
  * Represent a severely limited pose for dropping objects
  * Limited in height, and rotation around x and y axis
  */
-class DropGoal: public ObjectGoal {
+class DropGoal: public KinectGoal {
  public:
 
   /**
@@ -25,14 +25,14 @@ class DropGoal: public ObjectGoal {
    * @param drop_pose_goal drop pose goal
    * @param description descritpion with additional info
    */
-  explicit DropGoal(const kinect_goal::LimitedPose &drop_pose_goal, const std::string &description = "drop goal");
+  explicit DropGoal(const kinect_goal_definitions::LimitedPose &drop_pose_goal, const std::string &description = "drop goal");
 
   /**
    * Constructor
    * @param bounding_box_goal bounding box to drop something at
    * @param description descritpion with additional info
    */
-  explicit DropGoal(const kinect_goal::BoundingBox &bounding_box_goal, const std::string &description = "drop box goal");
+  explicit DropGoal(const kinect_goal_definitions::BoundingBox &bounding_box_goal, const std::string &description = "drop box goal");
 
   /**
    * default destructor
