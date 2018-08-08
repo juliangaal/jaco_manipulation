@@ -25,13 +25,13 @@ int main(int argn, char *args[]) {
   ros::init(argn, args, "manipulation_server");
   ros::MultiThreadedSpinner m_t_spinner(4);
 
-  ROS_INFO("Starting server for manipulation.");
-  server::JacoManipulationServer dmt;
+  ROS_STATUS("Starting server for manipulation.");
+  server::JacoManipulationServer jms;
 
-  ROS_INFO("Starting server for grasp pose generation.");
-  jaco_manipulation::GraspPoseGenerator GPG_server;
+  ROS_STATUS("Starting server for grasp pose generation.");
+  jaco_manipulation::GraspPoseGenerator gpg;
 
-  ROS_INFO("All servers are up.");
+  ROS_SUCCESS("All servers are up.");
 
   m_t_spinner.spin();
 }
