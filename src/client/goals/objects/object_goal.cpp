@@ -60,7 +60,7 @@ void ObjectGoal::adjustPoseToCenterOfObject(const kinect_goal::BoundingBox &boun
   if (bounding_box.type == "drop_bounding_box") {
     if (bounding_box.height < min_height_) {
       height_adj = min_height_;
-      ROS_WARN("Goal Fix: Bounding Box too low. Adjusted.");
+      ROS_WARN("Goal Fix: Drop Bounding Box too low. Adjusted.");
     } else {
       height_adj = min_height_ + std::fabs(bounding_box.height - min_height_);
     }
@@ -68,9 +68,12 @@ void ObjectGoal::adjustPoseToCenterOfObject(const kinect_goal::BoundingBox &boun
     height_adj += dropping_offset_;
     // TODO may be have to be adjusted once object is added to planning scene
   } else {
-    height_adj = min_height_;
-
-//    if (bounding_box)
+    if (bounding_box.height < min_height_) {
+      height_adj = min_height_;
+      ROS_WARN("Goal Fix: Drop Bounding Box too low. Adjusted.");
+    } else {
+      height_adj = min_height_ + std::fabs(bounding_box.height - min_height_);
+    }
   }
 
   goal_.pose_goal.pose.position.x += (bounding_box.x >= 0.0) ? -width_adj : width_adj;
