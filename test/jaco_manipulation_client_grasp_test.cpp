@@ -13,8 +13,7 @@ int main(int argn, char *args[]) {
   JacoManipulationClient jmc;
   jmc.moveTo("home");
 
-  using namespace goals::kinect_goal;
-
+  using namespace goals::kinect_goal_definitions;
   {
     LimitedPose pose;
     pose.x = 0.4;
@@ -27,7 +26,7 @@ int main(int argn, char *args[]) {
     BoundingBox b;
     b.description = "mug";
     b.x = 0.605;
-    b.y = -0.045;
+    b.y = -0.25;
     b.length = 0.09;
     b.width = 0.09;
     b.height = 0.11;
