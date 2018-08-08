@@ -18,16 +18,8 @@ KinectGoal::KinectGoal(const kinect_goal_definitions::LimitedPose &grasp_pose_go
   goal_.pose_goal.pose.position.y = grasp_pose_goal.y;
   goal_.pose_goal.pose.position.z = grasp_pose_goal.z;
 
-  PoseGoal::adjustHeight();
-
-  goal_.pose_goal.pose.orientation.x = default_rot_x_;
-  goal_.pose_goal.pose.orientation.y = default_rot_y_;
-  goal_.pose_goal.pose.orientation.z = default_rot_z_;
-  goal_.pose_goal.pose.orientation.w = default_orientation_;
-
-  if (default_orientation_ != grasp_pose_goal.rotation && grasp_pose_goal.rotation != 0.0)
-    goal_.pose_goal.pose.orientation.w = grasp_pose_goal.rotation;
   adjustPoseOrientationToAbsoluteOrientation();
+  PoseGoal::adjustHeight();
 }
 
 KinectGoal::KinectGoal(const kinect_goal_definitions::BoundingBox &bounding_box_goal, const std::string &description) {
@@ -37,13 +29,9 @@ KinectGoal::KinectGoal(const kinect_goal_definitions::BoundingBox &bounding_box_
   goal_.goal_type = "goal";
 
   adjustPoseToCenterOfObject(bounding_box_goal);
-  PoseGoal::adjustHeight();
-
-  goal_.pose_goal.pose.orientation.x = default_rot_x_;
-  goal_.pose_goal.pose.orientation.y = default_rot_y_;
-  goal_.pose_goal.pose.orientation.z = default_rot_z_;
-  goal_.pose_goal.pose.orientation.w = default_orientation_;
   adjustPoseOrientationToAbsoluteOrientation();
+
+  PoseGoal::adjustHeight();
 }
 
 jaco_manipulation::PlanAndMoveArmGoal KinectGoal::goal() const {
@@ -52,8 +40,6 @@ jaco_manipulation::PlanAndMoveArmGoal KinectGoal::goal() const {
 
 void KinectGoal::adjustPoseToCenterOfObject(const kinect_goal_definitions::BoundingBox &bounding_box) {
   // TODO BOUNDING BOX CALCULATED BY TOP RIGHT CORNER IN COORDINATE SYSTEM. CHANGE AFTER FEEDBACK WITH ANDREAS
-  ROS_INFO("Status  : Adjusting pose to center of object");
-
   goal_.pose_goal.pose.position.x = bounding_box.x;
   goal_.pose_goal.pose.position.y = bounding_box.y;
   goal_.pose_goal.pose.position.z = bounding_box.z;
@@ -77,7 +63,7 @@ void KinectGoal::adjustPoseToCenterOfObject(const kinect_goal_definitions::Bound
   } else {
     if (bounding_box.height < min_height_) {
       height_adj = min_height_;
-      ROS_WARN("Goal Fix: Drop Bounding Box too low. Adjusted.");
+      ROS_INFO("Goal Fix: Drop Bounding Box too low. Adjusted.");
     } else {
       height_adj = min_height_ + std::fabs(bounding_box.height - min_height_);
     }
@@ -87,7 +73,7 @@ void KinectGoal::adjustPoseToCenterOfObject(const kinect_goal_definitions::Bound
   goal_.pose_goal.pose.position.y += (bounding_box.y >= 0.0) ? -length_adj : length_adj;
   goal_.pose_goal.pose.position.z += height_adj;
 
-  ROS_INFO("Goal Fix: (%f %f %f) -> (%f %f %f)",
+  ROS_INFO("Box Fix : (%f %f %f) -> (%f %f %f)",
                                       bounding_box.x,
                                       bounding_box.y,
                                       bounding_box.z,
@@ -131,7 +117,7 @@ void KinectGoal::adjustPoseOrientationToAbsoluteOrientation() {
   top_grasp_orientation.getRotation(top_grasp_quaternion);
   tf::quaternionTFToMsg(top_grasp_quaternion, pose.pose.orientation);
 
-  ROS_WARN("Goal Fix: Pose now (%f,%f,%f) ; (%f,%f,%f,%f)",
+  ROS_INFO("Goal Fix: Pose now (%f,%f,%f) ; (%f,%f,%f,%f)",
            pose.pose.position.x,
            pose.pose.position.y,
            pose.pose.position.z,
