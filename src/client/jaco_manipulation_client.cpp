@@ -5,6 +5,7 @@
 #include <jaco_manipulation/client/jaco_manipulation_client.h>
 #include <jaco_manipulation/client/goals/objects/grasp_goal.h>
 #include <jaco_manipulation/client/goals/objects/drop_goal.h>
+#include <tf/tf.h>
 
 using namespace jaco_manipulation::client;
 
@@ -27,27 +28,27 @@ void JacoManipulationClient::moveTo(const sensor_msgs::JointState &joint_goal, c
   execute(goal);
 }
 
-void JacoManipulationClient::graspAt(const goals::kinect_goal::LimitedPose &grasp_pose_goal,
+void JacoManipulationClient::graspAt(const goals::kinect_goal_definitions::LimitedPose &grasp_pose_goal,
                                      const std::string &description) {
   goals::objects::GraspGoal goal(grasp_pose_goal, description);
   execute(goal);
 }
 
 
-void JacoManipulationClient::graspAt(goals::kinect_goal::BoundingBox &bounding_box_goal,
+void JacoManipulationClient::graspAt(goals::kinect_goal_definitions::BoundingBox &bounding_box_goal,
                                      const std::string &description) {
   bounding_box_goal.type = "grasp_bounding_box";
   goals::objects::GraspGoal goal(bounding_box_goal, description);
   execute(goal);
 }
 
-void JacoManipulationClient::dropAt(const goals::kinect_goal::LimitedPose &drop_pose_goal,
+void JacoManipulationClient::dropAt(const goals::kinect_goal_definitions::LimitedPose &drop_pose_goal,
                                     const std::string &description) {
   goals::objects::DropGoal goal(drop_pose_goal, description);
   execute(goal);
 }
 
-void JacoManipulationClient::dropAt(goals::kinect_goal::BoundingBox &bounding_box_goal,
+void JacoManipulationClient::dropAt(goals::kinect_goal_definitions::BoundingBox &bounding_box_goal,
                                     const std::string &description) {
   bounding_box_goal.type = "drop_bounding_box";
   goals::objects::DropGoal goal(bounding_box_goal, description);

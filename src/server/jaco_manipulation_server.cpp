@@ -21,7 +21,6 @@ using moveit::planning_interface::MoveItErrorCode;
 using namespace jaco_manipulation::server;
 namespace rvt = rviz_visual_tools;
 
-
 JacoManipulationServer::JacoManipulationServer() :
     move_group_("arm"),
     pam_server_(nh_, "plan_and_move_arm", boost::bind(&JacoManipulationServer::processGoal, this, _1), false),
@@ -38,8 +37,6 @@ JacoManipulationServer::JacoManipulationServer() :
   prepMoveItMoveGroup();
   prepMoveItVisualTools();
 
-  openGripper();
-  closeGripper();
   openGripper();
 }
 
@@ -134,11 +131,11 @@ bool JacoManipulationServer::planAndMove(const std::string &pose_goal_string) {
   return move_group_.move() ? true : false;
 }
 
-bool JacoManipulationServer::planAndMoveAndGrasp(const geometry_msgs::PoseStamped &target_pose) {
+bool JacoManipulationServer::planAndMoveAndGrasp(const geometry_msgs::PoseStamped &pose_goal) {
   ROS_STATUS("Grasp request received");
 
   openGripper();
-  bool moved = planAndMove(target_pose);
+  bool moved = planAndMove(pose_goal);
   if (!moved) return false;
 
   closeGripper();
@@ -148,10 +145,10 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const geometry_msgs::PoseStampe
   return true;
 }
 
-bool JacoManipulationServer::planAndMoveAndDrop(const geometry_msgs::PoseStamped &target_pose) {
+bool JacoManipulationServer::planAndMoveAndDrop(const geometry_msgs::PoseStamped &pose_goal) {
   ROS_STATUS("Drop request received");
 
-  bool moved = planAndMove(target_pose);
+  bool moved = planAndMove(pose_goal);
   if (!moved) {
     openGripper();
     return false;
