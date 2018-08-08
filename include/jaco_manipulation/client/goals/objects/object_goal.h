@@ -16,7 +16,7 @@ namespace kinect_goal {
  */
 struct BoundingBox {
   std::string description;
-
+  std::string type;
   double x;
   double y;
   double z;
@@ -104,6 +104,11 @@ class ObjectGoal: public PoseGoal {
    * Default rotation value z axis
   */
   constexpr static double default_rot_z_ = -0.737370;
+
+  /**
+   * Default dropping offset: tiny lift (5cm) + distance from jaco_lowest point (is marked on robot) to jaco palm (6cm)
+   */
+  constexpr static double dropping_offset_ = 0.02;
 };
 
 } // namespace objects

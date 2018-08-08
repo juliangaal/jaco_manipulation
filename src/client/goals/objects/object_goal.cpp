@@ -44,6 +44,7 @@ ObjectGoal::ObjectGoal(const kinect_goal::BoundingBox &bounding_box_goal, const 
 
 
 void ObjectGoal::adjustPoseToCenterOfObject(const kinect_goal::BoundingBox &bounding_box) {
+  // TODO BOUNDING BOX CALCULATED BY TOP RIGHT CORNER IN COORDINATE SYSTEM. CHANGE AFTER FEEDBACK WITH ANDREAS
   ROS_INFO("Status  : Adjusting pose to center of object");
 
   goal_.pose_goal.pose.position.x = bounding_box.x;
@@ -52,21 +53,21 @@ void ObjectGoal::adjustPoseToCenterOfObject(const kinect_goal::BoundingBox &boun
 
   const double width_adj = bounding_box.width * 0.5;
   const double length_adj = bounding_box.length * 0.5;
-  double height_adj = bounding_box.height;
-  if ((bounding_box.z + bounding_box.height) <= min_height_)
-    height_adj += min_height_;
+  // TODO this works even though it might seem to low. Jaco's, e.g. h=17cm is not real world height of 17cm, ASK CHITT
+  // works even without dropping offset
+  double height_adj = bounding_box.height + dropping_offset_;
 
-  if (height_adj != bounding_box.z)
-    ROS_WARN("Goal Fix: Object too low. Correcting to minimum height.");
+  // TODO may be have to be adjusted once object is added to planning scene
+  if ((bounding_box.z + bounding_box.height + dropping_offset_) <= min_height_)
+    height_adj += (min_height_ - bounding_box.height);
+
+  if (height_adj != (bounding_box.height + dropping_offset_))
+    ROS_WARN("Goal Fix: Object too low. Added difference to minimum height.");
 
   goal_.pose_goal.pose.position.x += (bounding_box.x >= 0.0) ? -width_adj : width_adj;
   goal_.pose_goal.pose.position.y += (bounding_box.y >= 0.0) ? -length_adj : length_adj;
   goal_.pose_goal.pose.position.z += height_adj;
-//  // if entered height is tall enough
-//  if ((bounding_box.z + bounding_box.height) >= min_height_)
-//    goal_.pose_goal.pose.position.z = bounding_box.z + bounding_box.height;
-//  else
-//    goal_.pose_goal.pose.position.z = min_height_ + bounding_box.z + bounding_box.height;
+
   ROS_INFO("Goal Fix: (%f %f %f) -> (%f %f %f)",
                                       bounding_box.x,
                                       bounding_box.y,

@@ -148,7 +148,10 @@ bool JacoManipulationServer::planAndMoveAndDrop(const geometry_msgs::PoseStamped
   ROS_STATUS("Drop request received");
 
   bool moved = planAndMove(target_pose);
-  if (!moved) return false;
+  if (!moved) {
+    openGripper();
+    return false;
+  }
 
   openGripper();
 

@@ -34,8 +34,9 @@ void JacoManipulationClient::graspAt(const goals::kinect_goal::LimitedPose &gras
 }
 
 
-void JacoManipulationClient::graspAt(const goals::kinect_goal::BoundingBox &bounding_box_goal,
+void JacoManipulationClient::graspAt(goals::kinect_goal::BoundingBox &bounding_box_goal,
                                      const std::string &description) {
+  bounding_box_goal.type = "grasp_bounding_box";
   goals::objects::GraspGoal goal(bounding_box_goal, description);
   execute(goal);
 }
@@ -46,8 +47,9 @@ void JacoManipulationClient::dropAt(const goals::kinect_goal::LimitedPose &drop_
   execute(goal);
 }
 
-void JacoManipulationClient::dropAt(const goals::kinect_goal::BoundingBox &bounding_box_goal,
+void JacoManipulationClient::dropAt(goals::kinect_goal::BoundingBox &bounding_box_goal,
                                     const std::string &description) {
+  bounding_box_goal.type = "drop_bounding_box";
   goals::objects::DropGoal goal(bounding_box_goal, description);
   execute(goal);
 }
