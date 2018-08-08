@@ -83,7 +83,7 @@ class ObjectGoal: public PoseGoal {
    * Adjusts the Pose to Center of Object
    * @param bounding_box bounding box to center pose around
    */
-  void adjustPoseToCenterOfObject(const kinect_goal::BoundingBox &bounding_box);
+  virtual void adjustPoseToCenterOfObject(const kinect_goal::BoundingBox &bounding_box);
 
   /**
    * Default rotation for posw
@@ -108,7 +108,7 @@ class ObjectGoal: public PoseGoal {
   /**
    * Default dropping offset: tiny lift (5cm) + distance from jaco_lowest point (is marked on robot) to jaco palm (6cm)
    */
-  constexpr static double dropping_offset_ = 0.02;
+  constexpr static double dropping_offset_ = 0.16;
 };
 
 } // namespace objects

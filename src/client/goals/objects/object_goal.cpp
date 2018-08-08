@@ -49,20 +49,29 @@ void ObjectGoal::adjustPoseToCenterOfObject(const kinect_goal::BoundingBox &boun
 
   goal_.pose_goal.pose.position.x = bounding_box.x;
   goal_.pose_goal.pose.position.y = bounding_box.y;
-  goal_.pose_goal.pose.position.z = bounding_box.height;
+  goal_.pose_goal.pose.position.z = bounding_box.z;
 
   const double width_adj = bounding_box.width * 0.5;
   const double length_adj = bounding_box.length * 0.5;
+  double height_adj = 0.0;
   // TODO this works even though it might seem to low. Jaco's, e.g. h=17cm is not real world height of 17cm, ASK CHITT
   // works even without dropping offset
-  double height_adj = bounding_box.height + dropping_offset_;
 
-  // TODO may be have to be adjusted once object is added to planning scene
-  if ((bounding_box.z + bounding_box.height + dropping_offset_) <= min_height_)
-    height_adj += (min_height_ - bounding_box.height);
+  if (bounding_box.type == "drop_bounding_box") {
+    if (bounding_box.height < min_height_) {
+      height_adj = min_height_;
+      ROS_WARN("Goal Fix: Bounding Box too low. Adjusted.");
+    } else {
+      height_adj = min_height_ + std::fabs(bounding_box.height - min_height_);
+    }
 
-  if (height_adj != (bounding_box.height + dropping_offset_))
-    ROS_WARN("Goal Fix: Object too low. Added difference to minimum height.");
+    height_adj += dropping_offset_;
+    // TODO may be have to be adjusted once object is added to planning scene
+  } else {
+    height_adj = min_height_;
+
+//    if (bounding_box)
+  }
 
   goal_.pose_goal.pose.position.x += (bounding_box.x >= 0.0) ? -width_adj : width_adj;
   goal_.pose_goal.pose.position.y += (bounding_box.y >= 0.0) ? length_adj : -length_adj;
