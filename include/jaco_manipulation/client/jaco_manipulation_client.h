@@ -69,14 +69,14 @@ class JacoManipulationClient {
     * @param goal grasp pose goal
     * @param description description of move
     */
-  void graspAt(const goals::kinect_goal::LimitedPose &grasp_pose_goal, const std::string &description = "grasp goal");
+  void graspAt(const goals::kinect_goal_definitions::LimitedPose &grasp_pose_goal, const std::string &description = "grasp goal");
 
   /**
     * Move to grasp goal according to bounding box
     * @param bounding_box_goal bounding box to drop something at
     * @param description description of move
     */
-  void graspAt(goals::kinect_goal::BoundingBox &bounding_box_goal,
+  void graspAt(goals::kinect_goal_definitions::BoundingBox &bounding_box_goal,
                const std::string &description = "grasp box goal");
 
   /**
@@ -84,14 +84,14 @@ class JacoManipulationClient {
    * @param goal drop pose goal
    * @param description description of move
   */
-  void dropAt(const goals::kinect_goal::LimitedPose &drop_pose_goal, const std::string &description = "drop goal");
+  void dropAt(const goals::kinect_goal_definitions::LimitedPose &drop_pose_goal, const std::string &description = "drop goal");
 
   /**
    * Move to drop goal according to bounding box
    * @param bounding_box_goal bounding box to drop something at
    * @param description description of move
   */
-  void dropAt(goals::kinect_goal::BoundingBox &bounding_box_goal,
+  void dropAt(goals::kinect_goal_definitions::BoundingBox &bounding_box_goal,
               const std::string &description = "drop box goal");
 
  private:
@@ -105,7 +105,7 @@ class JacoManipulationClient {
    * @param goal MoveItGoal, JointGoal, or PoseGoal
    */
   void execute(const goals::Goal& goal);
-};
+  };
 
 } // namespace client
 } // namespace jaco_manipulation

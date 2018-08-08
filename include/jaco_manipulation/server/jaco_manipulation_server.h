@@ -203,19 +203,19 @@ class JacoManipulationServer {
   void detachTarget();
 
   /**
-   * Convenience function to plan and execute the pose specified by target_pose.
+   * Convenience function to plan and execute the pose specified by pose_goal.
   */
-  bool planAndMove(const geometry_msgs::PoseStamped &target_pose);
+  bool planAndMove(const geometry_msgs::PoseStamped &pose_goal);
 
   /**
-   * Convenience function to plan, execute the pose and grasp for an object specified by target_pose.
+   * Convenience function to plan, execute the pose and grasp for an object specified by pose_goal.
   */
-  bool planAndMoveAndGrasp(const geometry_msgs::PoseStamped &target_pose);
+  bool planAndMoveAndGrasp(const geometry_msgs::PoseStamped &pose_goal);
 
   /**
-   * Convenience function to plan, execute the pose and drop an object specified by target_pose.
+   * Convenience function to plan, execute the pose and drop an object specified by pose_goal.
   */
-  bool planAndMoveAndDrop(const geometry_msgs::PoseStamped &target_pose);
+  bool planAndMoveAndDrop(const geometry_msgs::PoseStamped &pose_goal);
 
   /**
    * Convenience function to plan and execute the joint_state specified by target_joint_state.
@@ -224,12 +224,12 @@ class JacoManipulationServer {
   /**
    * Convenience function to plan and execute the pose specified by string.
   */
-  bool planAndMove(const std::string &target_pose_string);
+  bool planAndMove(const std::string &pose_goal_string);
 
   /**
-   * Convenience function to plan the pose specified by target_pose.
+   * Convenience function to plan the pose specified by pose_goal.
   */
-  bool plan(const geometry_msgs::PoseStamped &target_pose);
+  bool plan(const geometry_msgs::PoseStamped &pose_goal);
 
   /**
    * A function to close jaco's grippers
