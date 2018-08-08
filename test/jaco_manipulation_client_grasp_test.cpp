@@ -26,8 +26,8 @@ int main(int argn, char *args[]) {
   {
     BoundingBox b;
     b.description = "mug";
-    b.x = 0.045;
-    b.y = -0.695;
+    b.x = -0.045;
+    b.y = -0.605;
     b.length = 0.09;
     b.width = 0.09;
     b.height = 0.11;
