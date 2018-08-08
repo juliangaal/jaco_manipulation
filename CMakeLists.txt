@@ -68,8 +68,7 @@ set(CLIENT_SOURCES
         src/client/goals/objects/drop_goal.cpp
         src/client/goals/move_it_goal.cpp
         src/client/goals/pose_goal.cpp
-        src/client/goals/joint_goal.cpp
-)
+        src/client/goals/joint_goal.cpp)
 
 ## Declare a cpp library --> DoroManipulation
 add_library(jaco2_manipulation
