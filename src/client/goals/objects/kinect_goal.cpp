@@ -83,5 +83,5 @@ void KinectGoal::adjustPoseToCenterOfObject(const kinect_goal_definitions::Bound
 }
 
 void KinectGoal::adjustPoseOrientationToAbsoluteOrientation() {
-  grasp_orientation_generator_.adjustOrientation(top_grasp_orientation_, goal_.pose_goal);
+  grasp_orientation_generator_.adjustOrientation(front_grasp_orientation_, goal_.pose_goal);
 }

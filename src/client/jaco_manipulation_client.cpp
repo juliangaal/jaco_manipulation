@@ -55,7 +55,7 @@ void JacoManipulationClient::dropAt(goals::kinect_goal_definitions::BoundingBox 
   execute(goal);
 }
 
-void JacoManipulationClient::execute(const goals::Goal &goal_wrapper) {
+bool JacoManipulationClient::execute(const goals::Goal &goal_wrapper) {
   const auto& goal = goal_wrapper.goal();
 
   client_.sendGoal(goal);
@@ -63,8 +63,10 @@ void JacoManipulationClient::execute(const goals::Goal &goal_wrapper) {
 
   if (client_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
     ROS_SUCCESS("Status  : Move to " << goal_wrapper.info() << " succeeded.");
+    return true;
   } else {
     ROS_ERROR_STREAM("Status  : Move to " << goal_wrapper.info() << " failed.");
+    return false;
   }
-  std::cout << "\n";
 }
+

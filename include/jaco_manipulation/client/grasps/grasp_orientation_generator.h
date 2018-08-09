@@ -14,11 +14,13 @@ namespace jaco_manipulation {
 namespace client {
 namespace grasps {
 
+enum GraspType { TOP_GRASP, FRONT_GRASP, LEFT_GRASP, RIGHT_GRASP };
+
 class GraspOrientationGenerator {
  public:
   constexpr GraspOrientationGenerator() = default;
-
-  void adjustOrientation(const TopGraspOrientation &grasp, geometry_msgs::PoseStamped &pose);
+  void adjustOrientation(const GraspType type);
+  void adjustOrientation(const GraspType type, geometry_msgs::PoseStamped &pose);
   void adjustOrientation(const FrontGraspOrientation &grasp, geometry_msgs::PoseStamped &pose);
 };
 

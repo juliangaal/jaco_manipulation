@@ -12,7 +12,7 @@ namespace client {
 namespace grasps {
 
 struct TopGraspOrientation : public GraspOrientation {
-  constexpr TopGraspOrientation() : GraspOrientation(1, -1, 1, 0.175026) {}
+  constexpr TopGraspOrientation() : GraspOrientation(1, 1, 1, 0.175026) {}
   ~TopGraspOrientation() final = default;
 };
 } // namespace grasps

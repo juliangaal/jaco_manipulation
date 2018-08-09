@@ -104,7 +104,7 @@ class JacoManipulationClient {
    * Executes goal: sends to action server and gets result
    * @param goal MoveItGoal, JointGoal, or PoseGoal
    */
-  void execute(const goals::Goal& goal);
+  bool execute(const goals::Goal& goal);
   };
 
 } // namespace client
