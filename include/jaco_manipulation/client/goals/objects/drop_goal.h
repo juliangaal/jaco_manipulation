@@ -5,7 +5,7 @@
 #ifndef PROJECT_DROP_GOAL_H
 #define PROJECT_DROP_GOAL_H
 
-#include "jaco_manipulation/client/goals/objects/object_goal.h"
+#include "jaco_manipulation/client/goals/objects/kinect_goal.h"
 
 namespace jaco_manipulation {
 namespace client {

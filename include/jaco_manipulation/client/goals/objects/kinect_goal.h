@@ -2,9 +2,11 @@
 // Created by chitt on 8/6/18.
 //
 
-#ifndef PROJECT_OBJECTGOAL_HPP
-#define PROJECT_OBJECTGOAL_HPP
-#include "jaco_manipulation/client/goals/pose_goal.h"
+#ifndef PROJECT_KINECT_GOAL_HPP
+#define PROJECT_KINECT_GOAL_HPP
+
+#include <jaco_manipulation/client/goals/pose_goal.h>
+#include <jaco_manipulation/client/grasps/grasp_orientation_generator.h>
 
 namespace jaco_manipulation {
 namespace client {
@@ -85,6 +87,10 @@ class KinectGoal: public PoseGoal {
   constexpr static double dropping_offset_ = 0.16;
 
  private:
+
+  jaco_manipulation::client::grasps::GraspOrientationGenerator grasp_orientation_generator_{};
+
+  jaco_manipulation::client::grasps::TopGraspOrientation top_grasp_orientation_{};
   /**
    * Adjusts the Pose to Center of Object
    * @param bounding_box bounding box to center pose around
@@ -95,7 +101,6 @@ class KinectGoal: public PoseGoal {
    * Adjusts gripper pose orientation to absolute orientation relative to root
    */
   void adjustPoseOrientationToAbsoluteOrientation();
-
   };
 
 } // namespace objects
@@ -103,4 +108,4 @@ class KinectGoal: public PoseGoal {
 } // namespace client
 } // namespace jaco_manipulation
 
-#endif //PROJECT_OBJECTGOAL_HPP
+#endif //PROJECT_KINECT_GOAL_HPP
