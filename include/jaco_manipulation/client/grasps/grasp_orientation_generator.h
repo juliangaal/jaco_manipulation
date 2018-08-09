@@ -8,6 +8,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <jaco_manipulation/client/grasps/grasp_orientation.h>
 #include <jaco_manipulation/client/grasps/top_grasp_orientation.h>
+#include <jaco_manipulation/client/grasps/front_grasp_orientation.h>
 
 namespace jaco_manipulation {
 namespace client {
@@ -17,8 +18,8 @@ class GraspOrientationGenerator {
  public:
   constexpr GraspOrientationGenerator() = default;
 
-  void adjustOrientation(const GraspOrientation &grasp, geometry_msgs::PoseStamped &pose);
-
+  void adjustOrientation(const TopGraspOrientation &grasp, geometry_msgs::PoseStamped &pose);
+  void adjustOrientation(const FrontGraspOrientation &grasp, geometry_msgs::PoseStamped &pose);
 };
 
 } // namespace grasps

@@ -91,6 +91,8 @@ class KinectGoal: public PoseGoal {
   jaco_manipulation::client::grasps::GraspOrientationGenerator grasp_orientation_generator_{};
 
   jaco_manipulation::client::grasps::TopGraspOrientation top_grasp_orientation_{};
+
+  jaco_manipulation::client::grasps::FrontGraspOrientation front_grasp_orientation_{};
   /**
    * Adjusts the Pose to Center of Object
    * @param bounding_box bounding box to center pose around

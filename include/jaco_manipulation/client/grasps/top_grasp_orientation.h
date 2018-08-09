@@ -11,8 +11,7 @@ namespace jaco_manipulation {
 namespace client {
 namespace grasps {
 
-class TopGraspOrientation : public GraspOrientation {
- public:
+struct TopGraspOrientation : public GraspOrientation {
   constexpr TopGraspOrientation() : GraspOrientation(1, -1, 1, 0.175026) {}
   ~TopGraspOrientation() final = default;
 };
