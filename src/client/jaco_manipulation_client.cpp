@@ -38,12 +38,9 @@ void JacoManipulationClient::graspAt(const goals::kinect_goal_definitions::Limit
 }
 
 
-void JacoManipulationClient::graspAt(goals::kinect_goal_definitions::BoundingBox &bounding_box_goal,
+void JacoManipulationClient::graspAt(const goals::kinect_goal_definitions::BoundingBox &bounding_box_goal,
                                      const std::string &description) {
-  goals::objects::GraspGoal goal(bounding_box_goal,
-                                 jaco_manipulation::client::grasps::GraspType::TOP_GRASP,
-                                 description);
-  execute(goal);
+  tryDifferentPoses(bounding_box_goal, description);
 }
 
 void JacoManipulationClient::dropAt(const goals::kinect_goal_definitions::LimitedPose &drop_pose_goal,
@@ -52,7 +49,7 @@ void JacoManipulationClient::dropAt(const goals::kinect_goal_definitions::Limite
   execute(goal);
 }
 
-void JacoManipulationClient::dropAt(goals::kinect_goal_definitions::BoundingBox &bounding_box_goal,
+void JacoManipulationClient::dropAt(const goals::kinect_goal_definitions::BoundingBox &bounding_box_goal,
                                     const std::string &description) {
   goals::objects::DropGoal goal(bounding_box_goal, description);
   execute(goal);
@@ -65,13 +62,37 @@ bool JacoManipulationClient::execute(const goals::Goal &goal_wrapper) {
   client_.waitForResult();
 
   if (client_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-    ROS_SUCCESS("Status  : Move to " << goal_wrapper.info() << " succeeded.");
+    ROS_SUCCESS("Status  : Move to " << goal_wrapper.info() << " succeeded.\n");
     return true;
   } else {
-    ROS_ERROR_STREAM("Status  : Move to " << goal_wrapper.info() << " failed.");
+    ROS_ERROR_STREAM("Status  : Move to " << goal_wrapper.info() << " failed.\n");
     return false;
   }
+}
 
-  std::cout << "\n";
+void JacoManipulationClient::tryDifferentPoses(const goals::kinect_goal_definitions::BoundingBox &bounding_box_goal,
+                                               const std::string &description) {
+  {
+    goals::objects::GraspGoal goal(bounding_box_goal,
+                                   jaco_manipulation::client::grasps::GraspType::TOP_GRASP,
+                                   description);
+    if (execute(goal)) {
+      ROS_SUCCESS("Status  : Top Grasp Successful");
+      return;
+    } else {
+      ROS_ERROR("Status  : Top Grasp Unsuccessful");
+    }
+  }
+  {
+    goals::objects::GraspGoal goal(bounding_box_goal,
+                                   jaco_manipulation::client::grasps::GraspType::FRONT_GRASP,
+                                   description);
+    if (execute(goal)) {
+      ROS_SUCCESS("Status  : Front Grasp Successful");
+      return;
+    } else {
+      ROS_ERROR("Status  : Front Grasp Unsuccessful");
+    }
+  }
 }
 

@@ -47,7 +47,7 @@ void KinectGoal::adjustPoseToCenterOfObject(const kinect_goal_definitions::Bound
 
   const double width_adj = bounding_box.width * 0.5;
   const double length_adj = bounding_box.length * 0.5;
-  ROS_INFO("Box     : width: %f x lenght: %f x height: %f", bounding_box.width, bounding_box.length, bounding_box.height);
+
   goal_.pose_goal.pose.position.x += (bounding_box.x >= 0.0) ? width_adj : -width_adj;
   goal_.pose_goal.pose.position.y += (bounding_box.y >= 0.0) ? -length_adj : length_adj;
 
