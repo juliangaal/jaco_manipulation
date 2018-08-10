@@ -11,9 +11,9 @@ int main(int argn, char *args[]) {
   ros::init(argn, args, "pam_client");
 
   client::JacoManipulationClient jmc;
-  jmc.moveTo("home");
+//  jmc.moveTo("home");
 
-  using namespace goals::kinect_goal_definitions;
+  using namespace goals::goal_input;
   {
     BoundingBox b;
     b.description = "ball";

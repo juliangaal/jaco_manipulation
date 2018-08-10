@@ -7,37 +7,10 @@
 
 #include "pose_goal.h"
 #include <jaco_manipulation/grasps/grasp_pose_generator.h>
+#include <jaco_manipulation/goals/goal_input.h>
 
 namespace jaco_manipulation {
 namespace goals {
-namespace kinect_goal_definitions {
-
-/**
- * Object to grasp, defined by bounding box
- */
-struct BoundingBox {
-  std::string description;
-  std::string type;
-  double x;
-  double y;
-  double z;
-
-  double height;
-  double width;
-  double length;
-};
-
-/**
- * additional layer of security: grasp_helper::GraspPose allows only to change properties on pose that are not dangerous
- */
-struct LimitedPose {
-  double x;
-  double y;
-  double z;
-  double rotation;
-};
-
-}
 
 /*!
  * ObjectGoal
@@ -52,7 +25,7 @@ class KinectGoal: public PoseGoal {
    * @param grasp_pose_goal grasp pose goal
    * @param description descritpion with additional info
    */
-  explicit KinectGoal(const kinect_goal_definitions::LimitedPose &grasp_pose_goal,
+  explicit KinectGoal(const goal_input::LimitedPose &grasp_pose_goal,
                       jaco_manipulation::grasps::GraspType grasp,
                       const std::string &description = "grasp goal");
 
@@ -61,7 +34,7 @@ class KinectGoal: public PoseGoal {
    * @param bounding_box_goal bounding box to drop something at
    * @param description descritpion with additional info
    */
-  explicit KinectGoal(const kinect_goal_definitions::BoundingBox &bounding_box_goal,
+  explicit KinectGoal(const goal_input::BoundingBox &bounding_box_goal,
                       jaco_manipulation::grasps::GraspType grasp,
                       const std::string &description = "grasp box goal");
 
@@ -101,16 +74,19 @@ class KinectGoal: public PoseGoal {
 
   jaco_manipulation::grasps::GraspPoseGenerator grasp_orientation_generator_{};
 
-  /**
-   * Adjusts the Pose to Center of Object
-   * @param bounding_box bounding box to center pose around
-  */
-  void adjustPoseToCenterOfObject(const kinect_goal_definitions::BoundingBox &bounding_box);
+//  /**
+//   * Adjusts the Pose to Center of Object
+//   * @param bounding_box bounding box to center pose around
+//  */
+//  void adjustPoseToCenterOfObject(const goal_input::BoundingBox &bounding_box);
 
   /**
-   * Adjusts gripper pose orientation to absolute orientation relative to root
+   * Adjusts gripper pose orientation and position for type of grasp
+   * @param grasp type of grasp
+   * @param box Bounding box to be adjusted around
    */
-  void adjustOrientation(jaco_manipulation::grasps::GraspType grasp);
+  void adjustPose(jaco_manipulation::grasps::GraspType grasp,
+                  const jaco_manipulation::goals::goal_input::BoundingBox &box);
 };
 } // namespace goals
 } // namespace jaco_manipulation

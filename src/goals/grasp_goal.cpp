@@ -7,7 +7,7 @@
 
 using namespace jaco_manipulation::goals;
 
-GraspGoal::GraspGoal(const kinect_goal_definitions::LimitedPose &grasp_pose_goal,
+GraspGoal::GraspGoal(const goal_input::LimitedPose &grasp_pose_goal,
                      jaco_manipulation::grasps::GraspType grasp,
                      const std::string &description)
 
@@ -17,7 +17,7 @@ GraspGoal::GraspGoal(const kinect_goal_definitions::LimitedPose &grasp_pose_goal
   ROS_INFO_STREAM("Attempt : Move to " << info());
 }
 
-GraspGoal::GraspGoal(const kinect_goal_definitions::BoundingBox &bounding_box_goal,
+GraspGoal::GraspGoal(const goal_input::BoundingBox &bounding_box_goal,
                      jaco_manipulation::grasps::GraspType grasp,
                      const std::string &description)
 : KinectGoal(bounding_box_goal, grasp, description) {
@@ -33,7 +33,7 @@ jaco_manipulation::PlanAndMoveArmGoal GraspGoal::goal() const {
   return KinectGoal::goal();
 }
 
-void GraspGoal::adjustHeight(const jaco_manipulation::goals::kinect_goal_definitions::BoundingBox &bounding_box) {
+void GraspGoal::adjustHeight(const jaco_manipulation::goals::goal_input::BoundingBox &bounding_box) {
   double height_adj = 0.0;
 
   if (bounding_box.height > goal_.pose_goal.pose.position.z)

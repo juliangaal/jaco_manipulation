@@ -7,7 +7,9 @@
 
 using namespace jaco_manipulation::grasps;
 
-void GraspPoseGenerator::adjustOrientation(geometry_msgs::PoseStamped &pose, const GraspType type) {
+void GraspPoseGenerator::adjustPose(geometry_msgs::PoseStamped &pose,
+                                    const jaco_manipulation::goals::goal_input::BoundingBox &box,
+                                    const GraspType type) {
   switch(type) {
     case TOP_GRASP:
       adjustTopGraspOrientation(pose);
@@ -18,6 +20,27 @@ void GraspPoseGenerator::adjustOrientation(geometry_msgs::PoseStamped &pose, con
     default:
       adjustTopGraspOrientation(pose);
   }
+}
+
+void GraspPoseGenerator::adjustPosition(geometry_msgs::PoseStamped &pose,
+                                        const jaco_manipulation::goals::goal_input::BoundingBox &box) {
+  pose.pose.position.x = box.x;
+  pose.pose.position.y = box.y;
+  pose.pose.position.z = box.z;
+
+  const double width_adj = box.width * 0.5;
+  const double length_adj = box.length * 0.5;
+
+  pose.pose.position.x += (box.x >= 0.0) ? width_adj : -width_adj;
+  pose.pose.position.y += (box.y >= 0.0) ? -length_adj : length_adj;
+
+  ROS_INFO("Box Fix : (%f %f %f) -> (%f %f %f)",
+           box.x,
+           box.y,
+           box.z,
+           pose.pose.position.x,
+           pose.pose.position.y,
+           pose.pose.position.z);
 }
 
 void GraspPoseGenerator::adjustTopGraspOrientation(geometry_msgs::PoseStamped &pose) {
@@ -55,7 +78,7 @@ void GraspPoseGenerator::adjustTopGraspOrientation(geometry_msgs::PoseStamped &p
   tf::quaternionTFToMsg(top_grasp_quaternion, pose.pose.orientation);
 
   // adjust height, if smaller than minimal allowance
-  if (pose.pose.position.z < min_height_front_grasp)
+  if (pose.pose.position.z < min_height_top_grasp)
     pose.pose.position.z = min_height_top_grasp;
 
   ROS_INFO("Top Fix : Pose now (%f,%f,%f) ; (%f,%f,%f,%f)",

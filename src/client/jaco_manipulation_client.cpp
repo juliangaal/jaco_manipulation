@@ -29,42 +29,42 @@ void JacoManipulationClient::moveTo(const sensor_msgs::JointState &joint_goal, c
   execute(goal);
 }
 
-void JacoManipulationClient::graspAt(const goals::kinect_goal_definitions::LimitedPose &grasp_pose_goal,
+void JacoManipulationClient::graspAt(const goals::goal_input::LimitedPose &grasp_pose_goal,
                                      const std::string &description) {
   tryDifferentGraspPoses(grasp_pose_goal, description);
 }
 
 
-void JacoManipulationClient::graspAt(const goals::kinect_goal_definitions::BoundingBox &bounding_box_goal,
+void JacoManipulationClient::graspAt(const goals::goal_input::BoundingBox &bounding_box_goal,
                                      const std::string &description) {
   tryDifferentGraspPoses(bounding_box_goal, description);
 }
 
-void JacoManipulationClient::dropAt(const goals::kinect_goal_definitions::LimitedPose &drop_pose_goal,
+void JacoManipulationClient::dropAt(const goals::goal_input::LimitedPose &drop_pose_goal,
                                     const std::string &description) {
   goals::DropGoal goal(drop_pose_goal, description);
   execute(goal);
 }
 
-void JacoManipulationClient::dropAt(const goals::kinect_goal_definitions::BoundingBox &bounding_box_goal,
+void JacoManipulationClient::dropAt(const goals::goal_input::BoundingBox &bounding_box_goal,
                                     const std::string &description) {
   goals::DropGoal goal(bounding_box_goal, description);
   execute(goal);
 }
 
-bool JacoManipulationClient::execute(const goals::Goal &goal_wrapper, bool show_result_information) {
-  const auto& goal = goal_wrapper.goal();
+bool JacoManipulationClient::execute(const goals::Goal &goal_input, bool show_result_information) {
+  const auto& goal = goal_input.goal();
 
   client_.sendGoal(goal);
   client_.waitForResult();
 
   if (client_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
     if (show_result_information)
-      ROS_SUCCESS("Status  : Move to " << goal_wrapper.info() << " succeeded.\n");
+      ROS_SUCCESS("Status  : Move to " << goal_input.info() << " succeeded.\n");
     return true;
   } else {
     if (show_result_information)
-      ROS_ERROR_STREAM("Status  : Move to " << goal_wrapper.info() << " failed.\n");
+      ROS_ERROR_STREAM("Status  : Move to " << goal_input.info() << " failed.\n");
     return false;
   }
 }
