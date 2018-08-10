@@ -105,15 +105,16 @@ class JacoManipulationClient {
   /**
    * Executes goal: sends to action server and gets result
    * @param goal MoveItGoal, JointGoal, or PoseGoal
+   * @param show_result_information whether or not to show grasp information
    */
-  bool execute(const goals::Goal& goal);
+  bool execute(const goals::Goal& goal, bool show_result_information=true);
 
   /**
    *
    */
-  void tryDifferentPoses(const goals::kinect_goal_definitions::BoundingBox &bounding_box_goal,
+  template <typename T>
+  void tryDifferentGraspPoses(const T &goal_type,
                          const std::string &description);
-
   };
 
 } // namespace client

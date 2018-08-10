@@ -11,6 +11,8 @@ DropGoal::DropGoal(const kinect_goal_definitions::LimitedPose &drop_pose_goal, c
 : KinectGoal(drop_pose_goal, jaco_manipulation::client::grasps::GraspType::TOP_GRASP, description) {
   goal_.goal_type = "drop_pose";
 
+  goal_.pose_goal.pose.position.z += dropping_offset_;
+
   ROS_INFO_STREAM("Attempt : Move to " << info());
 }
 

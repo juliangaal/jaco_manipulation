@@ -22,10 +22,6 @@ int main(int argn, char *args[]) {
     b.length = 0.06;
     b.height = 0.06;
     b.width = 0.06;
-//    LimitedPose pose;
-//    pose.x = 0.4;
-//    pose.y = 0.0;
-//    pose.rotation = 0.674663;
     jmc.graspAt(b);
   }
 
@@ -38,6 +34,14 @@ int main(int argn, char *args[]) {
     b.width = 0.09;
     b.height = 0.11;
     jmc.dropAt(b);
+  }
+
+  {
+    LimitedPose pose;
+    pose.x = 0.4;
+    pose.y = 0.0;
+    jmc.graspAt(pose);
+    jmc.dropAt(pose);
   }
 
   jmc.moveTo("home");

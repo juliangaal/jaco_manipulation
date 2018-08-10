@@ -31,16 +31,13 @@ void JacoManipulationClient::moveTo(const sensor_msgs::JointState &joint_goal, c
 
 void JacoManipulationClient::graspAt(const goals::kinect_goal_definitions::LimitedPose &grasp_pose_goal,
                                      const std::string &description) {
-  goals::objects::GraspGoal goal(grasp_pose_goal,
-                                 jaco_manipulation::client::grasps::GraspType::TOP_GRASP,
-                                 description);
-  execute(goal);
+  tryDifferentGraspPoses(grasp_pose_goal, description);
 }
 
 
 void JacoManipulationClient::graspAt(const goals::kinect_goal_definitions::BoundingBox &bounding_box_goal,
                                      const std::string &description) {
-  tryDifferentPoses(bounding_box_goal, description);
+  tryDifferentGraspPoses(bounding_box_goal, description);
 }
 
 void JacoManipulationClient::dropAt(const goals::kinect_goal_definitions::LimitedPose &drop_pose_goal,
@@ -55,44 +52,45 @@ void JacoManipulationClient::dropAt(const goals::kinect_goal_definitions::Boundi
   execute(goal);
 }
 
-bool JacoManipulationClient::execute(const goals::Goal &goal_wrapper) {
+bool JacoManipulationClient::execute(const goals::Goal &goal_wrapper, bool show_result_information) {
   const auto& goal = goal_wrapper.goal();
 
   client_.sendGoal(goal);
   client_.waitForResult();
 
   if (client_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-    ROS_SUCCESS("Status  : Move to " << goal_wrapper.info() << " succeeded.\n");
+    if (show_result_information)
+      ROS_SUCCESS("Status  : Move to " << goal_wrapper.info() << " succeeded.\n");
     return true;
   } else {
-    ROS_ERROR_STREAM("Status  : Move to " << goal_wrapper.info() << " failed.\n");
+    if (show_result_information)
+      ROS_ERROR_STREAM("Status  : Move to " << goal_wrapper.info() << " failed.\n");
     return false;
   }
 }
 
-void JacoManipulationClient::tryDifferentPoses(const goals::kinect_goal_definitions::BoundingBox &bounding_box_goal,
-                                               const std::string &description) {
+template <typename T>
+void JacoManipulationClient::tryDifferentGraspPoses(const T &goal_type, const std::string &description) {
   {
-    goals::objects::GraspGoal goal(bounding_box_goal,
+    goals::objects::GraspGoal goal(goal_type,
                                    jaco_manipulation::client::grasps::GraspType::TOP_GRASP,
                                    description);
-    if (execute(goal)) {
-      ROS_SUCCESS("Status  : Top Grasp Successful");
+    if (execute(goal, false)) {
+      ROS_SUCCESS("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << " succeeded.\n");
       return;
     } else {
-      ROS_ERROR("Status  : Top Grasp Unsuccessful");
+      ROS_ERROR_STREAM("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << " failed.\n");
     }
   }
   {
-    goals::objects::GraspGoal goal(bounding_box_goal,
+    goals::objects::GraspGoal goal(goal_type,
                                    jaco_manipulation::client::grasps::GraspType::FRONT_GRASP,
                                    description);
-    if (execute(goal)) {
-      ROS_SUCCESS("Status  : Front Grasp Successful");
+    if (execute(goal, false)) {
+      ROS_SUCCESS("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << "succeeded.\n");
       return;
     } else {
-      ROS_ERROR("Status  : Front Grasp Unsuccessful");
+      ROS_ERROR_STREAM("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << "failed.\n");
     }
   }
 }
-

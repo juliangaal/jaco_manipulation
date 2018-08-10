@@ -78,6 +78,11 @@ class KinectGoal: public PoseGoal {
    */
   virtual jaco_manipulation::PlanAndMoveArmGoal goal() const override;
 
+  /**
+   * Returns requested grasp in string form
+   */
+  std::string requestedOrientation();
+
  protected:
 
   /**
@@ -89,6 +94,11 @@ class KinectGoal: public PoseGoal {
    * Default dropping offset: tiny lift (5cm) + distance from jaco_lowest point (is marked on robot) to jaco palm (6cm)
    */
   constexpr static double dropping_offset_ = 0.16;
+
+  /**
+   * Saves which grasp was requested
+   */
+  const jaco_manipulation::client::grasps::GraspType requested_grasp_;
 
  private:
 
