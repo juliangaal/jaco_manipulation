@@ -16,7 +16,6 @@
 
  */
 #include <ros/ros.h>
-#include <jaco_manipulation/grasp_pose_generator.h>
 #include <jaco_manipulation/server/jaco_manipulation_server.h>
 
 using namespace jaco_manipulation;
@@ -27,9 +26,6 @@ int main(int argn, char *args[]) {
 
   ROS_STATUS("Starting server for manipulation.");
   server::JacoManipulationServer jms;
-
-  ROS_STATUS("Starting server for grasp pose generation.");
-  jaco_manipulation::GraspPoseGenerator gpg;
 
   ROS_SUCCESS("All servers are up.");
 

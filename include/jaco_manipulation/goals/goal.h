@@ -10,7 +10,6 @@
 #include "goal.h"
 
 namespace jaco_manipulation {
-namespace client {
 namespace goals {
 
 /*!
@@ -67,7 +66,6 @@ class Goal {
 };
 
 } // namespace goals
-} // namespace client
 } // namespace jaco_manipulation
 
 #endif //PROJECT_GOAL_H

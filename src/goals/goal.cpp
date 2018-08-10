@@ -2,10 +2,10 @@
 // Created by julian on 04.08.18.
 //
 
-#include <jaco_manipulation/client/goals/goal.h>
+#include <jaco_manipulation/goals/goal.h>
 #include <ros/console.h>
 
-using namespace jaco_manipulation::client::goals;
+using namespace jaco_manipulation::goals;
 
 Goal::Goal() : planning_frame_("root") {
   goal_.goal_type = "goal";

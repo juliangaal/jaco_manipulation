@@ -6,19 +6,15 @@
 #define PROJECT_GRASP_ORIENTATION_GENERATOR_H
 
 #include <geometry_msgs/PoseStamped.h>
-#include <jaco_manipulation/client/grasps/grasp_orientation.h>
-#include <jaco_manipulation/client/grasps/top_grasp_orientation.h>
-#include <jaco_manipulation/client/grasps/front_grasp_orientation.h>
 
 namespace jaco_manipulation {
-namespace client {
 namespace grasps {
 
 enum GraspType { TOP_GRASP, FRONT_GRASP, LEFT_GRASP, RIGHT_GRASP };
 
-class GraspOrientationGenerator {
+class GraspPoseGenerator {
  public:
-  constexpr GraspOrientationGenerator() = default;
+  constexpr GraspPoseGenerator() = default;
   void adjustOrientation(geometry_msgs::PoseStamped &pose, const GraspType type);
  private:
   void adjustTopGraspOrientation(geometry_msgs::PoseStamped &pose);
@@ -28,7 +24,6 @@ class GraspOrientationGenerator {
 };
 
 } // namespace grasps
-} // namespace client
 } // namespace jaco_manipulation
 
 #endif //PROJECT_GRASP_ORIENTATION_GENERATOR_H

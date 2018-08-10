@@ -14,10 +14,10 @@ Messages defined in [action/PlanAndMoveArm.action](action/PlanAndMoveArm.action)
 Simple but convenient wrapper around ROS action server SimpleActionClient, tuned for Jaco Robot Arm
 
 ### Possible MoveIt Goal States
- * [JointGoal](include/jaco_manipulation/client/goals/joint_goal.h) : Joint state goal state
- * [PoseGoal](include/jaco_manipulation/client/goals/pose_goal.h) : Pose goal state
- * [MoveItGoal](include/jaco_manipulation/client/goals/move_it_goal.h) : Goal state from MoveIt config file ([jaco.srdf](https://github.com/ksatyaki/wpi_jaco/blob/develop/jaco_moveit_config/config/jaco.srdf)) 
- * All goals are defined [here](include/jaco_manipulation/client/goals)
+ * [JointGoal](include/jaco_manipulation/goals/joint_goal.h) : Joint state goal state
+ * [PoseGoal](include/jaco_manipulation/goals/pose_goal.h) : Pose goal state
+ * [MoveItGoal](include/jaco_manipulation/goals/move_it_goal.h) : Goal state from MoveIt config file ([jaco.srdf](https://github.com/ksatyaki/wpi_jaco/blob/develop/jaco_moveit_config/config/jaco.srdf)) 
+ * All goals are defined [here](include/jaco_manipulation/goals)
  
 ### Usage
 Start with

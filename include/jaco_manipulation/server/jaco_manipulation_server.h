@@ -37,7 +37,6 @@
 #include <geometry_msgs/PointStamped.h>
 
 #include <jaco_manipulation/PlanAndMoveArmAction.h>
-#include <jaco_manipulation/grasp_pose_generator.h>
 #include <wpi_jaco_msgs/HomeArmAction.h>
 
 #include <string>

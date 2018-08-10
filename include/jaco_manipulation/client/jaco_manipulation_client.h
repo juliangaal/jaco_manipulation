@@ -10,11 +10,11 @@
 #include <actionlib/client/simple_action_client.h>
 #include <jaco_manipulation/PlanAndMoveArmAction.h>
 
-#include <jaco_manipulation/client/goals/goal.h>
-#include <jaco_manipulation/client/goals/objects/grasp_goal.h>
-#include <jaco_manipulation/client/goals/joint_goal.h>
-#include <jaco_manipulation/client/goals/move_it_goal.h>
-#include <jaco_manipulation/client/goals/pose_goal.h>
+#include <jaco_manipulation/goals/goal.h>
+#include <jaco_manipulation/goals//grasp_goal.h>
+#include <jaco_manipulation/goals/joint_goal.h>
+#include <jaco_manipulation/goals/move_it_goal.h>
+#include <jaco_manipulation/goals/pose_goal.h>
 
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -26,7 +26,7 @@ namespace client {
  * JacoManipulationClient
  * Simple but convenient wrapper around ROS action server SimpleActionClient, tuned for Jaco Robot Arm
  * Joint-, Pose- and MoveItGoals can be sent to the SimpleActionServer.
- * All goals are defined in /include/jaco_manipulation/client/goals
+ * All goals are defined in /include/jaco_manipulation/goals/
  */
 class JacoManipulationClient {
  public:

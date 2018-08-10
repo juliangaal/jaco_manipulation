@@ -2,12 +2,12 @@
 // Created by julian on 04.08.18.
 //
 
-#include <jaco_manipulation/client/goals/joint_goal.h>
+#include <jaco_manipulation/goals/joint_goal.h>
 #include <ros/console.h>
 
-using namespace jaco_manipulation::client::goals;
+using namespace jaco_manipulation::goals;
 
-JointGoal::JointGoal(const std::vector<double> &joint_goal, const std::string &description) {  ROS_INFO("----");
+JointGoal::JointGoal(const std::vector<double> &joint_goal, const std::string &description) {
   description_ = description;
   goal_.goal_type = "joint_state";
   goal_.joint_goal.position = joint_goal;

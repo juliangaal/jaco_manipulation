@@ -5,11 +5,10 @@
 #ifndef PROJECT_KINECT_GOAL_HPP
 #define PROJECT_KINECT_GOAL_HPP
 
-#include <jaco_manipulation/client/goals/pose_goal.h>
-#include <jaco_manipulation/client/grasps/grasp_orientation_generator.h>
+#include "pose_goal.h"
+#include <jaco_manipulation/grasps/grasp_pose_generator.h>
 
 namespace jaco_manipulation {
-namespace client {
 namespace goals {
 namespace kinect_goal_definitions {
 
@@ -40,8 +39,6 @@ struct LimitedPose {
 
 }
 
-namespace objects {
-
 /*!
  * ObjectGoal
  * Represent a severely limited pose for grasping objects
@@ -56,7 +53,7 @@ class KinectGoal: public PoseGoal {
    * @param description descritpion with additional info
    */
   explicit KinectGoal(const kinect_goal_definitions::LimitedPose &grasp_pose_goal,
-                      jaco_manipulation::client::grasps::GraspType grasp,
+                      jaco_manipulation::grasps::GraspType grasp,
                       const std::string &description = "grasp goal");
 
   /**
@@ -65,7 +62,7 @@ class KinectGoal: public PoseGoal {
    * @param description descritpion with additional info
    */
   explicit KinectGoal(const kinect_goal_definitions::BoundingBox &bounding_box_goal,
-                      jaco_manipulation::client::grasps::GraspType grasp,
+                      jaco_manipulation::grasps::GraspType grasp,
                       const std::string &description = "grasp box goal");
 
   /**
@@ -98,11 +95,11 @@ class KinectGoal: public PoseGoal {
   /**
    * Saves which grasp was requested
    */
-  const jaco_manipulation::client::grasps::GraspType requested_grasp_;
+  const jaco_manipulation::grasps::GraspType requested_grasp_;
 
  private:
 
-  jaco_manipulation::client::grasps::GraspOrientationGenerator grasp_orientation_generator_{};
+  jaco_manipulation::grasps::GraspPoseGenerator grasp_orientation_generator_{};
 
   /**
    * Adjusts the Pose to Center of Object
@@ -113,11 +110,9 @@ class KinectGoal: public PoseGoal {
   /**
    * Adjusts gripper pose orientation to absolute orientation relative to root
    */
-  void adjustOrientation(jaco_manipulation::client::grasps::GraspType grasp);
+  void adjustOrientation(jaco_manipulation::grasps::GraspType grasp);
 };
-} // namespace objects
 } // namespace goals
-} // namespace client
 } // namespace jaco_manipulation
 
 #endif //PROJECT_KINECT_GOAL_HPP

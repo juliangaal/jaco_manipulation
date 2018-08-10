@@ -2,13 +2,13 @@
 // Created by julian on 8/6/18.
 //
 
-#include <jaco_manipulation/client/goals/objects/grasp_goal.h>
+#include <jaco_manipulation/goals/grasp_goal.h>
 #include <ros/console.h>
 
-using namespace jaco_manipulation::client::goals::objects;
+using namespace jaco_manipulation::goals;
 
 GraspGoal::GraspGoal(const kinect_goal_definitions::LimitedPose &grasp_pose_goal,
-                     jaco_manipulation::client::grasps::GraspType grasp,
+                     jaco_manipulation::grasps::GraspType grasp,
                      const std::string &description)
 
 : KinectGoal(grasp_pose_goal, grasp, description) {
@@ -18,12 +18,12 @@ GraspGoal::GraspGoal(const kinect_goal_definitions::LimitedPose &grasp_pose_goal
 }
 
 GraspGoal::GraspGoal(const kinect_goal_definitions::BoundingBox &bounding_box_goal,
-                     jaco_manipulation::client::grasps::GraspType grasp,
+                     jaco_manipulation::grasps::GraspType grasp,
                      const std::string &description)
 : KinectGoal(bounding_box_goal, grasp, description) {
   goal_.goal_type = "grasp_pose";
 
-  if (grasp == jaco_manipulation::client::grasps::GraspType::TOP_GRASP)
+  if (grasp == jaco_manipulation::grasps::GraspType::TOP_GRASP)
     adjustHeight(bounding_box_goal);
 
   ROS_INFO_STREAM("Attempt : Move to " << info());
@@ -33,7 +33,7 @@ jaco_manipulation::PlanAndMoveArmGoal GraspGoal::goal() const {
   return KinectGoal::goal();
 }
 
-void GraspGoal::adjustHeight(const jaco_manipulation::client::goals::kinect_goal_definitions::BoundingBox &bounding_box) {
+void GraspGoal::adjustHeight(const jaco_manipulation::goals::kinect_goal_definitions::BoundingBox &bounding_box) {
   double height_adj = 0.0;
 
   if (bounding_box.height > goal_.pose_goal.pose.position.z)

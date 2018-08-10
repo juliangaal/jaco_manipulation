@@ -2,12 +2,12 @@
 // Created by chitt on 8/9/18.
 //
 
-#include <jaco_manipulation/client/grasps/grasp_orientation_generator.h>
+#include <jaco_manipulation/grasps/grasp_pose_generator.h>
 #include <tf/tf.h>
 
-using namespace jaco_manipulation::client::grasps;
+using namespace jaco_manipulation::grasps;
 
-void GraspOrientationGenerator::adjustOrientation(geometry_msgs::PoseStamped &pose, const GraspType type) {
+void GraspPoseGenerator::adjustOrientation(geometry_msgs::PoseStamped &pose, const GraspType type) {
   switch(type) {
     case TOP_GRASP:
       adjustTopGraspOrientation(pose);
@@ -20,7 +20,7 @@ void GraspOrientationGenerator::adjustOrientation(geometry_msgs::PoseStamped &po
   }
 }
 
-void GraspOrientationGenerator::adjustTopGraspOrientation(geometry_msgs::PoseStamped &pose) {
+void GraspPoseGenerator::adjustTopGraspOrientation(geometry_msgs::PoseStamped &pose) {
   // Direction vector of z-axis. Should match root z-axis orientation
   tf::Vector3 z_axis(
       0,
@@ -68,7 +68,7 @@ void GraspOrientationGenerator::adjustTopGraspOrientation(geometry_msgs::PoseSta
            pose.pose.orientation.w);
 }
 
-void GraspOrientationGenerator::adjustFrontGraspOrientation(geometry_msgs::PoseStamped &pose) {
+void GraspPoseGenerator::adjustFrontGraspOrientation(geometry_msgs::PoseStamped &pose) {
   // Direction vector of z-axis. WARN: The z-axis will become the new x-axis for front grip
   tf::Vector3 z_axis(
       pose.pose.position.x,

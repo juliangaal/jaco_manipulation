@@ -134,7 +134,6 @@ bool JacoManipulationServer::planAndMove(const std::string &pose_goal_string) {
 bool JacoManipulationServer::planAndMoveAndGrasp(const geometry_msgs::PoseStamped &pose_goal) {
   ROS_STATUS("Grasp request received");
 
-  openGripper();
   bool moved = planAndMove(pose_goal);
   if (!moved) return false;
 

@@ -2,10 +2,10 @@
 // Created by julian on 04.08.18.
 //
 
-#include <jaco_manipulation/client/goals/pose_goal.h>
+#include <jaco_manipulation/goals/pose_goal.h>
 #include <ros/console.h>
 
-using namespace jaco_manipulation::client::goals;
+using namespace jaco_manipulation::goals;
 
 PoseGoal::PoseGoal(const geometry_msgs::PoseStamped &goal_pose, const std::string &description) {
   description_ = description;

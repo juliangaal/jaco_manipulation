@@ -5,12 +5,10 @@
 #ifndef PROJECT_DROP_GOAL_H
 #define PROJECT_DROP_GOAL_H
 
-#include "jaco_manipulation/client/goals/objects/kinect_goal.h"
+#include "kinect_goal.h"
 
 namespace jaco_manipulation {
-namespace client {
 namespace goals {
-namespace objects {
 
 /*!
  * DropGoal
@@ -54,9 +52,7 @@ class DropGoal: public KinectGoal {
   void adjustHeight(const kinect_goal_definitions::BoundingBox &bounding_box_goal);
 };
 
-} // namespace objects
 } // namespace goals
-} // namespace client
 } // namespace jaco_manipulation
 
 #endif //PROJECT_DROP_GOAL_H

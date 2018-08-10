@@ -2,10 +2,10 @@
 // Created by julian on 04.08.18.
 //
 
-#include <jaco_manipulation/client/goals/move_it_goal.h>
+#include <jaco_manipulation/goals/move_it_goal.h>
 #include <ros/console.h>
 
-using namespace jaco_manipulation::client::goals;
+using namespace jaco_manipulation::goals;
 
 MoveItGoal::MoveItGoal(const std::string &name, const std::string &description) {
   description_ = description;

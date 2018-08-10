@@ -2,13 +2,13 @@
 // Created by julian on 06.08.18.
 //
 
-#include <jaco_manipulation/client/goals/objects/drop_goal.h>
+#include <jaco_manipulation/goals/drop_goal.h>
 #include <ros/console.h>
 
-using namespace jaco_manipulation::client::goals::objects;
+using namespace jaco_manipulation::goals;
 
 DropGoal::DropGoal(const kinect_goal_definitions::LimitedPose &drop_pose_goal, const std::string &description)
-: KinectGoal(drop_pose_goal, jaco_manipulation::client::grasps::GraspType::TOP_GRASP, description) {
+: KinectGoal(drop_pose_goal, jaco_manipulation::grasps::GraspType::TOP_GRASP, description) {
   goal_.goal_type = "drop_pose";
 
   goal_.pose_goal.pose.position.z += dropping_offset_;
@@ -17,7 +17,7 @@ DropGoal::DropGoal(const kinect_goal_definitions::LimitedPose &drop_pose_goal, c
 }
 
 DropGoal::DropGoal(const kinect_goal_definitions::BoundingBox &bounding_box_goal, const std::string &description)
-: KinectGoal(bounding_box_goal, jaco_manipulation::client::grasps::GraspType::TOP_GRASP, description) {
+: KinectGoal(bounding_box_goal, jaco_manipulation::grasps::GraspType::TOP_GRASP, description) {
   goal_.goal_type = "drop_pose";
 
   adjustHeight(bounding_box_goal);
@@ -29,7 +29,7 @@ jaco_manipulation::PlanAndMoveArmGoal DropGoal::goal() const {
   return KinectGoal::goal();
 }
 
-void DropGoal::adjustHeight(const jaco_manipulation::client::goals::kinect_goal_definitions::BoundingBox &bounding_box) {
+void DropGoal::adjustHeight(const jaco_manipulation::goals::kinect_goal_definitions::BoundingBox &bounding_box) {
   double height_adj = 0.0;
   // TODO this works even though it might seem to low. Jaco's, e.g. h=17cm is not real world height of 17cm, ASK CHITT
   // works even without dropping offset

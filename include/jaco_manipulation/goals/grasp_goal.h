@@ -4,12 +4,10 @@
 
 #ifndef PROJECT_GRASPGOAL_HPP
 #define PROJECT_GRASPGOAL_HPP
-#include "jaco_manipulation/client/goals/objects/kinect_goal.h"
+#include "kinect_goal.h"
 
 namespace jaco_manipulation {
-namespace client {
 namespace goals {
-namespace objects {
 
 /*!
  * GraspGoal
@@ -30,7 +28,7 @@ class GraspGoal: public KinectGoal {
    * @param description descritpion with additional info
    */
   explicit GraspGoal(const kinect_goal_definitions::LimitedPose &grasp_pose_goal,
-                     jaco_manipulation::client::grasps::GraspType grasp,
+                     jaco_manipulation::grasps::GraspType grasp,
                      const std::string &description = "grasp goal");
 
   /**
@@ -39,7 +37,7 @@ class GraspGoal: public KinectGoal {
    * @param description descritpion with additional info
    */
   explicit GraspGoal(const kinect_goal_definitions::BoundingBox &bounding_box_goal,
-                     jaco_manipulation::client::grasps::GraspType grasp,
+                     jaco_manipulation::grasps::GraspType grasp,
                      const std::string &description = "grasp box goal");
 
   /**
@@ -61,9 +59,7 @@ class GraspGoal: public KinectGoal {
   void adjustHeight(const kinect_goal_definitions::BoundingBox &bounding_box);
 };
 
-} // namespace objects
 } // namespace goals
-} // namespace client
 } // namespace jaco_manipulation
 
 #endif //PROJECT_GRASPGOAL_HPP

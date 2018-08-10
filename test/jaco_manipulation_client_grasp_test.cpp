@@ -4,13 +4,13 @@
 
 #include <jaco_manipulation/client/jaco_manipulation_client.h>
 
-using namespace jaco_manipulation::client;
+using namespace jaco_manipulation;
 
 int main(int argn, char *args[]) {
 
   ros::init(argn, args, "pam_client");
 
-  JacoManipulationClient jmc;
+  client::JacoManipulationClient jmc;
   jmc.moveTo("home");
 
   using namespace goals::kinect_goal_definitions;

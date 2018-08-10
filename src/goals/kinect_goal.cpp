@@ -2,14 +2,14 @@
 // Created by julian on 8/6/18.
 //
 
-#include <jaco_manipulation/client/goals/objects/kinect_goal.h>
+#include <jaco_manipulation/goals/kinect_goal.h>
 #include <ros/console.h>
 #include <tf/tf.h>
 
-using namespace jaco_manipulation::client::goals::objects;
+using namespace jaco_manipulation::goals;
 
 KinectGoal::KinectGoal(const kinect_goal_definitions::LimitedPose &grasp_pose_goal,
-                       jaco_manipulation::client::grasps::GraspType grasp,
+                       jaco_manipulation::grasps::GraspType grasp,
                        const std::string &description)
 : requested_grasp_(grasp) {
   description_ = description;
@@ -25,7 +25,7 @@ KinectGoal::KinectGoal(const kinect_goal_definitions::LimitedPose &grasp_pose_go
 }
 
 KinectGoal::KinectGoal(const kinect_goal_definitions::BoundingBox &bounding_box_goal,
-                       jaco_manipulation::client::grasps::GraspType grasp,
+                       jaco_manipulation::grasps::GraspType grasp,
                        const std::string &description)
 : requested_grasp_(grasp) {
   description_ = description + " \"" + bounding_box_goal.description + "\"";
@@ -62,12 +62,12 @@ void KinectGoal::adjustPoseToCenterOfObject(const kinect_goal_definitions::Bound
                                       goal_.pose_goal.pose.position.z);
 }
 
-void KinectGoal::adjustOrientation(jaco_manipulation::client::grasps::GraspType grasp) {
+void KinectGoal::adjustOrientation(jaco_manipulation::grasps::GraspType grasp) {
   grasp_orientation_generator_.adjustOrientation(goal_.pose_goal, grasp);
 }
 
 std::string KinectGoal::requestedOrientation() {
-  using jaco_manipulation::client::grasps::GraspType;
+  using jaco_manipulation::grasps::GraspType;
   switch (requested_grasp_) {
     case GraspType::TOP_GRASP:
       return "Top Orientation";
