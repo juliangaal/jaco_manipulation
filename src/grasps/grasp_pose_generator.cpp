@@ -12,18 +12,24 @@ void GraspPoseGenerator::adjustPose(geometry_msgs::PoseStamped &pose,
                                     const GraspType type) {
   switch(type) {
     case TOP_GRASP:
-      adjustTopGraspOrientation(pose);
+      adjustPosition(pose, box, TOP_GRASP);
+      adjustToTopOrientation(pose);
+      break;
+    case TOP_DROP:
+      adjustPosition(pose, box, TOP_DROP);
+      adjustToTopOrientation(pose);
       break;
     case FRONT_GRASP:
-      adjustFrontGraspOrientation(pose);
+      adjustToFrontOrientation(pose);
       break;
     default:
-      adjustTopGraspOrientation(pose);
+      adjustToTopOrientation(pose);
   }
 }
 
 void GraspPoseGenerator::adjustPosition(geometry_msgs::PoseStamped &pose,
-                                        const jaco_manipulation::goals::goal_input::BoundingBox &box) {
+                                        const jaco_manipulation::goals::goal_input::BoundingBox &box,
+                                        const GraspType type) {
   pose.pose.position.x = box.x;
   pose.pose.position.y = box.y;
   pose.pose.position.z = box.z;
@@ -41,9 +47,41 @@ void GraspPoseGenerator::adjustPosition(geometry_msgs::PoseStamped &pose,
            pose.pose.position.x,
            pose.pose.position.y,
            pose.pose.position.z);
+
+  switch(type) {
+    case TOP_GRASP:
+      adjustHeightForTopPose(pose, box);
+      break;
+    case TOP_DROP:
+      adjustHeightForTopDropPose(pose, box);
+      break;
+    default:
+      adjustToTopOrientation(pose);
+  }
+
 }
 
-void GraspPoseGenerator::adjustTopGraspOrientation(geometry_msgs::PoseStamped &pose) {
+void GraspPoseGenerator::adjustHeightForTopPose(geometry_msgs::PoseStamped &pose,
+                                                const jaco_manipulation::goals::goal_input::BoundingBox &box) {
+  // adjust height, if smaller than minimal allowance
+  if (pose.pose.position.z < min_height_top_grasp)
+    pose.pose.position.z = min_height_top_grasp;
+
+  double height_adj = 0.0;
+
+  if (box.height > pose.pose.position.z)
+    height_adj = std::fabs(box.height - pose.pose.position.z);
+
+  pose.pose.position.z += height_adj;
+}
+
+void GraspPoseGenerator::adjustHeightForTopDropPose(geometry_msgs::PoseStamped &pose,
+                                                    const jaco_manipulation::goals::goal_input::BoundingBox &box) {
+  adjustHeightForTopPose(pose, box);
+  pose.pose.position.z += drop_offset_;
+}
+
+void GraspPoseGenerator::adjustToTopOrientation(geometry_msgs::PoseStamped &pose) {
   // Direction vector of z-axis. Should match root z-axis orientation
   tf::Vector3 z_axis(
       0,
@@ -77,10 +115,6 @@ void GraspPoseGenerator::adjustTopGraspOrientation(geometry_msgs::PoseStamped &p
   top_grasp_orientation.getRotation(top_grasp_quaternion);
   tf::quaternionTFToMsg(top_grasp_quaternion, pose.pose.orientation);
 
-  // adjust height, if smaller than minimal allowance
-  if (pose.pose.position.z < min_height_top_grasp)
-    pose.pose.position.z = min_height_top_grasp;
-
   ROS_INFO("Top Fix : Pose now (%f,%f,%f) ; (%f,%f,%f,%f)",
            pose.pose.position.x,
            pose.pose.position.y,
@@ -91,7 +125,7 @@ void GraspPoseGenerator::adjustTopGraspOrientation(geometry_msgs::PoseStamped &p
            pose.pose.orientation.w);
 }
 
-void GraspPoseGenerator::adjustFrontGraspOrientation(geometry_msgs::PoseStamped &pose) {
+void GraspPoseGenerator::adjustToFrontOrientation(geometry_msgs::PoseStamped &pose) {
   // Direction vector of z-axis. WARN: The z-axis will become the new x-axis for front grip
   tf::Vector3 z_axis(
       pose.pose.position.x,

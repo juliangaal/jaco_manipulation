@@ -14,16 +14,16 @@ int main(int argn, char *args[]) {
 //  jmc.moveTo("home");
 
   using namespace goals::goal_input;
-  {
-    BoundingBox b;
-    b.description = "ball";
-    b.x = 0.37;
-    b.y = 0.03;
-    b.length = 0.06;
-    b.height = 0.06;
-    b.width = 0.06;
-    jmc.graspAt(b);
-  }
+//  {
+//    BoundingBox b;
+//    b.description = "ball";
+//    b.x = 0.37;
+//    b.y = 0.03;
+//    b.length = 0.06;
+//    b.height = 0.06;
+//    b.width = 0.06;
+//    jmc.graspAt(b);
+//  }
 
   {
     BoundingBox b;
