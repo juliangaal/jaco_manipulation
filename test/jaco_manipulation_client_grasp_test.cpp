@@ -15,18 +15,25 @@ int main(int argn, char *args[]) {
 
   using namespace goals::kinect_goal_definitions;
   {
-    LimitedPose pose;
-    pose.x = 0.4;
-    pose.y = 0.0;
-    pose.rotation = 0.674663;
-    jmc.graspAt(pose);
+    BoundingBox b;
+    b.description = "ball";
+    b.x = 0.37;
+    b.y = 0.03;
+    b.length = 0.06;
+    b.height = 0.06;
+    b.width = 0.06;
+//    LimitedPose pose;
+//    pose.x = 0.4;
+//    pose.y = 0.0;
+//    pose.rotation = 0.674663;
+    jmc.graspAt(b);
   }
 
   {
     BoundingBox b;
     b.description = "mug";
-    b.x = 0.505;
-    b.y = -0.1;
+    b.x = 0.605;
+    b.y = 0.045;
     b.length = 0.09;
     b.width = 0.09;
     b.height = 0.11;
