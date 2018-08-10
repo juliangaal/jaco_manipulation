@@ -55,14 +55,18 @@ class KinectGoal: public PoseGoal {
    * @param grasp_pose_goal grasp pose goal
    * @param description descritpion with additional info
    */
-  explicit KinectGoal(const kinect_goal_definitions::LimitedPose &grasp_pose_goal, const std::string &description = "grasp goal");
+  explicit KinectGoal(const kinect_goal_definitions::LimitedPose &grasp_pose_goal,
+                      jaco_manipulation::client::grasps::GraspType grasp,
+                      const std::string &description = "grasp goal");
 
   /**
    * Constructor
    * @param bounding_box_goal bounding box to drop something at
    * @param description descritpion with additional info
    */
-  explicit KinectGoal(const kinect_goal_definitions::BoundingBox &bounding_box_goal, const std::string &description = "grasp box goal");
+  explicit KinectGoal(const kinect_goal_definitions::BoundingBox &bounding_box_goal,
+                      jaco_manipulation::client::grasps::GraspType grasp,
+                      const std::string &description = "grasp box goal");
 
   /**
    * default destructor
@@ -90,9 +94,6 @@ class KinectGoal: public PoseGoal {
 
   jaco_manipulation::client::grasps::GraspOrientationGenerator grasp_orientation_generator_{};
 
-  jaco_manipulation::client::grasps::TopGraspOrientation top_grasp_orientation_{};
-
-  jaco_manipulation::client::grasps::FrontGraspOrientation front_grasp_orientation_{};
   /**
    * Adjusts the Pose to Center of Object
    * @param bounding_box bounding box to center pose around
@@ -102,9 +103,8 @@ class KinectGoal: public PoseGoal {
   /**
    * Adjusts gripper pose orientation to absolute orientation relative to root
    */
-  void adjustPoseOrientationToAbsoluteOrientation();
-  };
-
+  void adjustOrientation(jaco_manipulation::client::grasps::GraspType grasp);
+};
 } // namespace objects
 } // namespace goals
 } // namespace client

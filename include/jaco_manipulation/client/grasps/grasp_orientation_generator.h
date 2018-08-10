@@ -19,9 +19,12 @@ enum GraspType { TOP_GRASP, FRONT_GRASP, LEFT_GRASP, RIGHT_GRASP };
 class GraspOrientationGenerator {
  public:
   constexpr GraspOrientationGenerator() = default;
-  void adjustOrientation(const GraspType type);
-  void adjustOrientation(const GraspType type, geometry_msgs::PoseStamped &pose);
-  void adjustOrientation(const FrontGraspOrientation &grasp, geometry_msgs::PoseStamped &pose);
+  void adjustOrientation(geometry_msgs::PoseStamped &pose, const GraspType type);
+ private:
+  void adjustTopGraspOrientation(geometry_msgs::PoseStamped &pose);
+  void adjustFrontGraspOrientation(geometry_msgs::PoseStamped &pose);
+  constexpr static double min_height_top_grasp = 0.175026;
+  constexpr static double min_height_front_grasp = 0.1;
 };
 
 } // namespace grasps

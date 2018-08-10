@@ -7,12 +7,25 @@
 
 using namespace jaco_manipulation::client::grasps;
 
-void GraspOrientationGenerator::adjustOrientation(const TopGraspOrientation &grasp, geometry_msgs::PoseStamped &pose) {
+void GraspOrientationGenerator::adjustOrientation(geometry_msgs::PoseStamped &pose, const GraspType type) {
+  switch(type) {
+    case TOP_GRASP:
+      adjustTopGraspOrientation(pose);
+      break;
+    case FRONT_GRASP:
+      adjustFrontGraspOrientation(pose);
+      break;
+    default:
+      adjustTopGraspOrientation(pose);
+  }
+}
+
+void GraspOrientationGenerator::adjustTopGraspOrientation(geometry_msgs::PoseStamped &pose) {
   // Direction vector of z-axis. Should match root z-axis orientation
   tf::Vector3 z_axis(
       0,
       0,
-      grasp.rotationZ_
+      1
   );
 
   /**
@@ -41,6 +54,10 @@ void GraspOrientationGenerator::adjustOrientation(const TopGraspOrientation &gra
   top_grasp_orientation.getRotation(top_grasp_quaternion);
   tf::quaternionTFToMsg(top_grasp_quaternion, pose.pose.orientation);
 
+  // adjust height, if smaller than minimal allowance
+  if (pose.pose.position.z < min_height_front_grasp)
+    pose.pose.position.z = min_height_top_grasp;
+
   ROS_INFO("Top Fix : Pose now (%f,%f,%f) ; (%f,%f,%f,%f)",
            pose.pose.position.x,
            pose.pose.position.y,
@@ -51,8 +68,7 @@ void GraspOrientationGenerator::adjustOrientation(const TopGraspOrientation &gra
            pose.pose.orientation.w);
 }
 
-void GraspOrientationGenerator::adjustOrientation(const FrontGraspOrientation &grasp,
-                                                  geometry_msgs::PoseStamped &pose) {
+void GraspOrientationGenerator::adjustFrontGraspOrientation(geometry_msgs::PoseStamped &pose) {
   // Direction vector of z-axis. WARN: The z-axis will become the new x-axis for front grip
   tf::Vector3 z_axis(
       pose.pose.position.x,
@@ -86,6 +102,10 @@ void GraspOrientationGenerator::adjustOrientation(const FrontGraspOrientation &g
   tf::Quaternion front_grasp_quaternion;
   front_grasp_orientation.getRotation(front_grasp_quaternion);
   tf::quaternionTFToMsg(front_grasp_quaternion, pose.pose.orientation);
+
+  // adjust height, if smaller than minimal allowance
+  if (pose.pose.position.z < min_height_front_grasp)
+    pose.pose.position.z = min_height_front_grasp;
 
   ROS_INFO("Front Fix: Pose now (%f,%f,%f) ; (%f,%f,%f,%f)",
            pose.pose.position.x,

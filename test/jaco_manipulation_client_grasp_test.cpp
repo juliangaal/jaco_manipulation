@@ -33,18 +33,6 @@ int main(int argn, char *args[]) {
     jmc.dropAt(b);
   }
 
-  {
-    BoundingBox b;
-    b.description = "mug";
-    b.x = 0.35;
-    b.y = -0.2;
-    b.length = 0.09;
-    b.width = 0.09;
-    b.height = 0.11;
-    jmc.dropAt(b);
-  }
-
-
   jmc.moveTo("home");
 
   return 0;
