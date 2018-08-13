@@ -17,7 +17,7 @@ GraspGoal::GraspGoal(const goal_input::LimitedPose &grasp_pose_goal,
   ROS_INFO_STREAM("Attempt : Move to " << info());
 }
 
-GraspGoal::GraspGoal(jaco_manipulation::BoundingBox &bounding_box_goal,
+GraspGoal::GraspGoal(const jaco_manipulation::BoundingBox &bounding_box_goal,
                      jaco_manipulation::grasps::GraspType grasp,
                      const std::string &description)
 : KinectGoal(bounding_box_goal, grasp, description) {

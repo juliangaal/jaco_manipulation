@@ -24,7 +24,7 @@ KinectGoal::KinectGoal(const goal_input::LimitedPose &grasp_pose_goal,
 //  adjustOrientation(grasp);
 }
 
-KinectGoal::KinectGoal(jaco_manipulation::BoundingBox &bounding_box_goal,
+KinectGoal::KinectGoal(const jaco_manipulation::BoundingBox &bounding_box_goal,
                        jaco_manipulation::grasps::GraspType grasp,
                        const std::string &description)
 : requested_grasp_(grasp) {
@@ -33,7 +33,6 @@ KinectGoal::KinectGoal(jaco_manipulation::BoundingBox &bounding_box_goal,
   goal_.pose_goal.header.frame_id = planning_frame_;
   goal_.goal_type = "goal";
 
-//  adjustPoseToCenterOfObject(bounding_box_goal);
   adjustPose(grasp, bounding_box_goal);
 }
 
@@ -41,29 +40,8 @@ jaco_manipulation::PlanAndMoveArmGoal KinectGoal::goal() const {
   return PoseGoal::goal();
 }
 
-//void KinectGoal::adjustPoseToCenterOfObject(const jaco_manipulation::BoundingBox &bounding_box) {
-//  // TODO BOUNDING BOX CALCULATED BY TOP RIGHT CORNER IN COORDINATE SYSTEM. CHANGE AFTER FEEDBACK WITH ANDREAS
-//  goal_.pose_goal.pose.position.x = bounding_box.x;
-//  goal_.pose_goal.pose.position.y = bounding_box.y;
-//  goal_.pose_goal.pose.position.z = bounding_box.z;
-//
-//  const double width_adj = bounding_box.width * 0.5;
-//  const double length_adj = bounding_box.length * 0.5;
-//
-//  goal_.pose_goal.pose.position.x += (bounding_box.x >= 0.0) ? width_adj : -width_adj;
-//  goal_.pose_goal.pose.position.y += (bounding_box.y >= 0.0) ? -length_adj : length_adj;
-//
-//  ROS_INFO("Box Fix : (%f %f %f) -> (%f %f %f)",
-//                                      bounding_box.x,
-//                                      bounding_box.y,
-//                                      bounding_box.z,
-//                                      goal_.pose_goal.pose.position.x,
-//                                      goal_.pose_goal.pose.position.y,
-//                                      goal_.pose_goal.pose.position.z);
-//}
-
 void KinectGoal::adjustPose(jaco_manipulation::grasps::GraspType grasp,
-                            jaco_manipulation::BoundingBox &box) {
+                            const jaco_manipulation::BoundingBox &box) {
   grasp_orientation_generator_.adjustPose(goal_.pose_goal, box, grasp);
 }
 

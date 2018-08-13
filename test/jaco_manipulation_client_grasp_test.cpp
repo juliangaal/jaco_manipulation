@@ -14,26 +14,14 @@ int main(int argn, char *args[]) {
   client::JacoManipulationClient jmc;
   jmc.moveTo("home");
 
-  using namespace goals::goal_input;
-//  {
-//    BoundingBox b;
-//    b.description = "ball";
-//    b.x = 0.37;
-//    b.y = 0.03;
-//    b.length = 0.06;
-//    b.height = 0.06;
-//    b.width = 0.06;
-//    jmc.graspAt(b);
-//  }
-
   {
     jaco_manipulation::BoundingBox b;
     b.header.frame_id = "base_link";
     b.description = "bottle";
-    b.point.x = 0.65;
-    b.point.y = 0.272;
-    b.dimensions.x = 0.09;
-    b.dimensions.y = 0.09;
+    b.point.x = 0.635;
+    b.point.y = 0.257;
+    b.dimensions.x = 0.06;
+    b.dimensions.y = 0.06;
     b.dimensions.z = 0.21;
     jmc.graspAt(b);
   }

@@ -20,13 +20,15 @@ class GraspPoseGenerator {
  public:
   GraspPoseGenerator();
   void adjustPose(geometry_msgs::PoseStamped &pose,
-                  jaco_manipulation::BoundingBox &box,
+                  const jaco_manipulation::BoundingBox &box,
                   const GraspType type);
  private:
   void adjustHeightForTopPose(geometry_msgs::PoseStamped &pose,
                                      const jaco_manipulation::BoundingBox &box);
   void adjustHeightForTopDropPose(geometry_msgs::PoseStamped &pose,
                                      const jaco_manipulation::BoundingBox &box);
+  void adjustHeightForFrontPose(geometry_msgs::PoseStamped &pose,
+                                                    const jaco_manipulation::BoundingBox &box);
   void adjustPosition(geometry_msgs::PoseStamped &pose,
                       const jaco_manipulation::BoundingBox &box,
                       const GraspType type);
@@ -34,14 +36,14 @@ class GraspPoseGenerator {
   void adjustToFrontOrientation(geometry_msgs::PoseStamped &pose);
 
   void transformGoalIntoRobotFrame(geometry_msgs::PoseStamped &pose,
-                                   jaco_manipulation::BoundingBox &box);
+                                   const jaco_manipulation::BoundingBox &box);
 
   ros::NodeHandle n_;
   tf::TransformListener tf_listener_;
   constexpr static double min_height_top_grasp = 0.175026;
   constexpr static double min_height_front_grasp = 0.1;
-  constexpr static double drop_offset_ = 0.16;
-  constexpr static double grasp_offset_ = 0.01;
+  constexpr static double drop_offset_ = 0.01;
+  constexpr static double grasp_offset_ = 0.11;
 };
 
 } // namespace grasps
