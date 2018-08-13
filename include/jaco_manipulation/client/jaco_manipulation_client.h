@@ -9,6 +9,7 @@
 
 #include <actionlib/client/simple_action_client.h>
 #include <jaco_manipulation/PlanAndMoveArmAction.h>
+#include <jaco_manipulation/BoundingBox.h>
 
 #include <jaco_manipulation/goals/goal.h>
 #include <jaco_manipulation/goals//grasp_goal.h>
@@ -77,7 +78,7 @@ class JacoManipulationClient {
     * @param bounding_box_goal bounding box to drop something at
     * @param description description of move
   */
-  void graspAt(goals::goal_input::BoundingBox &bounding_box_goal,
+  void graspAt(jaco_manipulation::BoundingBox &bounding_box_goal,
                const std::string &description = "grasp box goal");
 
   /**
@@ -93,7 +94,7 @@ class JacoManipulationClient {
    * @param bounding_box_goal bounding box to drop something at
    * @param description description of move
   */
-  void dropAt(goals::goal_input::BoundingBox &bounding_box_goal,
+  void dropAt(jaco_manipulation::BoundingBox &bounding_box_goal,
               const std::string &description = "drop box goal");
 
  private:

@@ -31,7 +31,7 @@ class DropGoal: public KinectGoal {
    * @param bounding_box_goal bounding box to drop something at
    * @param description descritpion with additional info
    */
-  explicit DropGoal(goal_input::BoundingBox &bounding_box_goal,
+  explicit DropGoal(jaco_manipulation::BoundingBox &bounding_box_goal,
                     const std::string &description = "drop box goal");
 
   /**

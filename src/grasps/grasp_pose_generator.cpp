@@ -7,52 +7,76 @@
 
 using namespace jaco_manipulation::grasps;
 
+GraspPoseGenerator::GraspPoseGenerator() : tf_listener_(n_, ros::Duration(10)) {}
+
 void GraspPoseGenerator::adjustPose(geometry_msgs::PoseStamped &pose,
-                                    jaco_manipulation::goals::goal_input::BoundingBox &box,
+                                    jaco_manipulation::BoundingBox &box,
                                     const GraspType type) {
   switch(type) {
     case TOP_GRASP:
-      transformGoalIntoRobotFrame(box, "base_link");
       adjustPosition(pose, box, TOP_GRASP);
+      transformGoalIntoRobotFrame(pose, box);
       adjustToTopOrientation(pose);
       break;
     case TOP_DROP:
-      transformGoalIntoRobotFrame(box, "base_link");
+//      transformGoalIntoRobotFrame(pose, box);
       adjustPosition(pose, box, TOP_DROP);
+      transformGoalIntoRobotFrame(pose, box);
       adjustToTopOrientation(pose);
       break;
     case FRONT_GRASP:
-      transformGoalIntoRobotFrame(box, "base_link");
+      transformGoalIntoRobotFrame(pose, box);
       adjustToFrontOrientation(pose);
       break;
     default:
-      transformGoalIntoRobotFrame(box, "base_link");
+      transformGoalIntoRobotFrame(pose, box);
       adjustToTopOrientation(pose);
   }
 }
 
-void GraspPoseGenerator::transformGoalIntoRobotFrame(jaco_manipulation::goals::goal_input::BoundingBox &box,
-                                                     const std::string input_frame) {
+void GraspPoseGenerator::transformGoalIntoRobotFrame(geometry_msgs::PoseStamped &pose,
+                                                     jaco_manipulation::BoundingBox &box) {
+  geometry_msgs::PointStamped out_pt;
+  geometry_msgs::PointStamped in_pt;
+  in_pt.header = box.header;
+  in_pt.point = pose.pose.position;
 
+  // transform point
+  try {
+    tf_listener_.waitForTransform("root", box.header.frame_id, box.header.stamp, ros::Duration(1));
+    tf_listener_.transformPoint("root", in_pt, out_pt);
+  }
+  catch (tf::TransformException &exception) {
+    ROS_INFO_STREAM("Transform failed. Why? - " << exception.what());
+  }
+  pose.pose.position = out_pt.point;
+
+  ROS_INFO("Transfrm: (%f,%f,%f) -> (%f,%f,%f)",
+           in_pt.point.x,
+           in_pt.point.y,
+           in_pt.point.z,
+           pose.pose.position.x,
+           pose.pose.position.y,
+           pose.pose.position.z);
 }
 
 void GraspPoseGenerator::adjustPosition(geometry_msgs::PoseStamped &pose,
-                                        const jaco_manipulation::goals::goal_input::BoundingBox &box,
+                                        const jaco_manipulation::BoundingBox &box,
                                         const GraspType type) {
-  pose.pose.position.x = box.x;
-  pose.pose.position.y = box.y;
-  pose.pose.position.z = box.z + box.height + grasp_offset_;
+  pose.pose.position.x = box.point.x;
+  pose.pose.position.y = box.point.y;
+  pose.pose.position.z = box.point.z + box.dimensions.z + grasp_offset_;
 
-  const double width_adj = box.width * 0.5;
-  const double length_adj = box.length * 0.5;
+  const double width_adj = box.dimensions.x * 0.5;
+  const double length_adj = box.dimensions.y * 0.5;
 
-  pose.pose.position.x += (box.x >= 0.0) ? width_adj : -width_adj;
-  pose.pose.position.y += (box.y >= 0.0) ? -length_adj : length_adj;
+  pose.pose.position.x += (box.point.x >= 0.0) ? width_adj : -width_adj;
+  pose.pose.position.y += (box.point.y >= 0.0) ? -length_adj : length_adj;
 
   ROS_INFO("Box Fix : (%f %f %f) -> (%f %f %f)",
-           box.x,
-           box.y,
-           box.z,
+           box.point.x,
+           box.point.y,
+           box.point.z,
            pose.pose.position.x,
            pose.pose.position.y,
            pose.pose.position.z);
@@ -71,21 +95,21 @@ void GraspPoseGenerator::adjustPosition(geometry_msgs::PoseStamped &pose,
 }
 
 void GraspPoseGenerator::adjustHeightForTopPose(geometry_msgs::PoseStamped &pose,
-                                                const jaco_manipulation::goals::goal_input::BoundingBox &box) {
+                                                const jaco_manipulation::BoundingBox &box) {
   // adjust height, if smaller than minimal allowance
   if (pose.pose.position.z < min_height_top_grasp)
     pose.pose.position.z = min_height_top_grasp;
 
 //  double height_adj = 0.0;
 //
-//  if (box.height > pose.pose.position.z)
-//    height_adj = std::fabs(box.height - pose.pose.position.z);
+//  if (box.dimensions.z > pose.pose.position.z)
+//    height_adj = std::fabs(box.dimensions.z - pose.pose.position.z);
 //
 //  pose.pose.position.z += height_adj;
 }
 
 void GraspPoseGenerator::adjustHeightForTopDropPose(geometry_msgs::PoseStamped &pose,
-                                                    const jaco_manipulation::goals::goal_input::BoundingBox &box) {
+                                                    const jaco_manipulation::BoundingBox &box) {
   adjustHeightForTopPose(pose, box);
   pose.pose.position.z += drop_offset_;
 }

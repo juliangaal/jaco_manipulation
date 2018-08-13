@@ -35,7 +35,7 @@ void JacoManipulationClient::graspAt(const goals::goal_input::LimitedPose &grasp
 }
 
 
-void JacoManipulationClient::graspAt(goals::goal_input::BoundingBox &bounding_box_goal,
+void JacoManipulationClient::graspAt(jaco_manipulation::BoundingBox &bounding_box_goal,
                                      const std::string &description) {
   tryDifferentGraspPoses(bounding_box_goal, description);
 }
@@ -46,7 +46,7 @@ void JacoManipulationClient::dropAt(const goals::goal_input::LimitedPose &drop_p
   execute(goal);
 }
 
-void JacoManipulationClient::dropAt(goals::goal_input::BoundingBox &bounding_box_goal,
+void JacoManipulationClient::dropAt(jaco_manipulation::BoundingBox &bounding_box_goal,
                                     const std::string &description) {
   goals::DropGoal goal(bounding_box_goal, description);
   execute(goal);

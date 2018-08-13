@@ -34,7 +34,7 @@ class KinectGoal: public PoseGoal {
    * @param bounding_box_goal bounding box to drop something at
    * @param description descritpion with additional info
    */
-  explicit KinectGoal(goal_input::BoundingBox &bounding_box_goal,
+  explicit KinectGoal(jaco_manipulation::BoundingBox &bounding_box_goal,
                       jaco_manipulation::grasps::GraspType grasp,
                       const std::string &description = "grasp box goal");
 
@@ -78,7 +78,7 @@ class KinectGoal: public PoseGoal {
 //   * Adjusts the Pose to Center of Object
 //   * @param bounding_box bounding box to center pose around
 //  */
-//  void adjustPoseToCenterOfObject(const goal_input::BoundingBox &bounding_box);
+//  void adjustPoseToCenterOfObject(const jaco_manipulation::BoundingBox &bounding_box);
 
   /**
    * Adjusts gripper pose orientation and position for type of grasp
@@ -86,7 +86,7 @@ class KinectGoal: public PoseGoal {
    * @param box Bounding box to be adjusted around
    */
   void adjustPose(jaco_manipulation::grasps::GraspType grasp,
-                  jaco_manipulation::goals::goal_input::BoundingBox &box);
+                  jaco_manipulation::BoundingBox &box);
 };
 } // namespace goals
 } // namespace jaco_manipulation

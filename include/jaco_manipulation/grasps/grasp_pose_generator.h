@@ -7,6 +7,9 @@
 
 #include <geometry_msgs/PoseStamped.h>
 #include <jaco_manipulation/goals/goal_input.h>
+#include <jaco_manipulation/BoundingBox.h>
+#include <tf/transform_listener.h>
+#include <ros/node_handle.h>
 
 namespace jaco_manipulation {
 namespace grasps {
@@ -15,28 +18,30 @@ enum GraspType { TOP_GRASP, TOP_DROP, FRONT_GRASP, LEFT_GRASP, RIGHT_GRASP };
 
 class GraspPoseGenerator {
  public:
-  constexpr GraspPoseGenerator() = default;
+  GraspPoseGenerator();
   void adjustPose(geometry_msgs::PoseStamped &pose,
-                  jaco_manipulation::goals::goal_input::BoundingBox &box,
+                  jaco_manipulation::BoundingBox &box,
                   const GraspType type);
  private:
   void adjustHeightForTopPose(geometry_msgs::PoseStamped &pose,
-                                     const jaco_manipulation::goals::goal_input::BoundingBox &box);
+                                     const jaco_manipulation::BoundingBox &box);
   void adjustHeightForTopDropPose(geometry_msgs::PoseStamped &pose,
-                                     const jaco_manipulation::goals::goal_input::BoundingBox &box);
+                                     const jaco_manipulation::BoundingBox &box);
   void adjustPosition(geometry_msgs::PoseStamped &pose,
-                      const jaco_manipulation::goals::goal_input::BoundingBox &box,
+                      const jaco_manipulation::BoundingBox &box,
                       const GraspType type);
   void adjustToTopOrientation(geometry_msgs::PoseStamped &pose);
   void adjustToFrontOrientation(geometry_msgs::PoseStamped &pose);
 
-  void transformGoalIntoRobotFrame(jaco_manipulation::goals::goal_input::BoundingBox &box,
-                                   const std::string input_frame);
+  void transformGoalIntoRobotFrame(geometry_msgs::PoseStamped &pose,
+                                   jaco_manipulation::BoundingBox &box);
 
+  ros::NodeHandle n_;
+  tf::TransformListener tf_listener_;
   constexpr static double min_height_top_grasp = 0.175026;
   constexpr static double min_height_front_grasp = 0.1;
   constexpr static double drop_offset_ = 0.16;
-  constexpr static double grasp_offset_ = 0.14;
+  constexpr static double grasp_offset_ = 0.01;
 };
 
 } // namespace grasps

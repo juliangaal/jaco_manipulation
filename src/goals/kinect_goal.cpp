@@ -24,7 +24,7 @@ KinectGoal::KinectGoal(const goal_input::LimitedPose &grasp_pose_goal,
 //  adjustOrientation(grasp);
 }
 
-KinectGoal::KinectGoal(goal_input::BoundingBox &bounding_box_goal,
+KinectGoal::KinectGoal(jaco_manipulation::BoundingBox &bounding_box_goal,
                        jaco_manipulation::grasps::GraspType grasp,
                        const std::string &description)
 : requested_grasp_(grasp) {
@@ -41,7 +41,7 @@ jaco_manipulation::PlanAndMoveArmGoal KinectGoal::goal() const {
   return PoseGoal::goal();
 }
 
-//void KinectGoal::adjustPoseToCenterOfObject(const goal_input::BoundingBox &bounding_box) {
+//void KinectGoal::adjustPoseToCenterOfObject(const jaco_manipulation::BoundingBox &bounding_box) {
 //  // TODO BOUNDING BOX CALCULATED BY TOP RIGHT CORNER IN COORDINATE SYSTEM. CHANGE AFTER FEEDBACK WITH ANDREAS
 //  goal_.pose_goal.pose.position.x = bounding_box.x;
 //  goal_.pose_goal.pose.position.y = bounding_box.y;
@@ -63,7 +63,7 @@ jaco_manipulation::PlanAndMoveArmGoal KinectGoal::goal() const {
 //}
 
 void KinectGoal::adjustPose(jaco_manipulation::grasps::GraspType grasp,
-                            jaco_manipulation::goals::goal_input::BoundingBox &box) {
+                            jaco_manipulation::BoundingBox &box) {
   grasp_orientation_generator_.adjustPose(goal_.pose_goal, box, grasp);
 }
 

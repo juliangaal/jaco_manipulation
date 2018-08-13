@@ -14,7 +14,7 @@ DropGoal::DropGoal(const goal_input::LimitedPose &drop_pose_goal, const std::str
   ROS_INFO_STREAM("Attempt : Move to " << info());
 }
 
-DropGoal::DropGoal(goal_input::BoundingBox &bounding_box_goal, const std::string &description)
+DropGoal::DropGoal(jaco_manipulation::BoundingBox &bounding_box_goal, const std::string &description)
 : KinectGoal(bounding_box_goal, jaco_manipulation::grasps::GraspType::TOP_DROP, description) {
   goal_.goal_type = "drop_pose";
 
