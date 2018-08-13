@@ -20,6 +20,11 @@ find_package(catkin REQUIRED COMPONENTS
         tf
         message_generation
         wpi_jaco_msgs
+        )
+
+add_message_files(
+        FILES
+        BoundingBox.msg
 )
 
 ## Generate actions in the 'action' folder
@@ -28,9 +33,14 @@ add_action_files(
         PlanAndMoveArm.action
 )
 
+add_service_files(
+        FILES
+        GenerateGraspPose.srv
+)
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
         DEPENDENCIES
+        jaco_manipulation
         geometry_msgs
         sensor_msgs
         std_msgs
@@ -51,7 +61,7 @@ include_directories(
 set(SERVER_SOURCES
         src/server/jaco_boundaries.cpp
         src/server/jaco_manipulation_server.cpp
-)
+        )
 
 set(CLIENT_SOURCES
         src/client/jaco_manipulation_client.cpp
@@ -62,17 +72,17 @@ set(CLIENT_SOURCES
         src/goals/move_it_goal.cpp
         src/goals/pose_goal.cpp
         src/goals/joint_goal.cpp
-)
+        )
 
 ## Declare a cpp library --> DoroManipulation
 add_library(jaco2_manipulation
         ${SERVER_SOURCES}
         ${CLIENT_SOURCES}
-)
+        )
 
 add_library(grasp_pose_generator
         src/grasps/grasp_pose_generator.cpp
-)
+        )
 
 # Test client for jaco_manipulation action server
 add_executable(jaco_manipulation_client_test test/jaco_manipulation_client_test.cpp)
@@ -91,19 +101,19 @@ add_dependencies(jaco_manipulation_client_test jaco_manipulation_generate_messag
 target_link_libraries(jaco2_manipulation
         ${catkin_LIBRARIES}
         grasp_pose_generator
-)
+        )
 
 target_link_libraries(manipulation_server
         ${catkin_LIBRARIES}
         jaco2_manipulation
-)
+        )
 
 target_link_libraries(jaco_manipulation_client_test
         ${catkin_LIBRARIES}
         jaco2_manipulation
-)
+        )
 
 target_link_libraries(jaco_manipulation_client_grasp_test
         ${catkin_LIBRARIES}
         jaco2_manipulation
-)
+        )
