@@ -18,8 +18,8 @@ int main(int argn, char *args[]) {
     jaco_manipulation::BoundingBox b;
     b.header.frame_id = "base_link";
     b.description = "bottle";
-    b.point.x = 0.635;
-    b.point.y = 0.257;
+    b.point.x = 0.65;
+    b.point.y = 0.198;
     b.dimensions.x = 0.06;
     b.dimensions.y = 0.06;
     b.dimensions.z = 0.21;
@@ -32,8 +32,8 @@ int main(int argn, char *args[]) {
     b.description = "bottle";
     b.point.x = 0.44;
     b.point.y = 0.272;
-    b.dimensions.x = 0.09;
-    b.dimensions.y = 0.09;
+    b.dimensions.x = 0.06;
+    b.dimensions.y = 0.06;
     b.dimensions.z = 0.21;
     jmc.dropAt(b);
   }

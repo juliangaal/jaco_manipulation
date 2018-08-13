@@ -74,7 +74,7 @@ void GraspPoseGenerator::adjustPosition(geometry_msgs::PoseStamped &pose,
   const double length_adj = box.dimensions.y * 0.5;
 
   pose.pose.position.x += (box.point.x >= 0.0) ? width_adj : -width_adj;
-  pose.pose.position.y += (box.point.y >= 0.0) ? -length_adj : length_adj;
+  pose.pose.position.y += (box.point.y >= 0.0) ? length_adj : -length_adj;
 
   ROS_INFO("Box Fix : (%f %f %f) -> (%f %f %f)",
            box.point.x,
