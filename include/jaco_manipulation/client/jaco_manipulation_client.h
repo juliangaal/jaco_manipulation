@@ -78,7 +78,7 @@ class JacoManipulationClient {
     * @param bounding_box_goal bounding box to drop something at
     * @param description description of move
   */
-  void graspAt(jaco_manipulation::BoundingBox &bounding_box_goal,
+  void graspAt(const jaco_manipulation::BoundingBox &bounding_box_goal,
                const std::string &description = "grasp box goal");
 
   /**
@@ -94,7 +94,7 @@ class JacoManipulationClient {
    * @param bounding_box_goal bounding box to drop something at
    * @param description description of move
   */
-  void dropAt(jaco_manipulation::BoundingBox &bounding_box_goal,
+  void dropAt(const jaco_manipulation::BoundingBox &bounding_box_goal,
               const std::string &description = "drop box goal");
 
  private:

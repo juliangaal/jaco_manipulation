@@ -24,8 +24,9 @@ namespace rvt = rviz_visual_tools;
 JacoManipulationServer::JacoManipulationServer() :
     move_group_("arm"),
     pam_server_(nh_, "plan_and_move_arm", boost::bind(&JacoManipulationServer::processGoal, this, _1), false),
-    visual_tools_("root"),
-    haa_client_("jaco_arm/home_arm", true) {
+    plan_({}),
+    haa_client_("jaco_arm/home_arm", true),
+    moveit_visuals_(nh_, "root", move_group_, plan_) {
   ROS_INFO("Initializing Jaco Manipulation!");
 
   finger_pub_ = nh_.advertise<std_msgs::Float32>("jaco_arm/finger_cmd", 1);
@@ -35,7 +36,6 @@ JacoManipulationServer::JacoManipulationServer() :
   pam_server_.start();
 
   prepMoveItMoveGroup();
-  prepMoveItVisualTools();
 
   openGripper();
 }
@@ -47,16 +47,8 @@ void JacoManipulationServer::prepMoveItMoveGroup() {
   move_group_.allowLooking(true);
 }
 
-void JacoManipulationServer::prepMoveItVisualTools() {
-  visual_tools_.deleteAllMarkers();
-  visual_tools_.loadRemoteControl();
-  visual_tools_.trigger();
-}
-
 void JacoManipulationServer::showPlannedPath() {
-  visual_tools_.deleteAllMarkers();
-  visual_tools_.publishTrajectoryLine(plan_.trajectory_, move_group_.getCurrentState()->getJointModelGroup("arm"));
-  visual_tools_.trigger();
+  moveit_visuals_.showPlannedPath();
 }
 
 void JacoManipulationServer::processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
@@ -70,9 +62,9 @@ void JacoManipulationServer::processGoal(const jaco_manipulation::PlanAndMoveArm
   } else if (goal->goal_type == "joint_state") {
     result_value = planAndMove(goal->joint_goal);
   } else if (goal->goal_type == "grasp_pose") {
-    result_value = planAndMoveAndGrasp(goal->pose_goal);
+    result_value = planAndMoveAndGrasp(goal);
   } else if (goal->goal_type == "drop_pose") {
-    result_value = planAndMoveAndDrop(goal->pose_goal);
+    result_value = planAndMoveAndDrop(goal);
   } else {
     result_value = planAndMove(goal->goal_type);
   }
@@ -131,10 +123,12 @@ bool JacoManipulationServer::planAndMove(const std::string &pose_goal_string) {
   return move_group_.move() ? true : false;
 }
 
-bool JacoManipulationServer::planAndMoveAndGrasp(const geometry_msgs::PoseStamped &pose_goal) {
+bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
   ROS_STATUS("Grasp request received");
 
-  bool moved = planAndMove(pose_goal);
+  addObstacle(goal);
+
+  bool moved = planAndMove(goal->pose_goal);
   if (!moved) return false;
 
   closeGripper();
@@ -144,10 +138,12 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const geometry_msgs::PoseStampe
   return true;
 }
 
-bool JacoManipulationServer::planAndMoveAndDrop(const geometry_msgs::PoseStamped &pose_goal) {
+bool JacoManipulationServer::planAndMoveAndDrop(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
   ROS_STATUS("Drop request received");
 
-  bool moved = planAndMove(pose_goal);
+  addObstacle(goal);
+
+  bool moved = planAndMove(goal->pose_goal);
   if (!moved) {
     openGripper();
     return false;
@@ -160,54 +156,10 @@ bool JacoManipulationServer::planAndMoveAndDrop(const geometry_msgs::PoseStamped
   return true;
 }
 
-/**
- * Attaches the table obstacle to the planning scene interface.
- */
-void JacoManipulationServer::addTableAsObstacle(geometry_msgs::PoseStamped table_pose) {
-  ros::param::set("/plane_extraction_enable", true);
 
-  while (table_pose.pose.position.x == table_pose.pose.position.y &&
-      table_pose.pose.position.x == table_pose.pose.position.z &&
-      table_pose.pose.position.x == 0) {
-    ROS_INFO("Waiting for table position...");
-    sleep(1);
-  }
-
-  moveit_msgs::CollisionObject collision_object;
-  collision_object.header.frame_id = move_group_.getPlanningFrame();
-
-  /* The id of the object is used to identify it. */
-  collision_object.id = "table";
-
-  /* Define a box to add to the world. */
-  shape_msgs::SolidPrimitive primitive;
-  primitive.type = primitive.BOX;
-  primitive.dimensions.resize(3);
-  primitive.dimensions[0] = 0.8;
-  primitive.dimensions[1] = 0.8;
-  primitive.dimensions[2] = 0.025;
-
-  /* A pose for the box (specified relative to frame_id) */
-  geometry_msgs::Pose table_pose_;
-  table_pose_.orientation.w = 1.0;
-  table_pose_.position.x = table_pose.pose.position.x;
-  table_pose_.position.y = table_pose.pose.position.y;
-  table_pose_.position.z = table_pose.pose.position.z;
-
-  collision_object.primitives.push_back(primitive);
-  collision_object.primitive_poses.push_back(table_pose_);
-  collision_object.operation = collision_object.ADD;
-
-  std::vector<moveit_msgs::CollisionObject> collision_objects;
-  collision_objects.push_back(collision_object);
-
-  planning_scene_interface_.addCollisionObjects(collision_objects);
-
-  ROS_INFO("THE PLANE WAS ADDED! SEE RVIZ!");
-
-  ros::param::set("/plane_extraction_enable", false);
+void JacoManipulationServer::addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
+  moveit_visuals_.addObstacle(goal);
 }
-
 /**
  * Attaches the object that is going to be picked up as obstacle.
  */

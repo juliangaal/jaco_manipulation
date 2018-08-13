@@ -53,11 +53,11 @@ void GraspPoseGenerator::transformGoalIntoRobotFrame(geometry_msgs::PoseStamped 
   pose.pose.position = out_pt.point;
 
   ROS_INFO("Transfrm: \"%s\" (%f,%f,%f) -> \"%s\" (%f,%f,%f)",
-           "root",
+           box.header.frame_id.c_str(),
            in_pt.point.x,
            in_pt.point.y,
            in_pt.point.z,
-           box.header.frame_id.c_str(),
+           "root",
            pose.pose.position.x,
            pose.pose.position.y,
            pose.pose.position.z);

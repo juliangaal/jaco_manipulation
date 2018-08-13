@@ -37,6 +37,7 @@
 #include <geometry_msgs/PointStamped.h>
 
 #include <jaco_manipulation/PlanAndMoveArmAction.h>
+#include <jaco_manipulation/visuals/moveit_visuals.h>
 #include <wpi_jaco_msgs/HomeArmAction.h>
 
 #include <string>
@@ -56,10 +57,6 @@ namespace server {
 */
 class JacoManipulationServer {
  private:
-  /**
-   * MoveIt visual tools
-  */
-  moveit_visual_tools::MoveItVisualTools visual_tools_;
 
   /**
    * A common NodeHandle.
@@ -105,6 +102,7 @@ class JacoManipulationServer {
   */
   void processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
+  void addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
  public:
 
   /// helper: joint 1
@@ -130,6 +128,7 @@ class JacoManipulationServer {
   */
   moveit::planning_interface::MoveGroupInterface move_group_;
 
+  jaco_manipulation::visuals::MoveitVisuals moveit_visuals_;
   /**
    * default constructor
   */
@@ -139,11 +138,6 @@ class JacoManipulationServer {
    * default destructor
   */
   ~JacoManipulationServer() = default;
-
-  /**
-   * A function to prepare MoveIt! Visual Tools in RViz
-  */
-  void prepMoveItVisualTools();
 
   /**
    * A function to prepare MoveIt movegroup and cofigure it for all future plans
@@ -209,12 +203,12 @@ class JacoManipulationServer {
   /**
    * Convenience function to plan, execute the pose and grasp for an object specified by pose_goal.
   */
-  bool planAndMoveAndGrasp(const geometry_msgs::PoseStamped &pose_goal);
+  bool planAndMoveAndGrasp(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
   /**
    * Convenience function to plan, execute the pose and drop an object specified by pose_goal.
   */
-  bool planAndMoveAndDrop(const geometry_msgs::PoseStamped &pose_goal);
+  bool planAndMoveAndDrop(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
   /**
    * Convenience function to plan and execute the joint_state specified by target_joint_state.

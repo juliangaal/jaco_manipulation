@@ -32,6 +32,7 @@ KinectGoal::KinectGoal(const jaco_manipulation::BoundingBox &bounding_box_goal,
 
   goal_.pose_goal.header.frame_id = planning_frame_;
   goal_.goal_type = "goal";
+  goal_.bounding_box = bounding_box_goal;
 
   adjustPose(grasp, bounding_box_goal);
 }

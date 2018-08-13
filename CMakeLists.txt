@@ -60,6 +60,7 @@ include_directories(
 
 set(SERVER_SOURCES
         src/server/jaco_boundaries.cpp
+        src/visuals/moveit_visuals.cpp
         src/server/jaco_manipulation_server.cpp
         )
 

@@ -18,8 +18,8 @@ int main(int argn, char *args[]) {
     jaco_manipulation::BoundingBox b;
     b.header.frame_id = "base_link";
     b.description = "bottle";
-    b.point.x = 0.65;
-    b.point.y = 0.198;
+    b.point.x = 0.50;
+    b.point.y = 0.30;
     b.dimensions.x = 0.06;
     b.dimensions.y = 0.06;
     b.dimensions.z = 0.21;
@@ -28,10 +28,10 @@ int main(int argn, char *args[]) {
 
   {
     jaco_manipulation::BoundingBox b;
-    b.header.frame_id = "base_link";
+    b.header.frame_id = "root";
     b.description = "bottle";
-    b.point.x = 0.44;
-    b.point.y = 0.272;
+    b.point.x = 0.325;
+    b.point.y = 0.14;
     b.dimensions.x = 0.06;
     b.dimensions.y = 0.06;
     b.dimensions.z = 0.21;

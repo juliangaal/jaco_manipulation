@@ -1,5 +1,6 @@
 string goal_type
 geometry_msgs/PoseStamped pose_goal
+jaco_manipulation/BoundingBox bounding_box
 sensor_msgs/JointState joint_goal
 ---
 ---

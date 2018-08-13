@@ -35,7 +35,7 @@ void JacoManipulationClient::graspAt(const goals::goal_input::LimitedPose &grasp
 }
 
 
-void JacoManipulationClient::graspAt(jaco_manipulation::BoundingBox &bounding_box_goal,
+void JacoManipulationClient::graspAt(const jaco_manipulation::BoundingBox &bounding_box_goal,
                                      const std::string &description) {
   tryDifferentGraspPoses(bounding_box_goal, description);
 }
@@ -46,7 +46,7 @@ void JacoManipulationClient::dropAt(const goals::goal_input::LimitedPose &drop_p
   execute(goal);
 }
 
-void JacoManipulationClient::dropAt(jaco_manipulation::BoundingBox &bounding_box_goal,
+void JacoManipulationClient::dropAt(const jaco_manipulation::BoundingBox &bounding_box_goal,
                                     const std::string &description) {
   goals::DropGoal goal(bounding_box_goal, description);
   execute(goal);
@@ -71,17 +71,17 @@ bool JacoManipulationClient::execute(const goals::Goal &goal_input, bool show_re
 
 template <typename T>
 void JacoManipulationClient::tryDifferentGraspPoses(T &goal_type, const std::string &description) {
-  {
-    goals::GraspGoal goal(goal_type,
-                          jaco_manipulation::grasps::GraspType::TOP_GRASP,
-                          description);
-    if (execute(goal, false)) {
-      ROS_SUCCESS("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << " succeeded.\n");
-      return;
-    } else {
-      ROS_ERROR_STREAM("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << " failed.\n");
-    }
-  }
+//  {
+//    goals::GraspGoal goal(goal_type,
+//                          jaco_manipulation::grasps::GraspType::TOP_GRASP,
+//                          description);
+//    if (execute(goal, false)) {
+//      ROS_SUCCESS("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << " succeeded.\n");
+//      return;
+//    } else {
+//      ROS_ERROR_STREAM("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << " failed.\n");
+//    }
+//  }
   {
     goals::GraspGoal goal(goal_type,
                           jaco_manipulation::grasps::GraspType::FRONT_GRASP,
