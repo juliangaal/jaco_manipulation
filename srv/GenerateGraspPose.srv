@@ -1,4 +1,4 @@
 jaco_manipulation/BoundingBox input
 string orientation_goal
 ---
-jaco_manipulation/BoundingBox output
+geometry_msgs/PoseStamped output
