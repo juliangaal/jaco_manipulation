@@ -24,7 +24,7 @@ KinectGoal::KinectGoal(const goal_input::LimitedPose &grasp_pose_goal,
 //  adjustOrientation(grasp);
 }
 
-KinectGoal::KinectGoal(const goal_input::BoundingBox &bounding_box_goal,
+KinectGoal::KinectGoal(goal_input::BoundingBox &bounding_box_goal,
                        jaco_manipulation::grasps::GraspType grasp,
                        const std::string &description)
 : requested_grasp_(grasp) {
@@ -63,7 +63,7 @@ jaco_manipulation::PlanAndMoveArmGoal KinectGoal::goal() const {
 //}
 
 void KinectGoal::adjustPose(jaco_manipulation::grasps::GraspType grasp,
-                            const jaco_manipulation::goals::goal_input::BoundingBox &box) {
+                            jaco_manipulation::goals::goal_input::BoundingBox &box) {
   grasp_orientation_generator_.adjustPose(goal_.pose_goal, box, grasp);
 }
 

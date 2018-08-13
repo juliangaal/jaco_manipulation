@@ -34,7 +34,7 @@ class KinectGoal: public PoseGoal {
    * @param bounding_box_goal bounding box to drop something at
    * @param description descritpion with additional info
    */
-  explicit KinectGoal(const goal_input::BoundingBox &bounding_box_goal,
+  explicit KinectGoal(goal_input::BoundingBox &bounding_box_goal,
                       jaco_manipulation::grasps::GraspType grasp,
                       const std::string &description = "grasp box goal");
 
@@ -86,7 +86,7 @@ class KinectGoal: public PoseGoal {
    * @param box Bounding box to be adjusted around
    */
   void adjustPose(jaco_manipulation::grasps::GraspType grasp,
-                  const jaco_manipulation::goals::goal_input::BoundingBox &box);
+                  jaco_manipulation::goals::goal_input::BoundingBox &box);
 };
 } // namespace goals
 } // namespace jaco_manipulation

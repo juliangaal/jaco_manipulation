@@ -17,7 +17,7 @@ class GraspPoseGenerator {
  public:
   constexpr GraspPoseGenerator() = default;
   void adjustPose(geometry_msgs::PoseStamped &pose,
-                  const jaco_manipulation::goals::goal_input::BoundingBox &box,
+                  jaco_manipulation::goals::goal_input::BoundingBox &box,
                   const GraspType type);
  private:
   void adjustHeightForTopPose(geometry_msgs::PoseStamped &pose,
@@ -30,9 +30,13 @@ class GraspPoseGenerator {
   void adjustToTopOrientation(geometry_msgs::PoseStamped &pose);
   void adjustToFrontOrientation(geometry_msgs::PoseStamped &pose);
 
+  void transformGoalIntoRobotFrame(jaco_manipulation::goals::goal_input::BoundingBox &box,
+                                   const std::string input_frame);
+
   constexpr static double min_height_top_grasp = 0.175026;
   constexpr static double min_height_front_grasp = 0.1;
   constexpr static double drop_offset_ = 0.16;
+  constexpr static double grasp_offset_ = 0.14;
 };
 
 } // namespace grasps

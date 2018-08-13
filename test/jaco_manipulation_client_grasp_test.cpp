@@ -32,17 +32,17 @@ int main(int argn, char *args[]) {
     b.y = 0.045;
     b.length = 0.09;
     b.width = 0.09;
-    b.height = 0.11;
-    jmc.dropAt(b);
+    b.height = 0.21;
+    jmc.graspAt(b);
   }
 
-  {
-    LimitedPose pose;
-    pose.x = 0.4;
-    pose.y = 0.0;
-    jmc.graspAt(pose);
-    jmc.dropAt(pose);
-  }
+//  {
+//    LimitedPose pose;
+//    pose.x = 0.4;
+//    pose.y = 0.0;
+//    jmc.graspAt(pose);
+//    jmc.dropAt(pose);
+//  }
 
   jmc.moveTo("home");
 

@@ -8,23 +8,32 @@
 using namespace jaco_manipulation::grasps;
 
 void GraspPoseGenerator::adjustPose(geometry_msgs::PoseStamped &pose,
-                                    const jaco_manipulation::goals::goal_input::BoundingBox &box,
+                                    jaco_manipulation::goals::goal_input::BoundingBox &box,
                                     const GraspType type) {
   switch(type) {
     case TOP_GRASP:
+      transformGoalIntoRobotFrame(box, "base_link");
       adjustPosition(pose, box, TOP_GRASP);
       adjustToTopOrientation(pose);
       break;
     case TOP_DROP:
+      transformGoalIntoRobotFrame(box, "base_link");
       adjustPosition(pose, box, TOP_DROP);
       adjustToTopOrientation(pose);
       break;
     case FRONT_GRASP:
+      transformGoalIntoRobotFrame(box, "base_link");
       adjustToFrontOrientation(pose);
       break;
     default:
+      transformGoalIntoRobotFrame(box, "base_link");
       adjustToTopOrientation(pose);
   }
+}
+
+void GraspPoseGenerator::transformGoalIntoRobotFrame(jaco_manipulation::goals::goal_input::BoundingBox &box,
+                                                     const std::string input_frame) {
+
 }
 
 void GraspPoseGenerator::adjustPosition(geometry_msgs::PoseStamped &pose,
@@ -32,7 +41,7 @@ void GraspPoseGenerator::adjustPosition(geometry_msgs::PoseStamped &pose,
                                         const GraspType type) {
   pose.pose.position.x = box.x;
   pose.pose.position.y = box.y;
-  pose.pose.position.z = box.z;
+  pose.pose.position.z = box.z + box.height + grasp_offset_;
 
   const double width_adj = box.width * 0.5;
   const double length_adj = box.length * 0.5;
@@ -67,12 +76,12 @@ void GraspPoseGenerator::adjustHeightForTopPose(geometry_msgs::PoseStamped &pose
   if (pose.pose.position.z < min_height_top_grasp)
     pose.pose.position.z = min_height_top_grasp;
 
-  double height_adj = 0.0;
-
-  if (box.height > pose.pose.position.z)
-    height_adj = std::fabs(box.height - pose.pose.position.z);
-
-  pose.pose.position.z += height_adj;
+//  double height_adj = 0.0;
+//
+//  if (box.height > pose.pose.position.z)
+//    height_adj = std::fabs(box.height - pose.pose.position.z);
+//
+//  pose.pose.position.z += height_adj;
 }
 
 void GraspPoseGenerator::adjustHeightForTopDropPose(geometry_msgs::PoseStamped &pose,
