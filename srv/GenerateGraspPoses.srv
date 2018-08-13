@@ -1,4 +1,0 @@
-geometry_msgs/PointStamped object_location
----
-geometry_msgs/PoseStamped[] grasp_poses
-geometry_msgs/PoseStamped[] pregrasp_poses
