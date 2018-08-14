@@ -41,7 +41,7 @@ class GraspPoseGenerator {
   ros::NodeHandle n_;
   tf::TransformListener tf_listener_;
   constexpr static double min_height_top_grasp = 0.175026;
-  constexpr static double min_height_front_grasp = 0.1;
+  constexpr static double min_height_front_grasp = 0.08;
   constexpr static double drop_offset_ = 0.01;
   constexpr static double grasp_offset_ = 0.11;
 };

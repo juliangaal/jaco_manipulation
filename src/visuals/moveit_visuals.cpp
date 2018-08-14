@@ -12,7 +12,7 @@ MoveitVisuals::MoveitVisuals(ros::NodeHandle &nh, const std::string frame,
 : nh_(nh), move_group_(move_group), plan_(plan), visual_tools_(frame), tf_listener_(nh_, ros::Duration(10)) {
     planning_scene_diff_publisher = nh_.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
     prepMoveItVisualTools();
-//    addTableObstacle();
+    addTableObstacle();
 }
 
 void MoveitVisuals::prepMoveItVisualTools() {

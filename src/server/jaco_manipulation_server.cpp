@@ -41,7 +41,7 @@ JacoManipulationServer::JacoManipulationServer() :
 }
 
 void JacoManipulationServer::prepMoveItMoveGroup() {
-  move_group_.setPlanningTime(1.0);
+  move_group_.setPlanningTime(0.5);
   move_group_.setPlannerId("RRTstarkConfigDefault");
   move_group_.allowReplanning(true);
   move_group_.allowLooking(true);

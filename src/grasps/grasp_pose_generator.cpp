@@ -24,7 +24,7 @@ void GraspPoseGenerator::adjustPose(geometry_msgs::PoseStamped &pose,
       adjustToTopOrientation(pose);
       break;
     case FRONT_GRASP:
-      adjustPosition(pose, box, TOP_DROP);
+      adjustPosition(pose, box, FRONT_GRASP);
       transformGoalIntoRobotFrame(pose, box);
       adjustToFrontOrientation(pose); // TODO set height, move gripper to accomodate front grasp
       break;

@@ -12,13 +12,13 @@ int main(int argn, char *args[]) {
   ros::init(argn, args, "pam_client");
 
   client::JacoManipulationClient jmc;
-  jmc.moveTo("home");
+//  jmc.moveTo("home");
 
   {
     jaco_manipulation::BoundingBox b;
     b.header.frame_id = "base_link";
     b.description = "bottle";
-    b.point.x = 0.30;
+    b.point.x = 0.45;
     b.point.y = 0.25;
     b.dimensions.x = 0.05;
     b.dimensions.y = 0.05;
