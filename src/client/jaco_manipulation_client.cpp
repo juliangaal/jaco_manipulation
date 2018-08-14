@@ -71,17 +71,17 @@ bool JacoManipulationClient::execute(const goals::Goal &goal_input, bool show_re
 
 template <typename T>
 void JacoManipulationClient::tryDifferentGraspPoses(T &goal_type, const std::string &description) {
-//  {
-//    goals::GraspGoal goal(goal_type,
-//                          jaco_manipulation::grasps::GraspType::TOP_GRASP,
-//                          description);
-//    if (execute(goal, false)) {
-//      ROS_SUCCESS("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << " succeeded.\n");
-//      return;
-//    } else {
-//      ROS_ERROR_STREAM("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << " failed.\n");
-//    }
-//  }
+  {
+    goals::GraspGoal goal(goal_type,
+                          jaco_manipulation::grasps::GraspType::TOP_GRASP,
+                          description);
+    if (execute(goal, false)) {
+      ROS_SUCCESS("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << " succeeded.\n");
+      return;
+    } else {
+      ROS_ERROR_STREAM("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << " failed.\n");
+    }
+  }
   {
     goals::GraspGoal goal(goal_type,
                           jaco_manipulation::grasps::GraspType::FRONT_GRASP,

@@ -34,6 +34,9 @@ class MoveitVisuals {
 
   void addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
+  void attachObstacle(const jaco_manipulation::BoundingBox &box);
+  void detachObstacle(const jaco_manipulation::BoundingBox &box);
+
  private:
 
   ros::NodeHandle &nh_;

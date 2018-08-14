@@ -103,6 +103,11 @@ class JacoManipulationServer {
   void processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
   void addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
+
+  void attachObstacle(const jaco_manipulation::BoundingBox &box);
+
+  void detachObstacle(const jaco_manipulation::BoundingBox &box);
+
  public:
 
   /// helper: joint 1

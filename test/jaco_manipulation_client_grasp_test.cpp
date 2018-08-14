@@ -18,27 +18,27 @@ int main(int argn, char *args[]) {
     jaco_manipulation::BoundingBox b;
     b.header.frame_id = "base_link";
     b.description = "bottle";
-    b.point.x = 0.50;
-    b.point.y = 0.30;
-    b.dimensions.x = 0.06;
-    b.dimensions.y = 0.06;
+    b.point.x = 0.30;
+    b.point.y = 0.25;
+    b.dimensions.x = 0.05;
+    b.dimensions.y = 0.05;
     b.dimensions.z = 0.21;
     jmc.graspAt(b);
   }
 
   {
     jaco_manipulation::BoundingBox b;
-    b.header.frame_id = "root";
+    b.header.frame_id = "base_link";
     b.description = "bottle";
-    b.point.x = 0.325;
-    b.point.y = 0.14;
-    b.dimensions.x = 0.06;
-    b.dimensions.y = 0.06;
+    b.point.x = 0.50;
+    b.point.y = 0.25;
+    b.dimensions.x = 0.05;
+    b.dimensions.y = 0.05;
     b.dimensions.z = 0.21;
     jmc.dropAt(b);
   }
 
-  jmc.moveTo("home");
+//  jmc.moveTo("home");
 
   return 0;
 }

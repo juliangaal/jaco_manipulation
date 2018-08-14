@@ -41,7 +41,7 @@ JacoManipulationServer::JacoManipulationServer() :
 }
 
 void JacoManipulationServer::prepMoveItMoveGroup() {
-  move_group_.setPlanningTime(0.5);
+  move_group_.setPlanningTime(1.0);
   move_group_.setPlannerId("RRTstarkConfigDefault");
   move_group_.allowReplanning(true);
   move_group_.allowLooking(true);
@@ -132,6 +132,7 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAn
   if (!moved) return false;
 
   closeGripper();
+//  attachObstacle(goal->bounding_box);
 
   ROS_STATUS("Gripper closed. Object grasped.");
 
@@ -150,6 +151,7 @@ bool JacoManipulationServer::planAndMoveAndDrop(const jaco_manipulation::PlanAnd
   }
 
   openGripper();
+//  detachObstacle(goal->bounding_box);
 
   ROS_STATUS("Gripper opened. Object dropped.");
 
@@ -160,6 +162,15 @@ bool JacoManipulationServer::planAndMoveAndDrop(const jaco_manipulation::PlanAnd
 void JacoManipulationServer::addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
   moveit_visuals_.addObstacle(goal);
 }
+
+void JacoManipulationServer::attachObstacle(const jaco_manipulation::BoundingBox &box) {
+  moveit_visuals_.attachObstacle(box);
+}
+
+void JacoManipulationServer::detachObstacle(const jaco_manipulation::BoundingBox &box) {
+  moveit_visuals_.detachObstacle(box);
+}
+
 /**
  * Attaches the object that is going to be picked up as obstacle.
  */
