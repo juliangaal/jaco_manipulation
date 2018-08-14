@@ -32,44 +32,45 @@ void MoveitVisuals::addTableObstacle() {
   collision_object.header.frame_id = move_group_.getPlanningFrame();;
   collision_object.id = "table";
 
-//  geometry_msgs::PointStamped out_pt;
-//  geometry_msgs::PointStamped in_pt;
-//  in_pt.header.frame_id = move_group_.getPlanningFrame();
-//  in_pt.header.stamp = ros::Time::now();
-//  in_pt.point.x = 0;
-//  in_pt.point.y = 0;
-//  in_pt.point.z = 0;
-//  // transform point
-//  try {
-//    tf_listener_.waitForTransform(in_pt.header.frame_id, "root", in_pt.header.stamp, ros::Duration(1));
-//    tf_listener_.transformPoint("base_link", in_pt, out_pt);
-//  }
-//  catch (tf::TransformException &exception) {
-//    ROS_INFO_STREAM("Transform failed. Why? - " << exception.what());
-//  }
-//
-//  ROS_INFO("Table Transfrm: \"%s\" (%f,%f,%f) -> \"%s\" (%f,%f,%f)",
-//           "root",
-//           in_pt.point.x,
-//           in_pt.point.y,
-//           in_pt.point.z,
-//           out_pt.header.frame_id.c_str(),
-//           out_pt.point.x,
-//           out_pt.point.y,
-//           out_pt.point.z);
-
-  geometry_msgs::Pose pose;
-  pose.position.x = 0.000001;
-  pose.position.y = 0.000001;
-  pose.position.z = -0.026;
-  pose.orientation.w = 1.0;
-
   shape_msgs::SolidPrimitive primitive;
   primitive.type = primitive.BOX;
   primitive.dimensions.resize(3);
   primitive.dimensions[0] = 1.18;
   primitive.dimensions[1] = 0.62;
-  primitive.dimensions[2] = 0.001;
+  primitive.dimensions[2] = -0.001;
+
+  geometry_msgs::PointStamped out_pt;
+  geometry_msgs::PointStamped in_pt;
+  in_pt.header.frame_id = "base_link";
+  in_pt.header.stamp = ros::Time::now();
+  in_pt.point.x = primitive.dimensions[0] * 0.5;
+  in_pt.point.y = primitive.dimensions[1] * 0.5;
+  in_pt.point.z = primitive.dimensions[2] * 0.5;
+
+  // transform point
+  try {
+    tf_listener_.waitForTransform("root", in_pt.header.frame_id, in_pt.header.stamp, ros::Duration(2));
+    tf_listener_.transformPoint("root", in_pt, out_pt);
+  }
+  catch (tf::TransformException &exception) {
+    ROS_INFO_STREAM("Transform failed. Why? - " << exception.what());
+  }
+
+  ROS_INFO("Table Transfrm: \"%s\" (%f,%f,%f) -> \"%s\" (%f,%f,%f)",
+           in_pt.header.frame_id.c_str(),
+           in_pt.point.x,
+           in_pt.point.y,
+           in_pt.point.z,
+           out_pt.header.frame_id.c_str(),
+           out_pt.point.x,
+           out_pt.point.y,
+           out_pt.point.z);
+
+  geometry_msgs::Pose pose;
+  pose.position.x = out_pt.point.x;
+  pose.position.y = out_pt.point.y;
+  pose.position.z = out_pt.point.z;
+  pose.orientation.w = 1.0;
 
   collision_object.primitives.push_back(primitive);
   collision_object.primitive_poses.push_back(pose);
@@ -89,6 +90,13 @@ void MoveitVisuals::addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConst
   collision_object.header.frame_id = move_group_.getPlanningFrame();
   collision_object.id = goal->bounding_box.description;
 
+  shape_msgs::SolidPrimitive primitive;
+  primitive.type = primitive.BOX;
+  primitive.dimensions.resize(3);
+  primitive.dimensions[0] = box.dimensions.x;
+  primitive.dimensions[1] = box.dimensions.y;
+  primitive.dimensions[2] = box.dimensions.z;
+
   geometry_msgs::PointStamped out_pt;
   geometry_msgs::PointStamped in_pt;
   in_pt.header = box.header;
@@ -102,28 +110,21 @@ void MoveitVisuals::addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConst
   catch (tf::TransformException &exception) {
     ROS_INFO_STREAM("Transform failed. Why? - " << exception.what());
   }
-  ROS_INFO("Transfrm: \"%s\" (%f,%f,%f) -> \"%s\" (%f,%f,%f)",
-           box.header.frame_id.c_str(),
-           in_pt.point.x,
-           in_pt.point.y,
-           in_pt.point.z,
-           "root",
-           out_pt.point.x,
-           out_pt.point.y,
-           out_pt.point.z);
+//  ROS_INFO("Transfrm: \"%s\" (%f,%f,%f) -> \"%s\" (%f,%f,%f)",
+//           box.header.frame_id.c_str(),
+//           in_pt.point.x,
+//           in_pt.point.y,
+//           in_pt.point.z,
+//           "root",
+//           out_pt.point.x,
+//           out_pt.point.y,
+//           out_pt.point.z);
 
   geometry_msgs::Pose pose;
   pose.position.x = out_pt.point.x;
   pose.position.y = out_pt.point.y;
   pose.position.z = out_pt.point.z;
   pose.orientation.w = 1.0;
-
-  shape_msgs::SolidPrimitive primitive;
-  primitive.type = primitive.BOX;
-  primitive.dimensions.resize(3);
-  primitive.dimensions[0] = box.dimensions.x;
-  primitive.dimensions[1] = box.dimensions.y;
-  primitive.dimensions[2] = box.dimensions.z;
 
   collision_object.primitives.push_back(primitive);
   collision_object.primitive_poses.push_back(pose);
@@ -133,13 +134,13 @@ void MoveitVisuals::addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConst
   collision_objects.push_back(collision_object);
   planning_scene_interface_.addCollisionObjects(collision_objects);
 
-  ROS_WARN("Added Object: pos (%f,%f,%f) ; dims (%f,%f,%f)",
-           pose.position.x,
-           pose.position.y,
-           pose.position.z,
-           primitive.dimensions[0],
-           primitive.dimensions[1],
-           primitive.dimensions[2]);
+//  ROS_WARN("Added Object: pos (%f,%f,%f) ; dims (%f,%f,%f)",
+//           pose.position.x,
+//           pose.position.y,
+//           pose.position.z,
+//           primitive.dimensions[0],
+//           primitive.dimensions[1],
+//           primitive.dimensions[2]);
 
   visual_tools_.trigger();
 }
@@ -150,4 +151,11 @@ void MoveitVisuals::attachObstacle(const jaco_manipulation::BoundingBox &box) {
 
 void MoveitVisuals::detachObstacle(const jaco_manipulation::BoundingBox &box) {
   move_group_.detachObject(box.description);
+}
+
+void MoveitVisuals::removeObstacle(const jaco_manipulation::BoundingBox &box) {
+  detachObstacle(box);
+  std::vector<std::string> object_ids;
+  object_ids.push_back(box.description);
+  planning_scene_interface_.removeCollisionObjects(object_ids);
 }

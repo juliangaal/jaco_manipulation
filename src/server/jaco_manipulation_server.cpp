@@ -16,6 +16,8 @@
 
  */
 #include <jaco_manipulation/server/jaco_manipulation_server.h>
+#include <thread>
+#include <chrono>
 
 using moveit::planning_interface::MoveItErrorCode;
 using namespace jaco_manipulation::server;
@@ -31,7 +33,7 @@ JacoManipulationServer::JacoManipulationServer() :
 
   finger_pub_ = nh_.advertise<std_msgs::Float32>("jaco_arm/finger_cmd", 1);
 
-  tf_listener_ = boost::shared_ptr<tf::TransformListener>(new tf::TransformListener(ros::Duration(10)));
+//  tf_listener_ = boost::shared_ptr<tf::TransformListener>(new tf::TransformListener(ros::Duration(10)));
 
   pam_server_.start();
 
@@ -41,7 +43,7 @@ JacoManipulationServer::JacoManipulationServer() :
 }
 
 void JacoManipulationServer::prepMoveItMoveGroup() {
-  move_group_.setPlanningTime(0.5);
+  move_group_.setPlanningTime(1.0);
   move_group_.setPlannerId("RRTstarkConfigDefault");
   move_group_.allowReplanning(true);
   move_group_.allowLooking(true);
@@ -132,7 +134,7 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAn
   if (!moved) return false;
 
   closeGripper();
-//  attachObstacle(goal->bounding_box);
+  attachObstacle(goal->bounding_box);
 
   ROS_STATUS("Gripper closed. Object grasped.");
 
@@ -142,8 +144,6 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAn
 bool JacoManipulationServer::planAndMoveAndDrop(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
   ROS_STATUS("Drop request received");
 
-  addObstacle(goal);
-
   bool moved = planAndMove(goal->pose_goal);
   if (!moved) {
     openGripper();
@@ -151,7 +151,7 @@ bool JacoManipulationServer::planAndMoveAndDrop(const jaco_manipulation::PlanAnd
   }
 
   openGripper();
-//  detachObstacle(goal->bounding_box);
+  detachObstacle(goal->bounding_box);
 
   ROS_STATUS("Gripper opened. Object dropped.");
 
@@ -171,84 +171,23 @@ void JacoManipulationServer::detachObstacle(const jaco_manipulation::BoundingBox
   moveit_visuals_.detachObstacle(box);
 }
 
-/**
- * Attaches the object that is going to be picked up as obstacle.
- */
-void JacoManipulationServer::addTargetAsObstacle(geometry_msgs::PoseStamped box_pose) {
-  moveit_msgs::CollisionObject collision_object;
-  collision_object.header.frame_id = move_group_.getPlanningFrame();
-
-  /* The id of the object is used to identify it. */
-  collision_object.id = "pill_box";
-
-  /* Define a box to add to the world. */
-  shape_msgs::SolidPrimitive primitive;
-  primitive.type = primitive.BOX;
-  primitive.dimensions.resize(3);
-  primitive.dimensions[0] = 0.025;
-  primitive.dimensions[1] = 0.035;
-  primitive.dimensions[2] = 0.080;
-
-  /* A pose for the box (specified relative to frame_id) */
-  geometry_msgs::Pose pill_box_pose;
-  pill_box_pose.orientation.w = 1.0;
-  pill_box_pose.position.x = box_pose.pose.position.x;
-  pill_box_pose.position.y = box_pose.pose.position.y;
-  pill_box_pose.position.z = box_pose.pose.position.z;
-
-  collision_object.primitives.push_back(primitive);
-  collision_object.primitive_poses.push_back(pill_box_pose);
-  collision_object.operation = collision_object.ADD;
-
-  std::vector<moveit_msgs::CollisionObject> collision_objects;
-  collision_objects.push_back(collision_object);
-
-  planning_scene_interface_.addCollisionObjects(collision_objects);
-
-  ROS_INFO("The box was added as a collision object!");
-}
-
-void JacoManipulationServer::removeTable() {
-  std::vector<std::string> object_ids;
-  object_ids.emplace_back("table");
-  planning_scene_interface_.removeCollisionObjects(object_ids);
-}
-
-void JacoManipulationServer::removeTarget() {
-  std::vector<std::string> object_ids;
-  object_ids.emplace_back("table");
-  planning_scene_interface_.removeCollisionObjects(object_ids);
-}
-
-void JacoManipulationServer::attachTarget() {
-  move_group_.attachObject("pill_box");
-  ROS_INFO("Pill box is in gripper now.");
-}
-
-void JacoManipulationServer::detachTarget() {
-  move_group_.detachObject("pill_box");
-  removeTarget();
-  ROS_INFO("Pill box removed.");
+void JacoManipulationServer::removeObstacle(const jaco_manipulation::BoundingBox &box) {
+  moveit_visuals_.removeObstacle(box);
 }
 
 void JacoManipulationServer::moveGripper(float value) {
   std_msgs::Float32 FP;
   FP.data = value;
   finger_pub_.publish(FP);
-  sleep(3.0);
+  std::this_thread::sleep_for(std::chrono_literals::operator""s(3));
 }
 
 void JacoManipulationServer::closeGripper() {
   moveGripper(6500.0);
 }
 
-
 void JacoManipulationServer::openGripper() {
   moveGripper(0.0);
-}
-
-void JacoManipulationServer::addBoundaries() {
-
 }
 
 void JacoManipulationServer::showPlannedMoveInfo(const geometry_msgs::PoseStamped &start,

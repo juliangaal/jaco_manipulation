@@ -36,6 +36,7 @@ class MoveitVisuals {
 
   void attachObstacle(const jaco_manipulation::BoundingBox &box);
   void detachObstacle(const jaco_manipulation::BoundingBox &box);
+  void removeObstacle(const jaco_manipulation::BoundingBox &box);
 
  private:
 

@@ -56,12 +56,36 @@ namespace server {
  * Convenience class to talk to Moveit-ROS interface.
 */
 class JacoManipulationServer {
+ public:
+
+  /**
+   * default constructor
+  */
+  JacoManipulationServer();
+
+  /**
+   * default destructor
+  */
+  ~JacoManipulationServer() = default;
+
+  /**
+   * Callback for the action server.
+  */
+  void processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
+
  private:
 
   /**
    * A common NodeHandle.
   */
   ros::NodeHandle nh_;
+
+  /**
+   * The move_group variable.
+  */
+  moveit::planning_interface::MoveGroupInterface move_group_;
+
+  jaco_manipulation::visuals::MoveitVisuals moveit_visuals_;
 
   /**
    * Action client to home home the arm.
@@ -89,64 +113,11 @@ class JacoManipulationServer {
   */
   ros::Publisher finger_pub_;
 
-  /**
-   * Convenience variable to get the current pose of jaco.
-   * This is not updated by a callback.
-  */
-  geometry_msgs::PoseStamped current_pose_;
-
   boost::shared_ptr<tf::TransformListener> tf_listener_;
 
   /**
-   * Callback for the action server.
-  */
-  void processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
-
-  void addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
-
-  void attachObstacle(const jaco_manipulation::BoundingBox &box);
-
-  void detachObstacle(const jaco_manipulation::BoundingBox &box);
-
- public:
-
-  /// helper: joint 1
-  constexpr static size_t JOINT1 = 0;
-
-  /// helper: joint 1
-  constexpr static size_t JOINT2 = 1;
-
-  /// helper: joint 1
-  constexpr static size_t JOINT3 = 2;
-
-  /// helper: joint 1
-  constexpr static size_t JOINT4 = 3;
-
-  //// helper: joint 1
-  constexpr static size_t JOINT5 = 4;
-
-  //// helper: joint 1
-  constexpr static size_t JOINT6 = 5;
-
-  /**
-   * The move_group variable.
-  */
-  moveit::planning_interface::MoveGroupInterface move_group_;
-
-  jaco_manipulation::visuals::MoveitVisuals moveit_visuals_;
-  /**
-   * default constructor
-  */
-  JacoManipulationServer();
-
-  /**
-   * default destructor
-  */
-  ~JacoManipulationServer() = default;
-
-  /**
-   * A function to prepare MoveIt movegroup and cofigure it for all future plans
-  */
+  * A function to prepare MoveIt movegroup and cofigure it for all future plans
+ */
   void prepMoveItMoveGroup();
 
   /**
@@ -168,37 +139,6 @@ class JacoManipulationServer {
   * Show planned move info in console from start joint to end joint state
  */
   void showPlannedMoveInfo(const geometry_msgs::PoseStamped &start, const std::string &target);
-
-  /**
-   * A function to add boundaries (for workspace in Oerebro, for now)
-  */
-  void addBoundaries();
-
-  /**
-   * A function to add the table as an obstacle.
-  */
-  void addTableAsObstacle(geometry_msgs::PoseStamped table_pose);
-
-  /**
-   * A function to add the target as an obstacle.
-  */
-  void addTargetAsObstacle(geometry_msgs::PoseStamped box_pose);
-
-  /**
-   * Remove the Table after task is complete.
-  */
-  void removeTable();
-
-  /**
-   * Remove the Target after release.
-  */
-  void removeTarget();
-
-  // Sucky
-  void attachTarget();
-
-  // Sucky 2
-  void detachTarget();
 
   /**
    * Convenience function to plan and execute the pose specified by pose_goal.
@@ -225,11 +165,6 @@ class JacoManipulationServer {
   bool planAndMove(const std::string &pose_goal_string);
 
   /**
-   * Convenience function to plan the pose specified by pose_goal.
-  */
-  bool plan(const geometry_msgs::PoseStamped &pose_goal);
-
-  /**
    * A function to close jaco's grippers
   */
   void closeGripper();
@@ -244,11 +179,31 @@ class JacoManipulationServer {
   */
   void moveGripper(float value = 6500.0);
 
-  /**
-   * Reset the values after a run.
-  */
-  void resetValues();
+  void addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
+  void attachObstacle(const jaco_manipulation::BoundingBox &box);
+
+  void detachObstacle(const jaco_manipulation::BoundingBox &box);
+
+  void removeObstacle(const jaco_manipulation::BoundingBox &box);
+
+  /// helper: joint 1
+  constexpr static size_t JOINT1 = 0;
+
+  /// helper: joint 1
+  constexpr static size_t JOINT2 = 1;
+
+  /// helper: joint 1
+  constexpr static size_t JOINT3 = 2;
+
+  /// helper: joint 1
+  constexpr static size_t JOINT4 = 3;
+
+  //// helper: joint 1
+  constexpr static size_t JOINT5 = 4;
+
+  //// helper: joint 1
+  constexpr static size_t JOINT6 = 5;
 };
 
 } // namespace server
