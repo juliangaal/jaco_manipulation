@@ -12,7 +12,6 @@ int main(int argn, char *args[]) {
   ros::init(argn, args, "pam_client");
 
   client::JacoManipulationClient jmc;
-  jmc.moveTo("home");
 
   {
     jaco_manipulation::BoundingBox b;
@@ -46,12 +45,12 @@ int main(int argn, char *args[]) {
     jaco_manipulation::BoundingBox b;
     b.header.frame_id = "base_link";
     b.description = "bottle";
-    b.point.x = 0.4;
+    b.point.x = 0.55;
     b.point.y = 0.3;
-    b.point.z = 0.15;
+    b.point.z = 0.105;
     b.dimensions.x = 0.06;
     b.dimensions.y = 0.06;
-    b.dimensions.z = 0.10;
+    b.dimensions.z = 0.21;
     jmc.graspAt(b);
   }
 
@@ -59,16 +58,16 @@ int main(int argn, char *args[]) {
     jaco_manipulation::BoundingBox b;
     b.header.frame_id = "base_link";
     b.description = "bottle";
-    b.point.x = 0.4;
-    b.point.y = -0.2;
-    b.point.z = 0.15;
+    b.point.x = 0.55;
+    b.point.y = 0.0;
+    b.point.z = 0.105;
     b.dimensions.x = 0.06;
     b.dimensions.y = 0.06;
-    b.dimensions.z = 0.10;
-//    jmc.dropAt(b);
+    b.dimensions.z = 0.21;
+    jmc.dropAt(b);
   }
 
-  jmc.moveTo("home");
+//  jmc.moveTo("home");
 
   return 0;
 }

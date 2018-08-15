@@ -44,10 +44,7 @@ class MoveitVisuals {
 
   tf::TransformListener tf_listener_;
 
-  std::vector<moveit_msgs::CollisionObject> collision_objects_;
 
-
-  ros::Publisher planning_scene_diff_publisher;
   /**
    * MoveIt visual tools
   */

@@ -44,12 +44,14 @@ void JacoManipulationClient::dropAt(const goals::goal_input::LimitedPose &drop_p
                                     const std::string &description) {
   goals::DropGoal goal(drop_pose_goal, description);
   execute(goal);
+  moveTo("home");
 }
 
 void JacoManipulationClient::dropAt(const jaco_manipulation::BoundingBox &bounding_box_goal,
                                     const std::string &description) {
   goals::DropGoal goal(bounding_box_goal, description);
   execute(goal);
+  moveTo("home");
 }
 
 bool JacoManipulationClient::execute(const goals::Goal &goal_input, bool show_result_information) {

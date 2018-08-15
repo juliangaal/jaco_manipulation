@@ -97,6 +97,8 @@ class JacoManipulationServer {
   */
   actionlib::SimpleActionServer<jaco_manipulation::PlanAndMoveArmAction> pam_server_;
 
+  tf::TransformListener tf_listener_;
+
   /**
    * The plan variable.
   */
@@ -113,7 +115,7 @@ class JacoManipulationServer {
   */
   ros::Publisher finger_pub_;
 
-  boost::shared_ptr<tf::TransformListener> tf_listener_;
+//  boost::shared_ptr<tf::TransformListener> tf_listener_;
 
   /**
   * A function to prepare MoveIt movegroup and cofigure it for all future plans
@@ -155,6 +157,7 @@ class JacoManipulationServer {
   */
   bool planAndMoveAndDrop(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
+  void addTableObstacle();
   /**
    * Convenience function to plan and execute the joint_state specified by target_joint_state.
   */
