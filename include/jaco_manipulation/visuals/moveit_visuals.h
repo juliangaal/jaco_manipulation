@@ -21,11 +21,11 @@ namespace visuals {
 
 class MoveitVisuals {
  public:
-  MoveitVisuals() = default;
+  MoveitVisuals() = delete;
   MoveitVisuals(ros::NodeHandle &nh, const std::string frame,
                 moveit::planning_interface::MoveGroupInterface &move_group,
                 const moveit::planning_interface::MoveGroupInterface::Plan &plan);
-  ~MoveitVisuals() = default;
+  ~MoveitVisuals();
 
   /**
    * A function to visualize planned move in RViz
@@ -36,7 +36,7 @@ class MoveitVisuals {
 
   void attachObstacle(const jaco_manipulation::BoundingBox &box);
   void detachObstacle(const jaco_manipulation::BoundingBox &box);
-  void removeObstacle(const jaco_manipulation::BoundingBox &box);
+  void removeObstacle(const std::string id);
 
  private:
 
@@ -44,6 +44,9 @@ class MoveitVisuals {
 
   tf::TransformListener tf_listener_;
 
+  ros::Publisher planning_scene_diff_publisher_;
+
+  moveit_msgs::PlanningScene planning_scene_;
 
   /**
    * MoveIt visual tools
@@ -55,7 +58,7 @@ class MoveitVisuals {
   */
   moveit::planning_interface::MoveGroupInterface &move_group_;
 
-  moveit_msgs::PlanningScene planning_scene_;
+//  moveit_msgs::PlanningScene planning_scene_;
 
   /**
    * The planning scene interface.

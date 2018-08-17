@@ -15,8 +15,20 @@ MoveitVisuals::MoveitVisuals(ros::NodeHandle &nh, const std::string frame,
   plan_(plan),
   visual_tools_(frame),
   tf_listener_(nh_, ros::Duration(10)) {
-    prepMoveItVisualTools();
-    addTableObstacle();
+
+  planning_scene_diff_publisher_ = nh_.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
+  prepMoveItVisualTools();
+  addTableObstacle();
+}
+
+MoveitVisuals::~MoveitVisuals() {
+  auto all_attached_objects = planning_scene_interface_.getAttachedObjects();
+  auto all_objects = planning_scene_interface_.getObjects();
+
+  for (auto it = begin(all_objects); it != end(all_objects); ++it) {
+    removeObstacle(it->first);
+  }
+  // TODO remove attached objects as well
 }
 
 void MoveitVisuals::prepMoveItVisualTools() {
@@ -180,36 +192,80 @@ void MoveitVisuals::addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConst
   std::vector<moveit_msgs::CollisionObject> collision_objects;
   collision_objects.push_back(collision_object);
   planning_scene_interface_.addCollisionObjects(collision_objects);
-
   ROS_STATUS("Added Object " << box.description);
 }
 
 void MoveitVisuals::attachObstacle(const jaco_manipulation::BoundingBox &box) {
-  auto all_objects = planning_scene_interface_.getAttachedObjects();
-  if (all_objects.find(box.description) != all_objects.end()) {
-    ROS_WARN_STREAM("Object " << box.description << " is already attached");
+  auto all_objects = planning_scene_interface_.getObjects();
+  if (all_objects.find(box.description) == end(all_objects)) {
+    ROS_ERROR_STREAM("Can't attach object " << box.description << ". Wasn't created!");
     return;
   }
 
+  const auto object_to_be_attached = all_objects.at(box.description);
+
+  // create attached object
+  moveit_msgs::AttachedCollisionObject attached_object;
+  attached_object.link_name = "jaco_link_hand";
+  attached_object.object = object_to_be_attached;
+  attached_object.object.operation = attached_object.object.ADD;
+  // define touch links that are ignored for planning
+  attached_object.touch_links = std::vector<std::string>{ "jaco_link_hand",
+                                                          "jaco_link_finger_1",
+                                                          "jaco_link_finger_2",
+                                                          "jaco_link_finger_3",
+                                                          "jaco_link_finger_tip_1",
+                                                          "jaco_link_finger_tip_2",
+                                                          "jaco_link_finger_tip_3" };
+
+  // original obstacle object from environment to be removed from environment
+  moveit_msgs::CollisionObject remove_object = all_objects.at(box.description);
+
+  planning_scene_.world.collision_objects.push_back(attached_object.object);
+  planning_scene_.is_diff = true;
+  planning_scene_diff_publisher_.publish(planning_scene_);
+
+  // remove original obstacle from aning scene and attach it beforehand
+  planning_scene_.world.collision_objects.clear();
+  planning_scene_.world.collision_objects.push_back(remove_object);
+  planning_scene_.robot_state.attached_collision_objects.push_back(attached_object);
+  planning_scene_diff_publisher_.publish(planning_scene_);
+
   ROS_STATUS("Attaching obstacle " << box.description);
-  move_group_.attachObject(box.description);
+//  move_group_.attachObject(box.description);
 }
 
 void MoveitVisuals::detachObstacle(const jaco_manipulation::BoundingBox &box) {
-  auto all_objects = planning_scene_interface_.getAttachedObjects();
-  if (all_objects.find(box.description) == all_objects.end()) {
-    ROS_WARN_STREAM("Object " << box.description << " is not attached! Can't detach");
+  auto all_attached_objects = planning_scene_interface_.getAttachedObjects();
+  if (all_attached_objects.find(box.description) == all_attached_objects.end()) {
+    ROS_ERROR_STREAM("Object " << box.description << " is not attached! Can't detach");
     return;
   }
 
+  // object to be detached
+  auto &attached_object = all_attached_objects.at(box.description);
+  moveit_msgs::AttachedCollisionObject detach_object;
+  detach_object.object.id = attached_object.object.id;
+  detach_object.link_name = attached_object.link_name;
+  detach_object.object.operation = attached_object.object.REMOVE;
+
+  // detaching robot from robot and returning it to world
+  planning_scene_.robot_state.attached_collision_objects.clear();
+  planning_scene_.robot_state.attached_collision_objects.push_back(detach_object);
+  planning_scene_.robot_state.is_diff = true;
+  planning_scene_.world.collision_objects.clear();
+  planning_scene_.world.collision_objects.push_back(attached_object.object);
+  planning_scene_.is_diff = true;
+  planning_scene_diff_publisher_.publish(planning_scene_);
+
   ROS_STATUS("Detaching obstacle " << box.description);
-  move_group_.detachObject(box.description);
+//  move_group_.detachObject(box.description);
 }
 
-void MoveitVisuals::removeObstacle(const jaco_manipulation::BoundingBox &box) {
-  detachObstacle(box);
+void MoveitVisuals::removeObstacle(const std::string id) {
   std::vector<std::string> object_ids;
-  object_ids.push_back(box.description);
+  object_ids.push_back(id);
   planning_scene_interface_.removeCollisionObjects(object_ids);
-  ROS_STATUS("Removed Object " << box.description << " from planning scene");
+  ROS_STATUS("Removed Object " << id << " from planning scene");
 }
+
