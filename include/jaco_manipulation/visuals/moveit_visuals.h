@@ -71,6 +71,7 @@ class MoveitVisuals {
   */
   const moveit::planning_interface::MoveGroupInterface::Plan &plan_;
 
+  std::map<std::string, moveit_msgs::AttachedCollisionObject> to_be_attached;
   /**
    * A function to prepare MoveIt! Visual Tools in RViz
   */

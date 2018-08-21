@@ -66,7 +66,6 @@ int main(int argn, char *args[]) {
     b.dimensions.z = 0.21;
     jmc.dropAt(b);
   }
-
 //  jmc.moveTo("home");
 
   return 0;
