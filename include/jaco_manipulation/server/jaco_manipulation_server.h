@@ -184,9 +184,9 @@ class JacoManipulationServer {
 
   void addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
-  void attachObstacle(const jaco_manipulation::BoundingBox &box);
+  void attachObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
-  void detachObstacle(const jaco_manipulation::BoundingBox &box);
+  void detachObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
   void removeObstacle(const jaco_manipulation::BoundingBox &box);
 

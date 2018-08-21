@@ -134,7 +134,7 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAn
   bool moved = planAndMove(goal->pose_goal);
   if (!moved) return false;
 
-  attachObstacle(goal->bounding_box);
+  attachObstacle(goal);
   closeGripper();
 
   ROS_STATUS("Gripper closed. Object grasped.");
@@ -148,12 +148,12 @@ bool JacoManipulationServer::planAndMoveAndDrop(const jaco_manipulation::PlanAnd
   bool moved = planAndMove(goal->pose_goal);
   if (!moved) {
     openGripper();
-    detachObstacle(goal->bounding_box);
+    detachObstacle(goal);
     return false;
   }
 
   openGripper();
-  detachObstacle(goal->bounding_box);
+  detachObstacle(goal);
 
   ROS_STATUS("Gripper opened. Object dropped.");
 
@@ -314,8 +314,8 @@ void JacoManipulationServer::addObstacle(const jaco_manipulation::PlanAndMoveArm
 //  ROS_STATUS("Added Object " << box.description);
 }
 
-void JacoManipulationServer::attachObstacle(const jaco_manipulation::BoundingBox &box) {
-  moveit_visuals_.attachObstacle(box);
+void JacoManipulationServer::attachObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
+  moveit_visuals_.attachObstacle(goal);
 //  auto all_attached_objects = planning_scene_interface_.getAttachedObjects();
 //  if (all_attached_objects.find(box.description) != all_attached_objects.end()) {
 //    ROS_WARN_STREAM("Object " << box.description << " is already attached");
@@ -326,8 +326,8 @@ void JacoManipulationServer::attachObstacle(const jaco_manipulation::BoundingBox
 
 }
 
-void JacoManipulationServer::detachObstacle(const jaco_manipulation::BoundingBox &box) {
-  moveit_visuals_.detachObstacle(box);
+void JacoManipulationServer::detachObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
+  moveit_visuals_.detachObstacle(goal);
 //  auto all_attached_objects = planning_scene_interface_.getAttachedObjects();
 //  if (all_attached_objects.find(box.description) == all_attached_objects.end()) {
 //    ROS_ERROR_STREAM("Object " << box.description << " is not attached! Can't detach");

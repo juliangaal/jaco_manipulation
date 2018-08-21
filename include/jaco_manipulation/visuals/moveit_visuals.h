@@ -34,8 +34,8 @@ class MoveitVisuals {
 
   void addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
-  void attachObstacle(const jaco_manipulation::BoundingBox &box);
-  void detachObstacle(const jaco_manipulation::BoundingBox &box);
+  void attachObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
+  void detachObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
   void removeObstacle(const std::string id);
 
  private:
@@ -76,6 +76,8 @@ class MoveitVisuals {
    * A function to prepare MoveIt! Visual Tools in RViz
   */
   void prepMoveItVisualTools();
+
+  void showStatus();
 
   void addTableObstacle();
 };
