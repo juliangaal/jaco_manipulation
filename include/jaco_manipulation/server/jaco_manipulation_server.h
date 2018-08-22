@@ -157,7 +157,6 @@ class JacoManipulationServer {
   */
   bool planAndMoveAndDrop(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
-  void addTableObstacle();
   /**
    * Convenience function to plan and execute the joint_state specified by target_joint_state.
   */

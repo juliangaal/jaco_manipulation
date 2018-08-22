@@ -254,7 +254,6 @@ void MoveitVisuals::detachObstacle(const jaco_manipulation::PlanAndMoveArmGoalCo
   }
 
   /* DETACH object message*/
-//  auto &object_to_be_detached = to_be_attached.at(box.description);
   moveit_msgs::AttachedCollisionObject object_to_be_detached;
   for (const auto& obj: planning_scene_.robot_state.attached_collision_objects) {
     if (obj.object.id == box.description)
@@ -271,14 +270,7 @@ void MoveitVisuals::detachObstacle(const jaco_manipulation::PlanAndMoveArmGoalCo
   planning_scene_.robot_state.is_diff = true;
   planning_scene_diff_publisher_.publish(planning_scene_);
 
-  // modify object that will be dropped
   addObstacle(goal);
-//  planning_scene_.world.collision_objects.clear();
-//  planning_scene_.world.collision_objects.push_back(object_to_be_detached.object);
-//  planning_scene_.is_diff = true;
-//  planning_scene_diff_publisher_.publish(planning_scene_);
-
-//  to_be_attached.erase(box.description);
 
   ROS_STATUS("Detached obstacle " << box.description);
   showStatus();
