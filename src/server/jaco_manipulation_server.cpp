@@ -68,6 +68,10 @@ void JacoManipulationServer::processGoal(const jaco_manipulation::PlanAndMoveArm
     result_value = planAndMoveAndGrasp(goal);
   } else if (goal->goal_type == "drop_pose") {
     result_value = planAndMoveAndDrop(goal);
+  } else if (goal->goal_type == "add_obstacle") {
+    addObstacle(goal);
+  } else if (goal->goal_type == "remove_obstacle") {
+    removeObstacle(goal);
   } else {
     result_value = planAndMove(goal->goal_type);
   }
@@ -172,8 +176,8 @@ void JacoManipulationServer::detachObstacle(const jaco_manipulation::PlanAndMove
   moveit_visuals_.detachObstacle(goal);
 }
 
-void JacoManipulationServer::removeObstacle(const jaco_manipulation::BoundingBox &box) {
-  moveit_visuals_.removeObstacle(box.description);
+void JacoManipulationServer::removeObstacle(const PlanAndMoveArmGoalConstPtr &goal) {
+  moveit_visuals_.removeObstacle(goal->bounding_box.description);
 }
 
 void JacoManipulationServer::moveGripper(float value) {

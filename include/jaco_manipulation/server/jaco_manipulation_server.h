@@ -187,7 +187,7 @@ class JacoManipulationServer {
 
   void detachObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
-  void removeObstacle(const jaco_manipulation::BoundingBox &box);
+  void removeObstacle(const PlanAndMoveArmGoalConstPtr &goal);
 
   /// helper: joint 1
   constexpr static size_t JOINT1 = 0;
