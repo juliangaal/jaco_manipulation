@@ -2,8 +2,8 @@
 // Created by chitt on 8/6/18.
 //
 
-#ifndef PROJECT_KINECT_GOAL_HPP
-#define PROJECT_KINECT_GOAL_HPP
+#ifndef PROJECT_VISION_GOAL_HPP
+#define PROJECT_VISION_GOAL_HPP
 
 #include "pose_goal.h"
 #include <jaco_manipulation/grasps/grasp_pose_generator.h>
@@ -17,7 +17,7 @@ namespace goals {
  * Represent a severely limited pose for grasping objects
  * Limited in height, and rotation around x and y axis
  */
-class KinectGoal: public PoseGoal {
+class VisionGoal: public PoseGoal {
  public:
 
   /**
@@ -25,7 +25,7 @@ class KinectGoal: public PoseGoal {
    * @param grasp_pose_goal grasp pose goal
    * @param description descritpion with additional info
    */
-  explicit KinectGoal(const goal_input::LimitedPose &grasp_pose_goal,
+  explicit VisionGoal(const goal_input::LimitedPose &grasp_pose_goal,
                       jaco_manipulation::grasps::GraspType grasp,
                       const std::string &description = "grasp goal");
 
@@ -34,14 +34,14 @@ class KinectGoal: public PoseGoal {
    * @param bounding_box_goal bounding box to drop something at
    * @param description descritpion with additional info
    */
-  explicit KinectGoal(const jaco_manipulation::BoundingBox &bounding_box_goal,
+  explicit VisionGoal(const jaco_manipulation::BoundingBox &bounding_box_goal,
                       jaco_manipulation::grasps::GraspType grasp,
                       const std::string &description = "grasp box goal");
 
   /**
    * default destructor
    */
-  virtual ~KinectGoal() override = default;
+  virtual ~VisionGoal() override = default;
 
   /**
    * get created goal
@@ -58,7 +58,7 @@ class KinectGoal: public PoseGoal {
   /**
    * protected default constructor
   */
-  KinectGoal() = default;
+  VisionGoal() = default;
 
   /**
    * Default dropping offset: tiny lift (5cm) + distance from jaco_lowest point (is marked on robot) to jaco palm (6cm)
@@ -91,4 +91,4 @@ class KinectGoal: public PoseGoal {
 } // namespace goals
 } // namespace jaco_manipulation
 
-#endif //PROJECT_KINECT_GOAL_HPP
+#endif //PROJECT_VISION_GOAL_HPP

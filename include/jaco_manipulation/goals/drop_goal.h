@@ -5,7 +5,7 @@
 #ifndef PROJECT_DROP_GOAL_H
 #define PROJECT_DROP_GOAL_H
 
-#include "kinect_goal.h"
+#include "vision_goal.h"
 
 namespace jaco_manipulation {
 namespace goals {
@@ -15,7 +15,7 @@ namespace goals {
  * Represent a severely limited pose for dropping objects
  * Limited in height, and rotation around x and y axis
  */
-class DropGoal: public KinectGoal {
+class DropGoal: public VisionGoal {
  public:
 
   /**

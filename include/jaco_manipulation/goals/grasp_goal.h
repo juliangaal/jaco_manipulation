@@ -4,7 +4,7 @@
 
 #ifndef PROJECT_GRASPGOAL_HPP
 #define PROJECT_GRASPGOAL_HPP
-#include "kinect_goal.h"
+#include "vision_goal.h"
 
 namespace jaco_manipulation {
 namespace goals {
@@ -14,7 +14,7 @@ namespace goals {
  * Represent a severely limited pose for grasping objects
  * Limited in height, and rotation around x and y axis
  */
-class GraspGoal: public KinectGoal {
+class GraspGoal: public VisionGoal {
  public:
 
   /**

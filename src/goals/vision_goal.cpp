@@ -2,13 +2,13 @@
 // Created by julian on 8/6/18.
 //
 
-#include <jaco_manipulation/goals/kinect_goal.h>
+#include <jaco_manipulation/goals/vision_goal.h>
 #include <ros/console.h>
 #include <tf/tf.h>
 
 using namespace jaco_manipulation::goals;
 
-KinectGoal::KinectGoal(const goal_input::LimitedPose &grasp_pose_goal,
+VisionGoal::VisionGoal(const goal_input::LimitedPose &grasp_pose_goal,
                        jaco_manipulation::grasps::GraspType grasp,
                        const std::string &description)
 : requested_grasp_(grasp) {
@@ -24,7 +24,7 @@ KinectGoal::KinectGoal(const goal_input::LimitedPose &grasp_pose_goal,
 //  adjustOrientation(grasp);
 }
 
-KinectGoal::KinectGoal(const jaco_manipulation::BoundingBox &bounding_box_goal,
+VisionGoal::VisionGoal(const jaco_manipulation::BoundingBox &bounding_box_goal,
                        jaco_manipulation::grasps::GraspType grasp,
                        const std::string &description)
 : requested_grasp_(grasp) {
@@ -37,16 +37,16 @@ KinectGoal::KinectGoal(const jaco_manipulation::BoundingBox &bounding_box_goal,
   adjustPose(grasp, bounding_box_goal);
 }
 
-jaco_manipulation::PlanAndMoveArmGoal KinectGoal::goal() const {
+jaco_manipulation::PlanAndMoveArmGoal VisionGoal::goal() const {
   return PoseGoal::goal();
 }
 
-void KinectGoal::adjustPose(jaco_manipulation::grasps::GraspType grasp,
+void VisionGoal::adjustPose(jaco_manipulation::grasps::GraspType grasp,
                             const jaco_manipulation::BoundingBox &box) {
   grasp_orientation_generator_.adjustPose(goal_.pose_goal, box, grasp);
 }
 
-std::string KinectGoal::requestedOrientation() {
+std::string VisionGoal::requestedOrientation() {
   using jaco_manipulation::grasps::GraspType;
   switch (requested_grasp_) {
     case GraspType::TOP_GRASP:
