@@ -26,11 +26,31 @@ void GraspPoseGenerator::adjustPose(geometry_msgs::PoseStamped &pose,
     case FRONT_GRASP:
       adjustPosition(pose, box, FRONT_GRASP);
       transformGoalIntoRobotFrame(pose, box);
-      adjustToFrontOrientation(pose); // TODO set height, move gripper to accomodate front grasp
+      adjustToFrontOrientation(pose); // TODO which height, when bounding box centroid above min_height_front_grasp?!
       break;
     default:
       adjustPosition(pose, box, TOP_DROP);
       transformGoalIntoRobotFrame(pose, box);
+      adjustToTopOrientation(pose);
+  }
+}
+
+void GraspPoseGenerator::adjustPose(geometry_msgs::PoseStamped &pose, const GraspType type) {
+  switch(type) {
+    case TOP_GRASP:
+      transformGoalIntoRobotFrame(pose);
+      adjustToTopOrientation(pose);
+      break;
+    case TOP_DROP:
+      transformGoalIntoRobotFrame(pose);
+      adjustToTopOrientation(pose);
+      break;
+    case FRONT_GRASP:
+      transformGoalIntoRobotFrame(pose);
+      adjustToFrontOrientation(pose); // TODO set height, move gripper to accomodate front grasp
+      break;
+    default:
+      transformGoalIntoRobotFrame(pose);
       adjustToTopOrientation(pose);
   }
 }
@@ -54,6 +74,34 @@ void GraspPoseGenerator::transformGoalIntoRobotFrame(geometry_msgs::PoseStamped 
 
   ROS_INFO("Transfrm: \"%s\" (%f,%f,%f) -> \"%s\" (%f,%f,%f)",
            box.header.frame_id.c_str(),
+           in_pt.point.x,
+           in_pt.point.y,
+           in_pt.point.z,
+           "root",
+           pose.pose.position.x,
+           pose.pose.position.y,
+           pose.pose.position.z);
+}
+
+
+void GraspPoseGenerator::transformGoalIntoRobotFrame(geometry_msgs::PoseStamped &pose) {
+  geometry_msgs::PointStamped out_pt;
+  geometry_msgs::PointStamped in_pt;
+  in_pt.header = pose.header;
+  in_pt.point = pose.pose.position;
+
+  // transform point
+  try {
+    tf_listener_.waitForTransform("root", pose.header.frame_id, pose.header.stamp, ros::Duration(1));
+    tf_listener_.transformPoint("root", in_pt, out_pt);
+  }
+  catch (tf::TransformException &exception) {
+    ROS_INFO_STREAM("Transform failed. Why? - " << exception.what());
+  }
+  pose.pose.position = out_pt.point;
+
+  ROS_INFO("Transfrm: \"%s\" (%f,%f,%f) -> \"%s\" (%f,%f,%f)",
+           pose.header.frame_id.c_str(),
            in_pt.point.x,
            in_pt.point.y,
            in_pt.point.z,
@@ -116,7 +164,7 @@ void GraspPoseGenerator::adjustHeightForFrontPose(geometry_msgs::PoseStamped &po
     pose.pose.position.z = box.point.z - std::fabs(min_height_front_grasp - box.point.z);
 }
 
-void GraspPoseGenerator::adjustPoseForFrontPose(geometry_msgs::PoseStamped &pose) {
+void GraspPoseGenerator::adjustPositionForFrontPose(geometry_msgs::PoseStamped &pose) {
   tf::Vector3 change_vector(
     pose.pose.position.x,
     pose.pose.position.y,
@@ -143,7 +191,7 @@ void GraspPoseGenerator::adjustPoseForFrontPose(geometry_msgs::PoseStamped &pose
 
   tf::Vector3 adj_vec = curr_vector - move_vector;
 
-  ROS_INFO("Front Move: Pose (%f,%f,%f) -> (%f,%f,%f)",
+  ROS_INFO("Move    : Pose (%f,%f,%f) -> (%f,%f,%f)",
            pose.pose.position.x,
            pose.pose.position.y,
            pose.pose.position.z,
@@ -201,7 +249,7 @@ void GraspPoseGenerator::adjustToTopOrientation(geometry_msgs::PoseStamped &pose
 
 void GraspPoseGenerator::adjustToFrontOrientation(geometry_msgs::PoseStamped &pose) {
   // adds offset in direction of grip
-  adjustPoseForFrontPose(pose);
+  adjustPositionForFrontPose(pose);
 
   // Direction vector of z-axis. WARN: The z-axis will become the new x-axis for front grip
   tf::Vector3 z_axis(
@@ -241,7 +289,7 @@ void GraspPoseGenerator::adjustToFrontOrientation(geometry_msgs::PoseStamped &po
   if (pose.pose.position.z < min_height_front_grasp)
     pose.pose.position.z = min_height_front_grasp;
 
-  ROS_INFO("Front Fix: Pose now (%f,%f,%f) ; (%f,%f,%f,%f)",
+  ROS_INFO("FrontFix: Pose now (%f,%f,%f) ; (%f,%f,%f,%f)",
            pose.pose.position.x,
            pose.pose.position.y,
            pose.pose.position.z,
