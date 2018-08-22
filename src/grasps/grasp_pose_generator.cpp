@@ -110,7 +110,49 @@ void GraspPoseGenerator::adjustHeightForTopDropPose(geometry_msgs::PoseStamped &
 void GraspPoseGenerator::adjustHeightForFrontPose(geometry_msgs::PoseStamped &pose,
                                                     const jaco_manipulation::BoundingBox &box) {
   adjustHeightForTopPose(pose, box);
-  pose.pose.position.z = box.point.z + min_height_front_grasp;
+  if (box.point.z < min_height_front_grasp)
+    pose.pose.position.z = min_height_front_grasp;
+  else
+    pose.pose.position.z = box.point.z - std::fabs(min_height_front_grasp - box.point.z);
+}
+
+void GraspPoseGenerator::adjustPoseForFrontPose(geometry_msgs::PoseStamped &pose) {
+  tf::Vector3 change_vector(
+    pose.pose.position.x,
+    pose.pose.position.y,
+    0
+  );
+  change_vector.normalize();
+
+  // grasp offset
+  tf::Vector3 move_vector(
+    0.145,
+    0.145,
+    0
+  );
+
+  // adjust change vector according to direction vector
+  move_vector.setX(move_vector.x() * change_vector.x());
+  move_vector.setY(move_vector.y() * change_vector.y());
+
+  tf::Vector3 curr_vector(
+    pose.pose.position.x,
+    pose.pose.position.y,
+    pose.pose.position.z
+  );
+
+  tf::Vector3 adj_vec = curr_vector - move_vector;
+
+  ROS_INFO("Front Move: Pose (%f,%f,%f) -> (%f,%f,%f)",
+           pose.pose.position.x,
+           pose.pose.position.y,
+           pose.pose.position.z,
+           adj_vec.x(),
+           adj_vec.y(),
+           adj_vec.z());
+
+  pose.pose.position.x = adj_vec.x();
+  pose.pose.position.y = adj_vec.y();
 }
 
 void GraspPoseGenerator::adjustToTopOrientation(geometry_msgs::PoseStamped &pose) {
@@ -158,6 +200,9 @@ void GraspPoseGenerator::adjustToTopOrientation(geometry_msgs::PoseStamped &pose
 }
 
 void GraspPoseGenerator::adjustToFrontOrientation(geometry_msgs::PoseStamped &pose) {
+  // adds offset in direction of grip
+  adjustPoseForFrontPose(pose);
+
   // Direction vector of z-axis. WARN: The z-axis will become the new x-axis for front grip
   tf::Vector3 z_axis(
       pose.pose.position.x,

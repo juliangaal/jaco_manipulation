@@ -45,7 +45,7 @@ void JacoManipulationServer::prepMoveItMoveGroup() {
   move_group_.setPlanningTime(1.0);
   move_group_.setPlannerId("RRTConnectkConfigDefault");
 //  move_group_.setPlannerId("RRTstarkConfigDefault");
-  move_group_.setNumPlanningAttempts(10);
+  move_group_.setNumPlanningAttempts(15);
   move_group_.allowReplanning(true);
   move_group_.allowLooking(true);
 }
@@ -133,12 +133,12 @@ bool JacoManipulationServer::planAndMove(const std::string &pose_goal_string) {
 bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
   ROS_STATUS("Grasp request received");
 
-  addObstacle(goal);
+//  addObstacle(goal);
 
   bool moved = planAndMove(goal->pose_goal);
   if (!moved) return false;
 
-  attachObstacle(goal);
+//  attachObstacle(goal);
   closeGripper();
 
   ROS_STATUS("Gripper closed. Object grasped.");
@@ -152,12 +152,12 @@ bool JacoManipulationServer::planAndMoveAndDrop(const jaco_manipulation::PlanAnd
   bool moved = planAndMove(goal->pose_goal);
   if (!moved) {
     openGripper();
-    detachObstacle(goal);
+//    detachObstacle(goal);
     return false;
   }
 
   openGripper();
-  detachObstacle(goal);
+//  detachObstacle(goal);
 
   ROS_STATUS("Gripper opened. Object dropped.");
 
