@@ -83,6 +83,7 @@ add_executable(manipulation_server src/manipulation_services_node.cpp)
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(jaco2_manipulation jaco_manipulation_generate_messages_cpp)
 add_dependencies(jaco_manipulation_client_test jaco_manipulation_generate_messages_cpp)
+add_dependencies(grasp_pose_generator jaco_manipulation_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(jaco2_manipulation
