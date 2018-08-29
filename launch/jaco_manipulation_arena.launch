@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
     <arg name="use_rviz" default="true"/>
-    <arg name="rviz_config" value="manipulation_arena.rviz" />
+    <arg name="rviz_config" default="manipulation_arena.rviz" />
 
     <!-- Launches jacp_manipulation -->
     <include file="$(find jaco_manipulation)/launch/jaco_manipulation.launch">

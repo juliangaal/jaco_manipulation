@@ -44,16 +44,16 @@ catkin_package(
     LIBRARIES jaco2_manipulation grasp_pose_generator
     CATKIN_DEPENDS actionlib actionlib_msgs cmake_modules geometry_msgs moveit_core moveit_ros_planning_interface pluginlib roscpp std_msgs tf message_runtime wpi_jaco_msgs)
 
-include_directories(include)
 include_directories(
+    include
     ${catkin_INCLUDE_DIRS})
 
 set(SERVER_SOURCES
     src/visuals/moveit_visuals.cpp
-    src/server/jaco_manipulation_server.cpp)
+    src/server/${PROJECT_NAME}_server.cpp)
 
 set(CLIENT_SOURCES
-    src/client/jaco_manipulation_client.cpp
+    src/client/${PROJECT_NAME}_client.cpp
     src/goals/goal.cpp
     src/goals/vision_goal.cpp
     src/goals/grasp_goal.cpp
@@ -71,32 +71,32 @@ add_library(grasp_pose_generator
             src/grasps/grasp_pose_generator.cpp)
 
 # Test client for jaco_manipulation action server
-add_executable(jaco_manipulation_client_test test/jaco_manipulation_client_test.cpp)
+add_executable(${PROJECT_NAME}_client_test test/${PROJECT_NAME}_client_test.cpp)
 
 # Test client for jaco_manipulation grasping
-add_executable(jaco_manipulation_client_grasp_test test/jaco_manipulation_client_grasp_test.cpp)
+add_executable(${PROJECT_NAME}_client_grasp_test test/${PROJECT_NAME}_client_grasp_test.cpp)
 
-add_executable(manipulation_server src/manipulation_services_node.cpp)
+add_executable(jaco_manipulation_server src/${PROJECT_NAME}_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(jaco2_manipulation jaco_manipulation_generate_messages_cpp)
-add_dependencies(jaco_manipulation_client_test jaco_manipulation_generate_messages_cpp)
-add_dependencies(grasp_pose_generator jaco_manipulation_generate_messages_cpp)
+add_dependencies(jaco2_manipulation ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME}_client_test ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(grasp_pose_generator ${PROJECT_NAME}_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(jaco2_manipulation
                       ${catkin_LIBRARIES}
                       grasp_pose_generator)
 
-target_link_libraries(manipulation_server
+target_link_libraries(jaco_manipulation_server
                       ${catkin_LIBRARIES}
                       jaco2_manipulation)
 
-target_link_libraries(jaco_manipulation_client_test
+target_link_libraries(${PROJECT_NAME}_client_test
                       ${catkin_LIBRARIES}
                       jaco2_manipulation)
 
-target_link_libraries(jaco_manipulation_client_grasp_test
+target_link_libraries(${PROJECT_NAME}_client_grasp_test
                       ${catkin_LIBRARIES}
                       jaco2_manipulation)

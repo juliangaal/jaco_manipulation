@@ -19,14 +19,13 @@ using namespace jaco_manipulation;
 
 int main(int argn, char *args[]) {
   ros::init(argn, args, "manipulation_server");
-  ros::MultiThreadedSpinner m_t_spinner(4);
 
   ROS_STATUS("Starting server for manipulation.");
   server::JacoManipulationServer jms;
 
-  ROS_SUCCESS("All servers are up.");
+  ROS_SUCCESS("Server is up.");
 
-  m_t_spinner.spin();
+  ros::spin();
 }
 
 
