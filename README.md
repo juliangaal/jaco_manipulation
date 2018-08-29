@@ -2,6 +2,10 @@
 
 Provides ROS Actionlib Server and Client interface to Jaco Robotic Arm.
 
+Depends on [wpi_jaco](), a custom driver for the robotic arm.
+
+Depends on installation of [MoveIt!](https://moveit.ros.org/) and it's [visual tools](https://github.com/ros-planning/moveit_visual_tools)
+
 ## Server: jaco\_manipulation_server
 ### Config
 Messages defined in [action/PlanAndMoveArm.action](action/PlanAndMoveArm.action)
