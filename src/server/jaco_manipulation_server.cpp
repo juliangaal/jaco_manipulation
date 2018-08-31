@@ -140,6 +140,15 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAn
 
   ROS_STATUS("Gripper closed. Object grasped.");
 
+  // once gripped we simply move up a little
+  jaco_manipulation::PlanAndMoveArmGoal new_goal(*goal);
+  new_goal.pose_goal.pose.position.z += 0.2;
+
+  moved = planAndMove(new_goal.pose_goal);
+  if (!moved) return false;
+
+  ROS_STATUS("Moved to pose gripping state");
+
   return true;
 }
 
