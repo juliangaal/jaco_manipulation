@@ -154,6 +154,28 @@ void GraspPoseGenerator::adjustPosition(geometry_msgs::PoseStamped &pose,
 
 void GraspPoseGenerator::adjustHeightForTopPose(geometry_msgs::PoseStamped &pose,
                                                 const jaco_manipulation::BoundingBox &box) {
+  // we adjust height according to width of bounding box
+  const auto min = min_height_top_grasp;
+  const double max = 0.265;
+
+  // function described by y = mx + b
+  // m = delta y/ delta x = 7/2.5 = 2.8
+  // b = 2.7
+  // function (defined after x(width) > 0.065: y = x + 0.027
+  if (box.dimensions.x > 0.065 || box.dimensions.y > 0.065) {
+    pose.pose.position.z = min_height_top_grasp; // min height grasp pose for objects <= 6.5cms
+    auto dim = std::max(box.dimensions.x, box.dimensions.y);
+    auto height_correction = 0.028 * dim + 0.027;
+    auto global_height = min + height_correction;
+    auto height_diff = std::fabs(global_height - min);
+    ROS_INFO_STREAM(dim);
+    ROS_INFO_STREAM(height_correction);
+    ROS_INFO("H/W Fix : %f -> %f for width %f", pose.pose.position.z,
+                                               pose.pose.position.z + height_diff,
+                                               dim);
+    pose.pose.position.z += height_diff;
+  }
+  ROS_INFO("Dims: (%f %f %f)", box.dimensions.x, box.dimensions.y, box.dimensions.z);
   // adjust height, if smaller than minimal allowance
   if (pose.pose.position.z < min_height_top_grasp)
     pose.pose.position.z = min_height_top_grasp;

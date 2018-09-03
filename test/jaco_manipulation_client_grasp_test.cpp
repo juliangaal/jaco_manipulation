@@ -27,11 +27,11 @@ int main(int argn, char *args[]) {
     jaco_manipulation::BoundingBox b;
     b.header.frame_id = "base_link";
     b.description = "ball";
-    b.point.x = 0.4;
+    b.point.x = 0.5;
     b.point.y = 0.3;
-    b.point.z = 0.03;
-    b.dimensions.x = 0.06;
-    b.dimensions.y = 0.06;
+    b.point.z = 0.0;
+    b.dimensions.x = 0.078;
+    b.dimensions.y = 0.078;
     b.dimensions.z = 0.06;
     jmc.graspAt(b);
   }
@@ -40,11 +40,11 @@ int main(int argn, char *args[]) {
     jaco_manipulation::BoundingBox b;
     b.header.frame_id = "base_link";
     b.description = "ball";
-    b.point.x = 0.4;
-    b.point.y = 0.1;
-    b.point.z = 0.03;
-    b.dimensions.x = 0.06;
-    b.dimensions.y = 0.06;
+    b.point.x = 0.5;
+    b.point.y = 0.3;
+    b.point.z = 0.0;
+    b.dimensions.x = 0.078;
+    b.dimensions.y = 0.078;
     b.dimensions.z = 0.06;
     jmc.dropAt(b);
   }

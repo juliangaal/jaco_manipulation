@@ -35,6 +35,8 @@ JacoManipulationServer::JacoManipulationServer() :
 
   prepMoveItMoveGroup();
 
+  sleep(3);
+
   openGripper();
 }
 
