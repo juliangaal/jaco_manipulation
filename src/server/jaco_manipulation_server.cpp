@@ -201,7 +201,7 @@ void JacoManipulationServer::closeGripper() {
 
 void JacoManipulationServer::closeGripper(const jaco_manipulation::BoundingBox &box) {
   // define gripper close by a function y = mx + b. In our case x is size of bounding box and y is amount to grip
-  // our function is: y = -433.33blablax + 6500
+  // our function is: y = -433.33blabla + 6500
   const double max_grip = 6500.0;
   const double size = std::max(box.dimensions.x, box.dimensions.y);
   float amount = -43333.333 * size + 6500.0;
