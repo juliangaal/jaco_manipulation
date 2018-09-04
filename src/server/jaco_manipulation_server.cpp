@@ -138,8 +138,8 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAn
   if (!moved) return false;
 
   attachObstacle(goal);
-  closeGripper();
-
+  closeGripper(goal->bounding_box);
+//  closeGripper();
   ROS_STATUS("Gripper closed. Object grasped.");
 
   // once gripped we simply move up a little
@@ -184,7 +184,7 @@ void JacoManipulationServer::detachObstacle(const jaco_manipulation::PlanAndMove
   moveit_visuals_.detachObstacle(goal);
 }
 
-void JacoManipulationServer::removeObstacle(const PlanAndMoveArmGoalConstPtr &goal) {
+void JacoManipulationServer::removeObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
   moveit_visuals_.removeObstacle(goal->bounding_box.description);
 }
 
@@ -197,6 +197,25 @@ void JacoManipulationServer::moveGripper(float value) {
 
 void JacoManipulationServer::closeGripper() {
   moveGripper(6500.0);
+}
+
+void JacoManipulationServer::closeGripper(const jaco_manipulation::BoundingBox &box) {
+  // define gripper close by a function y = mx + b. In our case x is size of bounding box and y is amount to grip
+  // our function is: y = -433.33blablax + 6500
+  const double max_grip = 6500.0;
+  const double size = std::max(box.dimensions.x, box.dimensions.y);
+  float amount = -43333.333 * size + 6500.0;
+
+  // give it a tiny extra squeeze, for heavier objects e.g.
+  const float squeeze = 350.0;
+  amount += squeeze;
+
+  if (amount < 0.0) {
+    ROS_ERROR("Object is too big to be gripped!");
+    amount = 0.0;
+  }
+
+  moveGripper(amount);
 }
 
 void JacoManipulationServer::openGripper() {

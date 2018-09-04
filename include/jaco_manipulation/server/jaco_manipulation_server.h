@@ -126,40 +126,52 @@ class JacoManipulationServer {
 
   /**
    * Show planned move info in console from start pose to end pose
+   * @param start start pose
+   * @param end target pose
   */
   void showPlannedMoveInfo(const geometry_msgs::PoseStamped &start, const geometry_msgs::PoseStamped &end);
 
   /**
    * Show planned move info in console from start joint to end joint state
+   * @param start start values
+   * @param end target pose
   */
   void showPlannedMoveInfo(const std::vector<double> &start, const sensor_msgs::JointState &end);
 
   /**
   * Show planned move info in console from start joint to end joint state
+   * @param start start pose
+   * @param end target pose defined in moveit config
  */
   void showPlannedMoveInfo(const geometry_msgs::PoseStamped &start, const std::string &target);
 
   /**
    * Convenience function to plan and execute the pose specified by pose_goal.
+   * @param pose_goal pose to be planned for and moved to
   */
   bool planAndMove(const geometry_msgs::PoseStamped &pose_goal);
 
   /**
    * Convenience function to plan, execute the pose and grasp for an object specified by pose_goal.
+   * @param goal to move to and grasp
   */
   bool planAndMoveAndGrasp(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
   /**
    * Convenience function to plan, execute the pose and drop an object specified by pose_goal.
+   * @param goal to move to and drop
   */
   bool planAndMoveAndDrop(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
   /**
    * Convenience function to plan and execute the joint_state specified by target_joint_state.
+   * @param target_joint_state joint state to move to
   */
   bool planAndMove(const sensor_msgs::JointState &target_joint_state);
+
   /**
-   * Convenience function to plan and execute the pose specified by string.
+   * Convenience function to plan and execute the pose specified by string (move it config name)
+   * @param pose_goal_string name of string defined in moveit config, that describes pose goal
   */
   bool planAndMove(const std::string &pose_goal_string);
 
@@ -169,22 +181,45 @@ class JacoManipulationServer {
   void closeGripper();
 
   /**
-  * A function to close jaco's grippers
- */
+   * A function to close jaco's grippers according to size of the bounding box
+   * @param box
+   */
+  void closeGripper(const jaco_manipulation::BoundingBox &box);
+
+  /**
+   * A function to close jaco's grippers
+  */
   void openGripper();
 
   /**
    * A function to move jaco's grippers.
+   * @param value gripper value to move to
   */
   void moveGripper(float value = 6500.0);
 
+  /**
+   * Adds obstacle into moveit planning scene
+   * @param goal that includes pose and bounding box
+   */
   void addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
+  /**
+   * Attach gripped obstacle
+   * @param goal from which to get bounding box to attach
+   */
   void attachObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
+  /**
+   * Detach dropped obstacle
+   * @param goal from which to get bounding box to drop
+   */
   void detachObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
-  void removeObstacle(const PlanAndMoveArmGoalConstPtr &goal);
+  /**
+   * Remove obstacle from planning scene
+   * @param goal from which to get Bounding box to remove
+   */
+  void removeObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
   /// helper: joint 1
   constexpr static size_t JOINT1 = 0;

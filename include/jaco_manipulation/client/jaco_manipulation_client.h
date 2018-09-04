@@ -22,7 +22,7 @@
 #include <jaco_manipulation/BoundingBox.h>
 
 #include <jaco_manipulation/goals/goal.h>
-#include <jaco_manipulation/goals//grasp_goal.h>
+#include <jaco_manipulation/goals/grasp_goal.h>
 #include <jaco_manipulation/goals/joint_goal.h>
 #include <jaco_manipulation/goals/move_it_goal.h>
 #include <jaco_manipulation/goals/pose_goal.h>
