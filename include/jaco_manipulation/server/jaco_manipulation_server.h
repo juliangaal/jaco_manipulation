@@ -82,6 +82,9 @@ class JacoManipulationServer {
   */
   moveit::planning_interface::MoveGroupInterface move_group_;
 
+  /**
+   * Class that handles visuals in the planning scene
+   */
   jaco_manipulation::visuals::MoveitVisuals moveit_visuals_;
 
   /**
@@ -112,8 +115,6 @@ class JacoManipulationServer {
   */
   ros::Publisher finger_pub_;
 
-//  boost::shared_ptr<tf::TransformListener> tf_listener_;
-
   /**
   * A function to prepare MoveIt movegroup and cofigure it for all future plans
  */
@@ -139,7 +140,7 @@ class JacoManipulationServer {
   void showPlannedMoveInfo(const std::vector<double> &start, const sensor_msgs::JointState &end);
 
   /**
-  * Show planned move info in console from start joint to end joint state
+   * Show planned move info in console from start joint to end joint state
    * @param start start pose
    * @param end target pose defined in moveit config
  */
