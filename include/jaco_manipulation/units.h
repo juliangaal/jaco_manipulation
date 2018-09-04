@@ -22,7 +22,6 @@ namespace jaco_manipulation {
  * @param amount 
  * @return amount in meters
  */
-
 double operator "" _m(long double amount) {
   return static_cast<double>(amount);
 }
