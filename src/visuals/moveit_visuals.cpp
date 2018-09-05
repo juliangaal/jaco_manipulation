@@ -84,20 +84,10 @@ void MoveitVisuals::addTableObstacle() {
       ROS_INFO_STREAM("Transform failed. Why? - " << exception.what());
     }
 
-    ROS_INFO("Table Transfrm: \"%s\" (%f,%f,%f) -> \"%s\" (%f,%f,%f)",
-             in_pt.header.frame_id.c_str(),
-             in_pt.point.x,
-             in_pt.point.y,
-             in_pt.point.z,
-             out_pt.header.frame_id.c_str(),
-             out_pt.point.x,
-             out_pt.point.y,
-             out_pt.point.z);
-
     geometry_msgs::Pose pose;
     pose.position.x = out_pt.point.x;
     pose.position.y = out_pt.point.y;
-    pose.position.z = out_pt.point.z - 0.01;
+    pose.position.z = out_pt.point.z;
     pose.orientation.w = 1.0;
 
     collision_object.operation = collision_object.ADD;
@@ -105,6 +95,8 @@ void MoveitVisuals::addTableObstacle() {
     collision_object.primitive_poses.push_back(pose);
     collision_objects.push_back(collision_object);
   }
+
+  ROS_SUCCESS("Added table as obstacle");
 
   {
     moveit_msgs::CollisionObject collision_object;
@@ -135,16 +127,6 @@ void MoveitVisuals::addTableObstacle() {
       ROS_INFO_STREAM("Transform failed. Why? - " << exception.what());
     }
 
-    ROS_INFO("Wall Transform: \"%s\" (%f,%f,%f) -> \"%s\" (%f,%f,%f)",
-             in_pt.header.frame_id.c_str(),
-             in_pt.point.x,
-             in_pt.point.y,
-             in_pt.point.z,
-             out_pt.header.frame_id.c_str(),
-             out_pt.point.x,
-             out_pt.point.y,
-             out_pt.point.z);
-
     geometry_msgs::Pose pose;
     pose.position.x = out_pt.point.x;
     pose.position.y = out_pt.point.y;
@@ -156,6 +138,8 @@ void MoveitVisuals::addTableObstacle() {
     collision_object.primitive_poses.push_back(pose);
     collision_objects.push_back(collision_object);
   }
+
+  ROS_SUCCESS("Added Wall as obstacle");
 
   planning_scene_interface_.addCollisionObjects(collision_objects);
 }
@@ -178,6 +162,12 @@ void MoveitVisuals::addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConst
 
   geometry_msgs::PointStamped out_pt;
   geometry_msgs::PointStamped in_pt;
+
+  ROS_INFO("Box Centroid: %f %f %f", box.point.x, box.point.y, box.point.z);
+
+  if (box.point.z == 0.0)
+    ROS_ERROR("Is it acutally the centroid? Height is %f", box.point.z);
+
   in_pt.header = box.header;
   in_pt.point = box.point;
 
@@ -200,7 +190,8 @@ void MoveitVisuals::addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConst
   attached_object.object.primitives.push_back(primitive);
   attached_object.object.primitive_poses.push_back(pose);
 
-  attached_object.touch_links = std::vector<std::string>{ "jaco_link_hand",
+  attached_object.touch_links = std::vector<std::string>{ "base_link",
+                                                          "jaco_link_hand",
                                                           "jaco_link_finger_1",
                                                           "jaco_link_finger_2",
                                                           "jaco_link_finger_3",

@@ -19,7 +19,7 @@
 
     <!--  Static transform publisher -->
     <node pkg="tf" type="static_transform_publisher" name="base_link_broadcaster"
-          args="-0.075 -0.26 -0.025 0.0 0 0 root base_link 50"/>
+          args="-0.075 -0.26 -0.045 0.0 0 0 root base_link 50"/>
 
     <group if="$(arg use_rviz)">
         <node name="jaco_rviz" pkg="rviz" type="rviz" args="-d $(find jaco_manipulation)/launch/$(arg rviz_config)"/>

@@ -134,7 +134,7 @@ class GraspPoseGenerator {
   tf::TransformListener tf_listener_;
 
   /// Minimum height for top grasp in BASE_LINK
-  constexpr static double min_height_top_grasp = 0.1959;
+  constexpr static double min_height_top_grasp = 0.21;
 
   /// Minimum height for front grasp
   constexpr static double min_height_front_grasp = 0.011;
