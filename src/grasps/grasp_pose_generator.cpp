@@ -17,18 +17,23 @@
 
 using namespace jaco_manipulation::grasps;
 
-GraspPoseGenerator::GraspPoseGenerator() : tf_listener_(n_, ros::Duration(10)) {}
+GraspPoseGenerator::GraspPoseGenerator()
+  : tf_listener_(nh_, ros::Duration(10)),
+    absolute_height_top_grasp_(min_height_top_grasp_),
+    absolute_height_front_grasp_(min_height_front_grasp_) {}
 
 void GraspPoseGenerator::adjustPose(geometry_msgs::PoseStamped &pose,
                                     const jaco_manipulation::BoundingBox &box,
                                     const GraspType type) {
   switch(type) {
     case TOP_GRASP:
+      setAbsoluteHeight(box);
       adjustPosition(pose, box, TOP_GRASP);
       transformGoalIntoRobotFrame(pose, box);
       adjustToTopOrientation(pose);
       break;
     case TOP_DROP:
+      setAbsoluteHeight(box);
       adjustPosition(pose, box, TOP_DROP);
       transformGoalIntoRobotFrame(pose, box);
       adjustToTopOrientation(pose);
@@ -36,7 +41,7 @@ void GraspPoseGenerator::adjustPose(geometry_msgs::PoseStamped &pose,
     case FRONT_GRASP:
       adjustPosition(pose, box, FRONT_GRASP);
       transformGoalIntoRobotFrame(pose, box);
-      adjustToFrontOrientation(pose); // TODO which height, when bounding box centroid above min_height_front_grasp?!
+      adjustToFrontOrientation(pose); // TODO which height, when bounding box centroid above min_height_front_grasp_?!
       break;
     default:
       adjustPosition(pose, box, TOP_DROP);
@@ -65,6 +70,36 @@ void GraspPoseGenerator::adjustPose(geometry_msgs::PoseStamped &pose, const Gras
   }
 }
 
+void GraspPoseGenerator::adjustPosition(geometry_msgs::PoseStamped &pose,
+                                        const jaco_manipulation::BoundingBox &box,
+                                        const GraspType type) {
+  pose.pose.position.x = box.point.x;
+  pose.pose.position.y = box.point.y;
+  pose.pose.position.z = box.point.z + box.dimensions.z*0.5 + grasp_offset_;
+
+  ROS_INFO("Box Fix : (%f %f %f) -> (%f %f %f)",
+           box.point.x,
+           box.point.y,
+           box.point.z,
+           pose.pose.position.x,
+           pose.pose.position.y,
+           pose.pose.position.z);
+
+  switch(type) {
+    case TOP_GRASP:
+      adjustHeightForTopPose(pose, box);
+      break;
+    case TOP_DROP:
+      adjustHeightForTopDropPose(pose, box);
+      break;
+    case FRONT_GRASP:
+      adjustHeightForFrontPose(pose, box);
+      break;
+    default:
+      adjustToTopOrientation(pose);
+  }
+}
+
 void GraspPoseGenerator::transformGoalIntoRobotFrame(geometry_msgs::PoseStamped &pose,
                                                      const jaco_manipulation::BoundingBox &box) {
   geometry_msgs::PointStamped out_pt;
@@ -72,7 +107,7 @@ void GraspPoseGenerator::transformGoalIntoRobotFrame(geometry_msgs::PoseStamped 
   in_pt.header = box.header;
   in_pt.point = pose.pose.position;
 
-  // transform point
+  // transform point into root frame
   try {
     tf_listener_.waitForTransform("root", box.header.frame_id, box.header.stamp, ros::Duration(1));
     tf_listener_.transformPoint("root", in_pt, out_pt);
@@ -121,41 +156,10 @@ void GraspPoseGenerator::transformGoalIntoRobotFrame(geometry_msgs::PoseStamped 
            pose.pose.position.z);
 }
 
-void GraspPoseGenerator::adjustPosition(geometry_msgs::PoseStamped &pose,
-                                        const jaco_manipulation::BoundingBox &box,
-                                        const GraspType type) {
-  pose.pose.position.x = box.point.x;
-  pose.pose.position.y = box.point.y;
-  pose.pose.position.z = box.point.z + box.dimensions.z*0.5 + grasp_offset_;
-
-  ROS_INFO("Box Fix : (%f %f %f) -> (%f %f %f)",
-           box.point.x,
-           box.point.y,
-           box.point.z,
-           pose.pose.position.x,
-           pose.pose.position.y,
-           pose.pose.position.z);
-
-  switch(type) {
-    case TOP_GRASP:
-      adjustHeightForTopPose(pose, box);
-      break;
-    case TOP_DROP:
-      adjustHeightForTopDropPose(pose, box);
-      break;
-    case FRONT_GRASP:
-      adjustHeightForFrontPose(pose, box);
-      break;
-    default:
-      adjustToTopOrientation(pose);
-  }
-
-}
-
 void GraspPoseGenerator::adjustHeightForTopPose(geometry_msgs::PoseStamped &pose,
                                                 const jaco_manipulation::BoundingBox &box) {
   // we adjust height according to width of bounding box
-  const auto min = min_height_top_grasp;
+  const auto min = absolute_height_top_grasp_;
   const double max = 0.265;
 
   // function described by y = mx + b
@@ -163,7 +167,7 @@ void GraspPoseGenerator::adjustHeightForTopPose(geometry_msgs::PoseStamped &pose
   // b = 2.7
   // function (defined after x(width) > 0.065: y = x + 0.027
   if (box.dimensions.x > 0.065 || box.dimensions.y > 0.065) {
-    pose.pose.position.z = min_height_top_grasp; // min height grasp pose for objects <= 6.5cms
+    pose.pose.position.z = absolute_height_top_grasp_; // min height grasp pose for objects <= 6.5cms
     auto dim = std::max(box.dimensions.x, box.dimensions.y);
     auto height_correction = 0.028 * dim + 0.027;
     auto global_height = min + height_correction;
@@ -175,10 +179,11 @@ void GraspPoseGenerator::adjustHeightForTopPose(geometry_msgs::PoseStamped &pose
                                                dim);
     pose.pose.position.z += height_diff;
   }
-  ROS_INFO("Dims: (%f %f %f)", box.dimensions.x, box.dimensions.y, box.dimensions.z);
   // adjust height, if smaller than minimal allowance
-  if (pose.pose.position.z < min_height_top_grasp)
-    pose.pose.position.z = min_height_top_grasp;
+  ROS_INFO("Absoulte height %f vs jaco min height %f", absolute_height_top_grasp_, min_height_top_grasp_);
+
+  if (pose.pose.position.z < absolute_height_top_grasp_)
+    pose.pose.position.z = absolute_height_top_grasp_;
 }
 
 void GraspPoseGenerator::adjustHeightForTopDropPose(geometry_msgs::PoseStamped &pose,
@@ -190,10 +195,42 @@ void GraspPoseGenerator::adjustHeightForTopDropPose(geometry_msgs::PoseStamped &
 void GraspPoseGenerator::adjustHeightForFrontPose(geometry_msgs::PoseStamped &pose,
                                                     const jaco_manipulation::BoundingBox &box) {
   adjustHeightForTopPose(pose, box);
-  if (box.point.z < min_height_front_grasp)
-    pose.pose.position.z = min_height_front_grasp;
+  if (box.point.z < min_height_front_grasp_)
+    pose.pose.position.z = min_height_front_grasp_;
   else
-    pose.pose.position.z = box.point.z - std::fabs(min_height_front_grasp - box.point.z);
+    pose.pose.position.z = box.point.z - std::fabs(min_height_front_grasp_ - box.point.z);
+}
+
+
+void GraspPoseGenerator::setAbsoluteHeight(const BoundingBox &box) {
+  geometry_msgs::PointStamped out_pt;
+  geometry_msgs::PointStamped in_pt;
+  in_pt.header = box.header;
+
+  geometry_msgs::PoseStamped pose; // empty pose in base link
+  in_pt.point = pose.pose.position;
+
+  // transform point into root frame
+  try {
+    tf_listener_.waitForTransform("root", box.header.frame_id, box.header.stamp, ros::Duration(1));
+    tf_listener_.transformPoint("root", in_pt, out_pt);
+  }
+  catch (tf::TransformException &exception) {
+    ROS_INFO_STREAM("Absolute height transform failed. Why? - " << exception.what());
+  }
+
+  const auto height_diff = std::fabs(out_pt.point.z - in_pt.point.z);
+  absolute_height_top_grasp_ += height_diff;
+//
+//  ROS_INFO("Transfrm Absolute Height: \"%s\" (%f,%f,%f) -> \"%s\" (%f,%f,%f)",
+//           box.header.frame_id.c_str(),
+//           in_pt.point.x,
+//           in_pt.point.y,
+//           in_pt.point.z,
+//           "root",
+//           out_pt.point.x,
+//           out_pt.point.y,
+//           out_pt.point.z);
 }
 
 void GraspPoseGenerator::adjustPositionForFrontPose(geometry_msgs::PoseStamped &pose) {
@@ -318,8 +355,8 @@ void GraspPoseGenerator::adjustToFrontOrientation(geometry_msgs::PoseStamped &po
   tf::quaternionTFToMsg(front_grasp_quaternion, pose.pose.orientation);
 
   // adjust height, if smaller than minimal allowance
-  if (pose.pose.position.z < min_height_front_grasp)
-    pose.pose.position.z = min_height_front_grasp;
+  if (pose.pose.position.z < min_height_front_grasp_)
+    pose.pose.position.z = min_height_front_grasp_;
 
   ROS_INFO("FrontFix: Pose now (%f,%f,%f) ; (%f,%f,%f,%f)",
            pose.pose.position.x,

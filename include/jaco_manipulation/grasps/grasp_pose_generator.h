@@ -122,22 +122,34 @@ class GraspPoseGenerator {
                                    const jaco_manipulation::BoundingBox &box);
 
   /**
- * transforms goal into robot frame
- * @param pose input pose
- */
+   * transforms goal into robot frame
+   * @param pose input pose
+   */
   void transformGoalIntoRobotFrame(geometry_msgs::PoseStamped &pose);
 
+  /**
+   * Set absolute height: min_height_top_grasp + height to base_link
+   * @param box point in root link
+   */
+  void setAbsoluteHeight(const BoundingBox &box);
+
   /// Node Handle
-  ros::NodeHandle n_;
+  ros::NodeHandle nh_;
 
   /// transform listener
   tf::TransformListener tf_listener_;
 
   /// Minimum height for top grasp in BASE_LINK
-  constexpr static double min_height_top_grasp = 0.21;
+  constexpr static double min_height_top_grasp_ = 0.18;
+
+  /// min_height_jaco is defined in jaco's lonk (root). This will define it in base link
+  double absolute_height_top_grasp_;
 
   /// Minimum height for front grasp
-  constexpr static double min_height_front_grasp = 0.011;
+  constexpr static double min_height_front_grasp_ = 0.011;
+
+  /// min_height_front_grasp_ is defined in jaco's lonk (root). This will define it in base link
+  double absolute_height_front_grasp_;
 
   /// offset that is added for dropping
   constexpr static double drop_offset_ = 0.03;
