@@ -42,9 +42,9 @@ JacoManipulationServer::JacoManipulationServer() :
 
 void JacoManipulationServer::prepMoveItMoveGroup() {
   move_group_.setPlanningTime(1.0);
-  move_group_.setPlannerId("RRTConnectkConfigDefault");
-//  move_group_.setPlannerId("RRTstarkConfigDefault");
-  move_group_.setNumPlanningAttempts(15);
+//  move_group_.setPlannerId("RRTConnectkConfigDefault");
+  move_group_.setPlannerId("RRTstarkConfigDefault");
+  move_group_.setNumPlanningAttempts(5);
   move_group_.allowReplanning(true);
   move_group_.allowLooking(true);
 }
@@ -136,6 +136,7 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAn
 
   bool moved = planAndMove(goal->pose_goal);
   if (!moved) return false;
+//  closeGripper(goal->bounding_box);
 
   attachObstacle(goal);
 //  closeGripper(goal->bounding_box);
@@ -192,7 +193,7 @@ void JacoManipulationServer::moveGripper(float value) {
   std_msgs::Float32 FP;
   FP.data = value;
   finger_pub_.publish(FP);
-  std::this_thread::sleep_for(std::chrono_literals::operator""s(3));
+  sleep(3);
 }
 
 void JacoManipulationServer::closeGripper() {
@@ -207,7 +208,7 @@ void JacoManipulationServer::closeGripper(const jaco_manipulation::BoundingBox &
   float amount = -43333.333 * size + 6500.0;
 
   // give it a tiny extra squeeze, for heavier objects e.g.
-  constexpr float squeeze = 300.0;
+  constexpr float squeeze = 350.0;
   amount += squeeze;
 
   if (amount < 0.0) {
