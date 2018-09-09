@@ -29,6 +29,7 @@ MoveitVisuals::MoveitVisuals(ros::NodeHandle &nh, const std::string frame,
   planning_scene_diff_publisher_ = nh_.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
   prepMoveItVisualTools();
   addTableObstacle();
+  sleep(1);
 }
 
 MoveitVisuals::~MoveitVisuals() {
@@ -87,7 +88,7 @@ void MoveitVisuals::addTableObstacle() {
     geometry_msgs::Pose pose;
     pose.position.x = out_pt.point.x;
     pose.position.y = out_pt.point.y;
-    pose.position.z = out_pt.point.z;
+    pose.position.z = out_pt.point.z - 0.01;
     pose.orientation.w = 1.0;
 
     collision_object.operation = collision_object.ADD;
@@ -163,8 +164,6 @@ void MoveitVisuals::addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConst
   geometry_msgs::PointStamped out_pt;
   geometry_msgs::PointStamped in_pt;
 
-  ROS_INFO("Box Centroid: %f %f %f", box.point.x, box.point.y, box.point.z);
-
   if (box.point.z == 0.0)
     ROS_ERROR("Is it acutally the centroid? Height is %f", box.point.z);
 
@@ -205,7 +204,7 @@ void MoveitVisuals::addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConst
 
   to_be_attached[box.description] = attached_object;
 
-  ROS_STATUS("Added Object " << box.description);
+  ROS_SUCCESS("Added Object " << box.description);
 }
 
 void MoveitVisuals::attachObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
@@ -281,7 +280,15 @@ void MoveitVisuals::removeObstacle(const std::string id) {
   std::vector<std::string> object_ids;
   object_ids.push_back(id);
   planning_scene_interface_.removeCollisionObjects(object_ids);
-  ROS_STATUS("Removed Object " << id << " from planning scene");
+  ROS_SUCCESS("Removed Object " << id << " from planning scene");
+}
+
+void MoveitVisuals::wipeKinectObstacles() {
+  auto all_objects = planning_scene_interface_.getObjects();
+  for (auto it = begin(all_objects); it != end(all_objects); ++it) {
+    if (it->first == "table" || it->first == "wall") continue;
+    removeObstacle(it->first);
+  }
 }
 
 void MoveitVisuals::showStatus() {

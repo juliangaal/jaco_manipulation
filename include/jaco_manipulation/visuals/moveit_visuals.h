@@ -47,6 +47,7 @@ class MoveitVisuals {
   void attachObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
   void detachObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
   void removeObstacle(const std::string id);
+  void wipeKinectObstacles();
 
  private:
 
@@ -67,8 +68,6 @@ class MoveitVisuals {
    * The move_group variable.
   */
   moveit::planning_interface::MoveGroupInterface &move_group_;
-
-//  moveit_msgs::PlanningScene planning_scene_;
 
   /**
    * The planning scene interface.

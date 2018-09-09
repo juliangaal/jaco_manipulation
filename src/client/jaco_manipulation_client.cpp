@@ -106,3 +106,22 @@ void JacoManipulationClient::tryDifferentGraspPoses(T &goal_type, const std::str
     }
   }
 }
+
+void JacoManipulationClient::updatePlanningScene(const jaco_manipulation::BoundingBox &box) {
+  jaco_manipulation::PlanAndMoveArmGoal goal;
+  goal.pose_goal.header.frame_id = "root";
+  goal.goal_type = "add_obstacle";
+  goal.bounding_box = box;
+
+  client_.sendGoal(goal);
+  client_.waitForResult();
+}
+
+void JacoManipulationClient::wipePlanningScene() {
+  jaco_manipulation::PlanAndMoveArmGoal goal;
+  goal.pose_goal.header.frame_id = "root";
+  goal.goal_type = "wipe_kinect_obstacles";
+
+  client_.sendGoal(goal);
+  client_.waitForResult();
+}

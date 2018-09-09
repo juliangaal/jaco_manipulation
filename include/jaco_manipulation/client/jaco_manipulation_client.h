@@ -107,7 +107,19 @@ class JacoManipulationClient {
   void dropAt(const jaco_manipulation::BoundingBox &bounding_box_goal,
               const std::string &description = "drop box goal");
 
+  /**
+   * Updates planning scene with obstacle from kinect
+   * @param box Bounding Box to be added to planning scene
+   */
+  void updatePlanningScene(const jaco_manipulation::BoundingBox &box);
+
+  /**
+   * Wipes planning scene clean. To be used before new ReGround action
+   */
+  void wipePlanningScene();
+
  private:
+
   /**
    * PlanAndMoveArmAction ROS action server client
    */

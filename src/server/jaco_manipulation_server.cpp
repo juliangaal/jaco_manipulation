@@ -13,6 +13,7 @@
 */
 
 #include <jaco_manipulation/server/jaco_manipulation_server.h>
+#include <jaco_manipulation/units.h>
 #include <thread>
 #include <chrono>
 
@@ -42,9 +43,9 @@ JacoManipulationServer::JacoManipulationServer() :
 
 void JacoManipulationServer::prepMoveItMoveGroup() {
   move_group_.setPlanningTime(1.0);
-//  move_group_.setPlannerId("RRTConnectkConfigDefault");
-  move_group_.setPlannerId("RRTstarkConfigDefault");
-  move_group_.setNumPlanningAttempts(5);
+  move_group_.setPlannerId("RRTConnectkConfigDefault");
+//  move_group_.setPlannerId("RRTstarkConfigDefault");
+  move_group_.setNumPlanningAttempts(10);
   move_group_.allowReplanning(true);
   move_group_.allowLooking(true);
 }
@@ -54,7 +55,8 @@ void JacoManipulationServer::showPlannedPath() {
 }
 
 void JacoManipulationServer::processGoal(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
-  bool result_value;
+  static bool result_value    = false;
+  static bool obstacle_action = false;
 
   if (goal->goal_type.empty() || goal->goal_type == "goal") {
     ROS_ERROR("Goal not set or configured correctly. Returning");
@@ -69,8 +71,16 @@ void JacoManipulationServer::processGoal(const jaco_manipulation::PlanAndMoveArm
     result_value = planAndMoveAndDrop(goal);
   } else if (goal->goal_type == "add_obstacle") {
     addObstacle(goal);
+    pam_server_.setSucceeded();
+    return;
+  } else if (goal->goal_type == "wipe_kinect_obstacles") {
+    wipeKinectObstacles();
+    pam_server_.setSucceeded();
+    return;
   } else if (goal->goal_type == "remove_obstacle") {
     removeObstacle(goal);
+    pam_server_.setSucceeded();
+    return;
   } else {
     result_value = planAndMove(goal->goal_type);
   }
@@ -145,7 +155,7 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAn
 
   // once gripped we simply move up a little
   jaco_manipulation::PlanAndMoveArmGoal new_goal(*goal);
-  new_goal.pose_goal.pose.position.z += 0.2;
+  new_goal.pose_goal.pose.position.z += 12.0_cm;
 
   moved = planAndMove(new_goal.pose_goal);
   if (!moved) return false;
@@ -189,6 +199,10 @@ void JacoManipulationServer::removeObstacle(const jaco_manipulation::PlanAndMove
   moveit_visuals_.removeObstacle(goal->bounding_box.description);
 }
 
+void JacoManipulationServer::wipeKinectObstacles() {
+  moveit_visuals_.wipeKinectObstacles();
+}
+
 void JacoManipulationServer::moveGripper(float value) {
   std_msgs::Float32 FP;
   FP.data = value;
@@ -205,7 +219,7 @@ void JacoManipulationServer::closeGripper(const jaco_manipulation::BoundingBox &
   // our function is: y = -433.33blabla + 6500
   constexpr double max_grip = 6500.0;
   const double size = std::max(box.dimensions.x, box.dimensions.y);
-  float amount = -43333.333 * size + 6500.0;
+  auto amount = static_cast<float>(-43333.333 * size + 6500.0);
 
   // give it a tiny extra squeeze, for heavier objects e.g.
   constexpr float squeeze = 350.0;

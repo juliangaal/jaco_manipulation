@@ -222,6 +222,11 @@ class JacoManipulationServer {
    */
   void removeObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
+  /**
+   * Wipes obstacles added by kinect from the planning scene
+   */
+  void wipeKinectObstacles();
+
   /// helper: joint 1
   constexpr static size_t JOINT1 = 0;
 
