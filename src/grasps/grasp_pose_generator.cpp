@@ -13,7 +13,6 @@
 */
 
 #include <jaco_manipulation/grasps/grasp_pose_generator.h>
-#include <tf/tf.h>
 
 using namespace jaco_manipulation::grasps;
 
@@ -31,6 +30,7 @@ void GraspPoseGenerator::adjustPose(geometry_msgs::PoseStamped &pose,
       adjustPosition(pose, box, TOP_GRASP);
       transformGoalIntoRobotFrame(pose, box);
       adjustToTopOrientation(pose);
+      adjustOrientationToShape(pose, box);
       break;
     case TOP_DROP:
       setAbsoluteHeight(box);
@@ -100,6 +100,43 @@ void GraspPoseGenerator::adjustPosition(geometry_msgs::PoseStamped &pose,
   }
 }
 
+double GraspPoseGenerator::degToRad(const double &amount) {
+  return (amount * M_PI)/180.;
+}
+
+void GraspPoseGenerator::rotatePose(geometry_msgs::PoseStamped &pose, double amount, Rotation r_type) {
+  tf::Quaternion q_orig, q_rot, q_new;
+
+  const double rotation = degToRad(amount);
+  switch(r_type) {
+    case Rotation::ROLL:
+      q_rot = roll(rotation);
+      break;
+    case Rotation::PITCH:
+      q_rot = pitch(rotation);
+      break;
+    case Rotation::YAW:
+      q_rot = yaw(rotation);
+  }
+
+  quaternionMsgToTF(pose.pose.orientation , q_orig);
+  q_new = q_rot * q_orig;
+  q_new.normalize();
+  quaternionTFToMsg(q_new, pose.pose.orientation);
+}
+
+tf::Quaternion GraspPoseGenerator::yaw(double amount) {
+  return tf::createQuaternionFromRPY(0, 0, amount);
+}
+
+tf::Quaternion GraspPoseGenerator::roll(double amount) {
+  return tf::createQuaternionFromRPY(0, amount, 0);
+}
+
+tf::Quaternion GraspPoseGenerator::pitch(double amount) {
+  return tf::createQuaternionFromRPY(amount, 0, 0);
+}
+
 void GraspPoseGenerator::transformGoalIntoRobotFrame(geometry_msgs::PoseStamped &pose,
                                                      const jaco_manipulation::BoundingBox &box) {
   geometry_msgs::PointStamped out_pt;
@@ -162,13 +199,19 @@ void GraspPoseGenerator::adjustHeightForTopPose(geometry_msgs::PoseStamped &pose
   const auto min = absolute_height_top_grasp_;
   const double max = 0.265;
 
+  // Because of inherent properties and the "angle" of the fingers, we have to adjust the height of the grasp pose
+  // according to the size of the object.
   // function described by y = mx + b
   // m = delta y/ delta x = 7/2.5 = 2.8
   // b = 2.7
   // function (defined after x(width) > 0.065: y = x + 0.027
-  if (box.dimensions.x > 0.065 || box.dimensions.y > 0.065) {
+  if ((box.dimensions.x > 0.065 && box.dimensions.x <= box.dimensions.y) ||
+      (box.dimensions.y > 0.065 && box.dimensions.y <= box.dimensions.x)) {
+
     pose.pose.position.z = absolute_height_top_grasp_; // min height grasp pose for objects <= 6.5cms
-    auto dim = std::max(box.dimensions.x, box.dimensions.y);
+    // min because we turn rotation for best fit in hand.
+    // see adjustOrientationToShape
+    auto dim = std::min(box.dimensions.x, box.dimensions.y);
     auto height_correction = 0.028 * dim + 0.027;
     auto global_height = min + height_correction;
     auto height_diff = std::fabs(global_height - min);
@@ -221,55 +264,66 @@ void GraspPoseGenerator::setAbsoluteHeight(const BoundingBox &box) {
 
   const auto height_diff = std::fabs(out_pt.point.z - in_pt.point.z);
   absolute_height_top_grasp_ += height_diff;
-//
-//  ROS_INFO("Transfrm Absolute Height: \"%s\" (%f,%f,%f) -> \"%s\" (%f,%f,%f)",
-//           box.header.frame_id.c_str(),
-//           in_pt.point.x,
-//           in_pt.point.y,
-//           in_pt.point.z,
-//           "root",
-//           out_pt.point.x,
-//           out_pt.point.y,
-//           out_pt.point.z);
 }
 
 void GraspPoseGenerator::adjustPositionForFrontPose(geometry_msgs::PoseStamped &pose) {
-  tf::Vector3 change_vector(
-    pose.pose.position.x,
-    pose.pose.position.y,
-    0
-  );
-  change_vector.normalize();
-
-  // grasp offset
-  tf::Vector3 move_vector(
-    0.145,
-    0.145,
-    0
+  // Direction vector of z-axis. Should match root z-axis orientation
+  tf::Vector3 z_axis(
+      0,
+      0,
+      1
   );
 
-  // adjust change vector according to direction vector
-  move_vector.setX(move_vector.x() * change_vector.x());
-  move_vector.setY(move_vector.y() * change_vector.y());
+  /**
+   * Direction vector of our new x-axis, NOT defined in relation to y and z, but always parallel to the y axis in reality.
+  */
+  tf::Vector3 x_axis(
+      1,
+      0,
+      0
+  );
+  x_axis.normalize();
 
-  tf::Vector3 curr_vector(
-    pose.pose.position.x,
-    pose.pose.position.y,
-    pose.pose.position.z
+  // Calculate missing y-axis from defined z and x axis
+  tf::Vector3 y_axis;
+  y_axis = z_axis.cross(x_axis);
+
+  tf::Matrix3x3 top_grasp_orientation(
+      x_axis.x(), y_axis.x(), z_axis.x(),
+      x_axis.y(), y_axis.y(), z_axis.y(),
+      x_axis.z(), y_axis.z(), z_axis.z()
   );
 
-  tf::Vector3 adj_vec = curr_vector - move_vector;
-
-  ROS_INFO("Move    : Pose (%f,%f,%f) -> (%f,%f,%f)",
+  // convert orientation matrix to quaternion
+  tf::Quaternion top_grasp_quaternion;
+  top_grasp_orientation.getRotation(top_grasp_quaternion);
+  tf::quaternionTFToMsg(top_grasp_quaternion, pose.pose.orientation);
+  
+  // we have to move pose to accomodate for the offset from jaco_link_hand to finger tips
+  pose.pose.position.x += (pose.pose.position.x >= 0) ? -grasp_offset_ : grasp_offset_;
+  
+  ROS_INFO("Top Fix : Pose now (%f,%f,%f) ; (%f,%f,%f,%f)",
            pose.pose.position.x,
            pose.pose.position.y,
            pose.pose.position.z,
-           adj_vec.x(),
-           adj_vec.y(),
-           adj_vec.z());
+           pose.pose.orientation.x,
+           pose.pose.orientation.y,
+           pose.pose.orientation.z,
+           pose.pose.orientation.w);
+}
 
-  pose.pose.position.x = adj_vec.x();
-  pose.pose.position.y = adj_vec.y();
+void GraspPoseGenerator::adjustOrientationToShape(geometry_msgs::PoseStamped &pose,
+                              const jaco_manipulation::BoundingBox &box) {
+// Before we can adjust the height of the pose, we need to know about the ortientation of the objects
+// In our case we only care about two orientations, because the anchoring system
+// can't publish a bounding box with an accurate orientation. So, our scenario is reduced to these two orientations
+//     ______          ____
+//  y |_____|  and  y |   |
+//       x            |___|
+//                      x
+// We need to rotate the gripper 90deg if the length in x is longer than the length in y
+  if (box.dimensions.x > box.dimensions.y)
+    rotatePose(pose, 90._deg, Rotation::YAW);
 }
 
 void GraspPoseGenerator::adjustToTopOrientation(geometry_msgs::PoseStamped &pose) {
@@ -317,52 +371,52 @@ void GraspPoseGenerator::adjustToTopOrientation(geometry_msgs::PoseStamped &pose
 
 void GraspPoseGenerator::adjustToFrontOrientation(geometry_msgs::PoseStamped &pose) {
   // adds offset in direction of grip
-  adjustPositionForFrontPose(pose);
-
-  // Direction vector of z-axis. WARN: The z-axis will become the new x-axis for front grip
-  tf::Vector3 z_axis(
-      pose.pose.position.x,
-      pose.pose.position.y,
-      0
-  );
-  z_axis *= -1; // z-axis direction for front grasp should be opposite of x-axis direction of top grasp
-  z_axis.normalize();
-
-  /**
-   * Direction vector of our new x-axis, defined in relation to y and z. Dynamically calculated with current Pose.
-   * z is ignored, because we want the grasp pose to always be horizontal
-  */
-  tf::Vector3 y_axis(
-      0,
-      0,
-      1
-  );
-
-  // Calculate missing y-axis from defined z and x axis
-  tf::Vector3 x_axis;
-  x_axis = y_axis.cross(z_axis);
-
-  tf::Matrix3x3 front_grasp_orientation(
-      x_axis.x(), y_axis.x(), z_axis.x(),
-      x_axis.y(), y_axis.y(), z_axis.y(),
-      x_axis.z(), y_axis.z(), z_axis.z()
-  );
-
-  // convert orientation matrix to quaternion
-  tf::Quaternion front_grasp_quaternion;
-  front_grasp_orientation.getRotation(front_grasp_quaternion);
-  tf::quaternionTFToMsg(front_grasp_quaternion, pose.pose.orientation);
-
-  // adjust height, if smaller than minimal allowance
-  if (pose.pose.position.z < min_height_front_grasp_)
-    pose.pose.position.z = min_height_front_grasp_;
-
-  ROS_INFO("FrontFix: Pose now (%f,%f,%f) ; (%f,%f,%f,%f)",
-           pose.pose.position.x,
-           pose.pose.position.y,
-           pose.pose.position.z,
-           pose.pose.orientation.x,
-           pose.pose.orientation.y,
-           pose.pose.orientation.z,
-           pose.pose.orientation.w);
+//  adjustPositionForFrontPose(pose);
+//
+//  // Direction vector of z-axis. WARN: The z-axis will become the new x-axis for front grip
+//  tf::Vector3 z_axis(
+//      pose.pose.position.x,
+//      pose.pose.position.y,
+//      0
+//  );
+//  z_axis *= -1; // z-axis direction for front grasp should be opposite of x-axis direction of top grasp
+//  z_axis.normalize();
+//
+//  /**
+//   * Direction vector of our new x-axis, defined in relation to y and z. Dynamically calculated with current Pose.
+//   * z is ignored, because we want the grasp pose to always be horizontal
+//  */
+//  tf::Vector3 y_axis(
+//      0,
+//      0,
+//      1
+//  );
+//
+//  // Calculate missing y-axis from defined z and x axis
+//  tf::Vector3 x_axis;
+//  x_axis = y_axis.cross(z_axis);
+//
+//  tf::Matrix3x3 front_grasp_orientation(
+//      x_axis.x(), y_axis.x(), z_axis.x(),
+//      x_axis.y(), y_axis.y(), z_axis.y(),
+//      x_axis.z(), y_axis.z(), z_axis.z()
+//  );
+//
+//  // convert orientation matrix to quaternion
+//  tf::Quaternion front_grasp_quaternion;
+//  front_grasp_orientation.getRotation(front_grasp_quaternion);
+//  tf::quaternionTFToMsg(front_grasp_quaternion, pose.pose.orientation);
+//
+//  // adjust height, if smaller than minimal allowance
+//  if (pose.pose.position.z < min_height_front_grasp_)
+//    pose.pose.position.z = min_height_front_grasp_;
+//
+//  ROS_INFO("FrontFix: Pose now (%f,%f,%f) ; (%f,%f,%f,%f)",
+//           pose.pose.position.x,
+//           pose.pose.position.y,
+//           pose.pose.position.z,
+//           pose.pose.orientation.x,
+//           pose.pose.orientation.y,
+//           pose.pose.orientation.z,
+//           pose.pose.orientation.w);
 }
