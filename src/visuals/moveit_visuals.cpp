@@ -66,7 +66,7 @@ void MoveitVisuals::addTableObstacle() {
     primitive.dimensions.resize(3);
     primitive.dimensions[0] = 1.18;
     primitive.dimensions[1] = 0.62;
-    primitive.dimensions[2] = -0.001;
+    primitive.dimensions[2] = 0.0;//-0.001;
 
     geometry_msgs::PointStamped out_pt;
     geometry_msgs::PointStamped in_pt;
@@ -109,7 +109,7 @@ void MoveitVisuals::addTableObstacle() {
     primitive.dimensions.resize(3);
     primitive.dimensions[0] = 1.18;
     primitive.dimensions[1] = 0.01;
-    primitive.dimensions[2] = 0.31;
+    primitive.dimensions[2] = 0.40;
 
     geometry_msgs::PointStamped out_pt;
     geometry_msgs::PointStamped in_pt;
