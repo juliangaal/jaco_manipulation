@@ -22,7 +22,7 @@ namespace jaco_manipulation {
  * @param amount 
  * @return amount in meters
  */
-double operator "" _m(long double amount) {
+constexpr double operator "" _m(long double amount) {
   return static_cast<double>(amount);
 }
 
@@ -31,9 +31,8 @@ double operator "" _m(long double amount) {
  * @param amount
  * @return amount in cms
  */
-double operator "" _cm(long double amount) {
+constexpr double operator "" _cm(long double amount) {
   return static_cast<double>(amount / 100.0);
-
 }
 
 /**
@@ -41,9 +40,19 @@ double operator "" _cm(long double amount) {
  * @param amount
  * @return amount in millimeters
  */
-double operator "" _mm(long double amount) {
+constexpr double operator "" _mm(long double amount) {
   return static_cast<double>(amount / 1000.0);
 }
+
+/**
+ * User defined literal: Degree
+ * @param amount
+ * @return amount in degree (may be used to convert to rad in the future
+ */
+constexpr double operator "" _deg(long double amount) {
+  return static_cast<double>(amount);
+}
+
 } // namespace jaco_manipulation
 
 #endif //PROJECT_UNITS_H
