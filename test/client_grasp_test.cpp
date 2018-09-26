@@ -30,24 +30,10 @@ int main(int argn, char *args[]) {
     b.description = "box";
     b.point.x = 0.5_m;
     b.point.y = 0.3_m;
-    b.point.z = 6.5_cm/2;
-    b.dimensions.x = 6.5_cm;
-    b.dimensions.y = 6.5_cm;
-    b.dimensions.z = 6.5_cm;
-    jmc.graspAt(b);
-  }
-
-  {
-    jaco_manipulation::BoundingBox b;
-    b.header.frame_id = "base_link";
-    b.description = "box";
-    b.point.x = 0.4_m;
-    b.point.y = 0.3_m;
-    b.point.z = 6.5_cm/2;
-    b.dimensions.x = 6.5_cm;
-    b.dimensions.y = 6.5_cm;
-    b.dimensions.z = 6.5_cm;
-    jmc.dropAt(b);
+    b.point.z = 6.5_cm/2.;
+    b.dimensions.x = 6.0_cm;
+    b.dimensions.y = 14.5_cm;
+    b.dimensions.z = 6.0_cm;
     jmc.graspAt(b);
   }
 
@@ -57,12 +43,90 @@ int main(int argn, char *args[]) {
     b.description = "box";
     b.point.x = 0.5_m;
     b.point.y = 0.3_m;
-    b.point.z = 6.5_cm/2;
-    b.dimensions.x = 6.5_cm;
-    b.dimensions.y = 6.5_cm;
-    b.dimensions.z = 6.5_cm;
+    b.point.z = 6.0_cm/2.;
+    b.dimensions.x = 6.0_cm;
+    b.dimensions.y = 14.5_cm;
+    b.dimensions.z = 6.0_cm;
     jmc.dropAt(b);
   }
+
+  {
+    jaco_manipulation::BoundingBox b;
+    b.header.frame_id = "base_link";
+    b.description = "box";
+    b.point.x = 0.5_m;
+    b.point.y = 0.3_m;
+    b.point.z =6.0_cm/2.;
+    b.dimensions.x = 14.5_cm;
+    b.dimensions.y = 6.0_cm;
+    b.dimensions.z = 6.0_cm;
+    jmc.graspAt(b);
+  }
+
+  {
+    jaco_manipulation::BoundingBox b;
+    b.header.frame_id = "base_link";
+    b.description = "box";
+    b.point.x = 0.5_m;
+    b.point.y = 0.3_m;
+    b.point.z =6.0_cm/2.;
+    b.dimensions.x = 14.5_cm;
+    b.dimensions.y = 6.0_cm;
+    b.dimensions.z = 6.0_cm;
+    jmc.dropAt(b);
+  }
+
+//  {
+//    jaco_manipulation::BoundingBox b;
+//    b.header.frame_id = "base_link";
+//    b.description = "box";
+//    b.point.x = .7_m;
+//    b.point.y = .3_m;
+//    b.point.z = 14.5_cm/2.;
+//    b.dimensions.x = 6._cm;
+//    b.dimensions.y = 6._cm;
+//    b.dimensions.z = 14.5_cm;
+//    jmc.graspAt(b);
+//  }
+//
+//  {
+//    jaco_manipulation::BoundingBox b;
+//    b.header.frame_id = "base_link";
+//    b.description = "box";
+//    b.point.x = .6_m;
+//    b.point.y = .3_m;
+//    b.point.z = 14.5_cm/2.;
+//    b.dimensions.x = 6._cm;
+//    b.dimensions.y = 6._cm;
+//    b.dimensions.z = 14.5_cm;
+//    jmc.dropAt(b);
+//  }
+//
+//  {
+//    jaco_manipulation::BoundingBox b;
+//    b.header.frame_id = "base_link";
+//    b.description = "box";
+//    b.point.x = 0.5_m;
+//    b.point.y = 0.5_m;
+//    b.point.z =6.0_cm/2.;
+//    b.dimensions.x = 6.5_cm;
+//    b.dimensions.y = 6.5_cm;
+//    b.dimensions.z = 6.5_cm;
+//    jmc.graspAt(b);
+//  }
+//
+//  {
+//    jaco_manipulation::BoundingBox b;
+//    b.header.frame_id = "base_link";
+//    b.description = "box";
+//    b.point.x = 0.5_m;
+//    b.point.y = 0.5_m;
+//    b.point.z =6.0_cm/2.;
+//    b.dimensions.x = 6.5_cm;
+//    b.dimensions.y = 6.5_cm;
+//    b.dimensions.z = 6.5_cm;
+//    jmc.dropAt(b);
+//  }
 
   return 0;
 }
