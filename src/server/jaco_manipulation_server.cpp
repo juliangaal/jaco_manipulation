@@ -42,7 +42,7 @@ JacoManipulationServer::JacoManipulationServer() :
 }
 
 void JacoManipulationServer::prepMoveItMoveGroup() {
-  move_group_.setPlanningTime(1.0);
+  move_group_.setPlanningTime(1.2);
   move_group_.setPlannerId("RRTConnectkConfigDefault");
 //  move_group_.setPlannerId("RRTstarkConfigDefault");
   move_group_.setNumPlanningAttempts(10);
@@ -146,11 +146,10 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAn
 
   bool moved = planAndMove(goal->pose_goal);
   if (!moved) return false;
-//  closeGripper(goal->bounding_box);
 
   attachObstacle(goal);
-//  closeGripper(goal->bounding_box);
-  closeGripper();
+  closeGripper(goal->bounding_box);
+//  closeGripper();
   ROS_STATUS("Gripper closed. Object grasped.");
 
   // once gripped we simply move up a little
@@ -218,11 +217,11 @@ void JacoManipulationServer::closeGripper(const jaco_manipulation::BoundingBox &
   // define gripper close by a function y = mx + b. In our case x is size of bounding box and y is amount to grip
   // our function is: y = -433.33blabla + 6500
   constexpr double max_grip = 6500.0;
-  const double size = std::max(box.dimensions.x, box.dimensions.y);
+  const double size = std::min(box.dimensions.x, box.dimensions.y);
   auto amount = static_cast<float>(-43333.333 * size + 6500.0);
 
   // give it a tiny extra squeeze, for heavier objects e.g.
-  constexpr float squeeze = 350.0;
+  constexpr float squeeze = 800.0;
   amount += squeeze;
 
   if (amount < 0.0) {
