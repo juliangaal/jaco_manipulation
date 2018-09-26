@@ -281,12 +281,11 @@ void GraspPoseGenerator::adjustToTopOrientation(geometry_msgs::PoseStamped &pose
   );
 
   /**
-   * Direction vector of our new x-axis, defined in relation to y and z. Dynamically calculated with current Pose.
-   * z is ignored, because we want the grasp pose to always be horizontal
+   * Direction vector of our new x-axis, NOT defined in relation to y and z, but always parallel to the y axis in reality.
   */
   tf::Vector3 x_axis(
-      pose.pose.position.x, //* grasp.rotationX_,
-      pose.pose.position.y,// * grasp.rotationY_,
+      1,
+      0,
       0
   );
   x_axis.normalize();
