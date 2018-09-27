@@ -1,4 +1,3 @@
-std_msgs/Time timestamp
-jaco_manipulation/MoveItConfig config
-jaco_manipulation/MoveItGoal goal
-bool result
+geometry_msgs/Pose current_pose
+geometry_msgs/Pose target_pose
+jaco_manipulation/BoundingBox bounding_box
