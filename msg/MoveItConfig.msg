@@ -1,0 +1,5 @@
+string planner
+string planning_time
+string allow_replanning
+string allow_looking
+string planning_attempts

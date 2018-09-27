@@ -23,7 +23,10 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_message_files(
     FILES
-    BoundingBox.msg)
+    BoundingBox.msg
+    MoveItGoal.msg
+    MoveItConfig.msg
+    JacoDebug.msg)
 
 ## Generate actions in the 'action' folder
 add_action_files(
