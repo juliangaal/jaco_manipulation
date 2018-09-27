@@ -27,7 +27,13 @@ JacoManipulationServer::JacoManipulationServer() :
     plan_{},
     haa_client_("jaco_arm/home_arm", true),
     moveit_visuals_(nh_, "root", move_group_, plan_),
-    tf_listener_(nh_, ros::Duration(10)) {
+    tf_listener_(nh_, ros::Duration(10)),
+    allow_replanning_(false),
+    allow_looking_(false),
+    planning_time_(10.),
+    planning_attempts_(1),
+    planner_id_("RRTConnectkConfigDefault")
+{
   ROS_INFO("Initializing Jaco Manipulation!");
 
   finger_pub_ = nh_.advertise<std_msgs::Float32>("jaco_arm/finger_cmd", 1);
@@ -42,12 +48,43 @@ JacoManipulationServer::JacoManipulationServer() :
 }
 
 void JacoManipulationServer::prepMoveItMoveGroup() {
-  move_group_.setPlanningTime(1.5);
-  move_group_.setPlannerId("RRTConnectkConfigDefault");
-//  move_group_.setPlannerId("RRTstarkConfigDefault");
-  move_group_.setNumPlanningAttempts(10);
-  move_group_.allowReplanning(true);
-  move_group_.allowLooking(true);
+  ROS_INFO_STREAM("Setting ROS Parameters from launch file");
+
+  if (nh_.getParam("jaco_manipulation_server/planner_id", planner_id_)) {
+    ROS_INFO_STREAM("Got param 'planner_id': " << planner_id_);
+  } else {
+    ROS_ERROR_STREAM("Failed to get param 'planner_id'");
+  }
+
+  if (nh_.getParam("jaco_manipulation_server/planning_time", planning_time_)) {
+    ROS_INFO_STREAM("Got param 'planning_time': " << planning_time_);
+  } else {
+    ROS_ERROR_STREAM("Failed to get param 'planning_time'");
+  }
+
+  if (nh_.getParam("jaco_manipulation_server/planning_attempts", planning_attempts_)) {
+    ROS_INFO_STREAM("Got param 'planning_attempts': " << planning_attempts_);
+  } else {
+    ROS_ERROR_STREAM("Failed to get param 'planning_attempts'");
+  }
+
+  if (nh_.getParam("jaco_manipulation_server/allow_replanning", allow_replanning_)) {
+    ROS_INFO_STREAM("Got param 'allow_replanning': " << allow_replanning_);
+  } else {
+    ROS_ERROR_STREAM("Failed to get param 'allow_replanning'");
+  }
+
+  if (nh_.getParam("jaco_manipulation_server/allow_looking", allow_looking_)) {
+    ROS_INFO_STREAM("Got param 'allow_looking': " << allow_looking_);
+  } else {
+    ROS_ERROR_STREAM("Failed to get param 'allow_looking'");
+  }
+
+  move_group_.setPlannerId(planner_id_);
+  move_group_.setPlanningTime(planning_time_);
+  move_group_.setNumPlanningAttempts(planning_attempts_);
+  move_group_.allowReplanning(allow_replanning_);
+  move_group_.allowLooking(allow_looking_);
 }
 
 void JacoManipulationServer::showPlannedPath() {

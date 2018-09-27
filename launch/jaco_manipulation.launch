@@ -15,7 +15,15 @@
     </include>
 
     <!-- Launches jaco_manipulation node -->
-    <node name="jaco_manipulation_server" type="jaco_manipulation_server" pkg="jaco_manipulation" output="screen"/>
+    <node name="jaco_manipulation_server" type="jaco_manipulation_server" pkg="jaco_manipulation" output="screen">
+        <param name="planner_id" type="str" value="RRTConnectkConfigDefault" />
+        <!--<param name="planner_id" value="RRTstarkConfigDefault" />-->
+        <param name="planning_time" type="double" value="1.5" />
+        <param name="planning_attempts" type="int" value="10" />
+        <param name="allow_replanning" type="bool" value="true" />
+        <param name="allow_looking" type="bool" value="true" />
+
+    </node>
 
     <!--  Static transform publisher root -> base_link -->
     <node pkg="tf" type="static_transform_publisher" name="base_link_broadcaster"

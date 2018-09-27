@@ -116,6 +116,31 @@ class JacoManipulationServer {
   ros::Publisher finger_pub_;
 
   /**
+   * Fallback for ROS paramter llow_replanning
+   */
+  bool allow_replanning_;
+
+  /**
+   * Fallback for ROS paramter allow_looking
+   */
+  bool allow_looking_;
+
+  /**
+   * Fallback for ROS paramter planning_time
+   */
+  double planning_time_;
+
+  /**
+   * Fallback for ROS paramter planning_attempts
+   */
+  int planning_attempts_;
+
+  /**
+   * Fallback for ROS paramter planner_id
+   */
+  std::string planner_id_;
+
+  /**
   * A function to prepare MoveIt movegroup and cofigure it for all future plans
  */
   void prepMoveItMoveGroup();
