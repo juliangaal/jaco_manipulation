@@ -1,5 +1,5 @@
 string planner
-string planning_time
-string allow_replanning
-string allow_looking
-string planning_attempts
+float32 planning_time
+bool allow_replanning
+bool allow_looking
+int32 planning_attempts

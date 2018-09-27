@@ -35,6 +35,7 @@
 
 #include <jaco_manipulation/PlanAndMoveArmAction.h>
 #include <jaco_manipulation/visuals/moveit_visuals.h>
+#include <jaco_manipulation/JacoDebug.h>
 #include <wpi_jaco_msgs/HomeArmAction.h>
 
 #include <string>
@@ -114,6 +115,13 @@ class JacoManipulationServer {
    * A publisher to control jaco's hand grip.
   */
   ros::Publisher finger_pub_;
+
+  /**
+   * A publisher to get debug information
+   */
+  ros::Publisher debug_pub_;
+
+  jaco_manipulation::JacoDebug debug_msg_;
 
   /**
    * Fallback for ROS paramter llow_replanning
@@ -252,22 +260,39 @@ class JacoManipulationServer {
    */
   void wipeKinectObstacles();
 
+  /**
+   * Fills MoveItConfigMsg with values from current MoveIt! config
+   * debug_msg message to be filled
+   */
+  void fillMoveItConfigMsg(jaco_manipulation::MoveItConfig &config_msg);
+
+  /**
+    * Fills MoveItGoalMsg with values from current MoveIt! state
+    * debug_msg message to be filled
+    */
+  void fillMoveItGoalMsg(jaco_manipulation::MoveItGoal &goal_msg, const PlanAndMoveArmGoalConstPtr &goal);
+
+  /**
+   * Publishes debug message
+   */
+  void pubDebugMsg(const PlanAndMoveArmGoalConstPtr &goal, bool result);
+
   /// helper: joint 1
   constexpr static size_t JOINT1 = 0;
 
-  /// helper: joint 1
+  /// helper: joint 2
   constexpr static size_t JOINT2 = 1;
 
-  /// helper: joint 1
+  /// helper: joint 3
   constexpr static size_t JOINT3 = 2;
 
-  /// helper: joint 1
+  /// helper: joint 4
   constexpr static size_t JOINT4 = 3;
 
-  //// helper: joint 1
+  //// helper: joint 5
   constexpr static size_t JOINT5 = 4;
 
-  //// helper: joint 1
+  //// helper: joint 6
   constexpr static size_t JOINT6 = 5;
 };
 

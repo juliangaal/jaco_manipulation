@@ -16,6 +16,7 @@
 #include <jaco_manipulation/units.h>
 #include <thread>
 #include <chrono>
+#include "../../include/jaco_manipulation/server/jaco_manipulation_server.h"
 
 using moveit::planning_interface::MoveItErrorCode;
 using namespace jaco_manipulation::server;
@@ -37,6 +38,7 @@ JacoManipulationServer::JacoManipulationServer() :
   ROS_INFO("Initializing Jaco Manipulation!");
 
   finger_pub_ = nh_.advertise<std_msgs::Float32>("jaco_arm/finger_cmd", 1);
+  debug_pub_  = nh_.advertise<jaco_manipulation::JacoDebug>("jaco_manipulation/debug", 1);
 
   pam_server_.start();
 
@@ -104,8 +106,10 @@ void JacoManipulationServer::processGoal(const jaco_manipulation::PlanAndMoveArm
     result_value = planAndMove(goal->joint_goal);
   } else if (goal->goal_type == "grasp_pose") {
     result_value = planAndMoveAndGrasp(goal);
+    pubDebugMsg(goal, result_value);
   } else if (goal->goal_type == "drop_pose") {
     result_value = planAndMoveAndDrop(goal);
+    pubDebugMsg(goal, result_value);
   } else if (goal->goal_type == "add_obstacle") {
     addObstacle(goal);
     pam_server_.setSucceeded();
@@ -182,7 +186,10 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAn
   addObstacle(goal);
 
   bool moved = planAndMove(goal->pose_goal);
-  if (!moved) return false;
+
+  if (!moved) {
+    return false;
+  }
 
   attachObstacle(goal);
   closeGripper(goal->bounding_box);
@@ -270,6 +277,30 @@ void JacoManipulationServer::closeGripper(const jaco_manipulation::BoundingBox &
 
 void JacoManipulationServer::openGripper() {
   moveGripper(0.0);
+}
+
+void JacoManipulationServer::fillMoveItConfigMsg(jaco_manipulation::MoveItConfig &config_msg) {
+  config_msg.planner = planner_id_;
+  config_msg.planning_time = planning_time_;
+  config_msg.planning_attempts = planning_attempts_;
+  config_msg.allow_looking = allow_looking_;
+  config_msg.allow_replanning = allow_replanning_;
+}
+
+void JacoManipulationServer::fillMoveItGoalMsg(jaco_manipulation::MoveItGoal &goal_msg,
+                                               const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
+  goal_msg.current_pose = move_group_.getCurrentPose();
+  goal_msg.target_pose = goal->pose_goal;
+  goal_msg.bounding_box = goal->bounding_box;
+}
+
+void JacoManipulationServer::pubDebugMsg(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal, bool result) {
+  debug_msg_.timestamp.data = ros::Time::now();
+  debug_msg_.goal.description = goal->goal_type;
+  fillMoveItConfigMsg(debug_msg_.config);
+  fillMoveItGoalMsg(debug_msg_.goal, goal);
+  debug_msg_.result = result;
+  debug_pub_.publish(debug_msg_);
 }
 
 void JacoManipulationServer::showPlannedMoveInfo(const geometry_msgs::PoseStamped &start,

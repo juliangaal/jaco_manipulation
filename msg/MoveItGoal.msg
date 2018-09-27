@@ -1,3 +1,4 @@
-geometry_msgs/Pose current_pose
-geometry_msgs/Pose target_pose
+string description
+geometry_msgs/PoseStamped current_pose
+geometry_msgs/PoseStamped target_pose
 jaco_manipulation/BoundingBox bounding_box
