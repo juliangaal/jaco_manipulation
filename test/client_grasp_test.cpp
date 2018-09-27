@@ -24,6 +24,86 @@ int main(int argn, char *args[]) {
 
   client::JacoManipulationClient jmc;
 
+//  {
+//    jaco_manipulation::BoundingBox b;
+//    b.header.frame_id = "base_link";
+//    b.description = "box";
+//    b.point.x = 0.2_m;
+//    b.point.y = 0.4_m;
+//    b.point.z = 6.5_cm/2.;
+//    b.dimensions.x = 6.5_cm;
+//    b.dimensions.y = 6.5_cm;
+//    b.dimensions.z = 6.5_cm;
+//    jmc.graspAt(b);
+//  }
+////
+//  {
+//    jaco_manipulation::BoundingBox b;
+//    b.header.frame_id = "base_link";
+//    b.description = "box";
+//    b.point.x = 0.5_m;
+//    b.point.y = 0.3_m;
+//    b.point.z = 6.5_cm/2.;
+//    b.dimensions.x = 6.5_cm;
+//    b.dimensions.y = 6.5_cm;
+//    b.dimensions.z = 6.5_cm;
+//    jmc.dropAt(b);
+//  }
+
+//  {
+//    jaco_manipulation::BoundingBox b;
+//    b.header.frame_id = "base_link";
+//    b.description = "box";
+//    b.point.x = 0.5_m;
+//    b.point.y = 0.3_m;
+//    b.point.z = 6.5_cm/2.;
+//    b.dimensions.x = 6.5_cm;
+//    b.dimensions.y = 6.5_cm;
+//    b.dimensions.z = 6.5_cm;
+//    std::cout << b.dimensions.x << "x" << b.dimensions.y << std::endl;
+//    jmc.graspAt(b);
+//  }
+////
+//  {
+//    jaco_manipulation::BoundingBox b;
+//    b.header.frame_id = "base_link";
+//    b.description = "box";
+//    b.point.x = 0.5_m;
+//    b.point.y = 0.3_m;
+//    b.point.z = 6.5_cm/2.;
+//    b.dimensions.x = 6.5_cm;
+//    b.dimensions.y = 6.5_cm;
+//    b.dimensions.z = 6.5_cm;
+//    jmc.dropAt(b);
+//  }
+
+//  {
+//    jaco_manipulation::BoundingBox b;
+//    b.header.frame_id = "base_link";
+//    b.description = "box";
+//    b.point.x = 0.5_m;
+//    b.point.y = 0.3_m;
+//    b.point.z = 6.5_cm/2.;
+//    b.dimensions.x = 7._cm;
+//    b.dimensions.y = 7._cm;
+//    b.dimensions.z = 6.5_cm;
+//    std::cout << b.dimensions.x << "x" << b.dimensions.y << std::endl;
+//    jmc.graspAt(b);
+//  }
+////
+//  {
+//    jaco_manipulation::BoundingBox b;
+//    b.header.frame_id = "base_link";
+//    b.description = "box";
+//    b.point.x = 0.5_m;
+//    b.point.y = 0.3_m;
+//    b.point.z = 6.5_cm/2.;
+//    b.dimensions.x = 7._cm;
+//    b.dimensions.y = 7._cm;
+//    b.dimensions.z = 6.5_cm;
+//    jmc.dropAt(b);
+//  }
+
   {
     jaco_manipulation::BoundingBox b;
     b.header.frame_id = "base_link";
@@ -31,9 +111,37 @@ int main(int argn, char *args[]) {
     b.point.x = 0.5_m;
     b.point.y = 0.3_m;
     b.point.z = 6.5_cm/2.;
-    b.dimensions.x = 6.0_cm;
-    b.dimensions.y = 14.5_cm;
-    b.dimensions.z = 6.0_cm;
+    b.dimensions.x = 7.2_cm;
+    b.dimensions.y = 7.2_cm;
+    b.dimensions.z = 6.5_cm;
+    std::cout << b.dimensions.x << "x" << b.dimensions.y << std::endl;
+    jmc.graspAt(b);
+  }
+//
+  {
+    jaco_manipulation::BoundingBox b;
+    b.header.frame_id = "base_link";
+    b.description = "box";
+    b.point.x = 0.5_m;
+    b.point.y = 0.3_m;
+    b.point.z = 6.5_cm/2.;
+    b.dimensions.x = 7.2_cm;
+    b.dimensions.y = 7.2_cm;
+    b.dimensions.z = 6.5_cm;
+    jmc.dropAt(b);
+  }
+//
+  {
+    jaco_manipulation::BoundingBox b;
+    b.header.frame_id = "base_link";
+    b.description = "box";
+    b.point.x = 0.5_m;
+    b.point.y = 0.3_m;
+    b.point.z = 6.5_cm/2.;
+    b.dimensions.x = 7.6_cm;
+    b.dimensions.y = 7.6_cm;
+    b.dimensions.z = 6.5_cm;
+    std::cout << b.dimensions.x << "x" << b.dimensions.y << std::endl;
     jmc.graspAt(b);
   }
 
@@ -43,10 +151,10 @@ int main(int argn, char *args[]) {
     b.description = "box";
     b.point.x = 0.5_m;
     b.point.y = 0.3_m;
-    b.point.z = 6.0_cm/2.;
-    b.dimensions.x = 6.0_cm;
-    b.dimensions.y = 14.5_cm;
-    b.dimensions.z = 6.0_cm;
+    b.point.z = 6.5_cm/2.;
+    b.dimensions.x = 7.6_cm;
+    b.dimensions.y = 7.6_cm;
+    b.dimensions.z = 6.5_cm;
     jmc.dropAt(b);
   }
 
@@ -56,10 +164,11 @@ int main(int argn, char *args[]) {
     b.description = "box";
     b.point.x = 0.5_m;
     b.point.y = 0.3_m;
-    b.point.z =6.0_cm/2.;
-    b.dimensions.x = 14.5_cm;
-    b.dimensions.y = 6.0_cm;
-    b.dimensions.z = 6.0_cm;
+    b.point.z = 6.5_cm/2.;
+    b.dimensions.x = 8._cm;
+    b.dimensions.y = 8._cm;
+    b.dimensions.z = 6.5_cm;
+    std::cout << b.dimensions.x << "x" << b.dimensions.y << std::endl;
     jmc.graspAt(b);
   }
 
@@ -69,13 +178,39 @@ int main(int argn, char *args[]) {
     b.description = "box";
     b.point.x = 0.5_m;
     b.point.y = 0.3_m;
-    b.point.z =6.0_cm/2.;
-    b.dimensions.x = 14.5_cm;
-    b.dimensions.y = 6.0_cm;
-    b.dimensions.z = 6.0_cm;
+    b.point.z = 6.5_cm/2.;
+    b.dimensions.x = 8._cm;
+    b.dimensions.y = 8._cm;
+    b.dimensions.z = 6.5_cm;
     jmc.dropAt(b);
   }
 
+  {
+    jaco_manipulation::BoundingBox b;
+    b.header.frame_id = "base_link";
+    b.description = "box";
+    b.point.x = 0.5_m;
+    b.point.y = 0.3_m;
+    b.point.z = 9.5_cm/2.;
+    b.dimensions.x = 10._cm;
+    b.dimensions.y = 10._cm;
+    b.dimensions.z = 9.5_cm;
+    std::cout << b.dimensions.x << "x" << b.dimensions.y << std::endl;
+    jmc.graspAt(b);
+  }
+
+  {
+    jaco_manipulation::BoundingBox b;
+    b.header.frame_id = "base_link";
+    b.description = "box";
+    b.point.x = 0.5_m;
+    b.point.y = 0.3_m;
+    b.point.z = 9.5_cm/2.;
+    b.dimensions.x = 10._cm;
+    b.dimensions.y = 10._cm;
+    b.dimensions.z = 9.5_cm;
+    jmc.dropAt(b);
+  }
 //  {
 //    jaco_manipulation::BoundingBox b;
 //    b.header.frame_id = "base_link";
@@ -85,7 +220,7 @@ int main(int argn, char *args[]) {
 //    b.point.z = 14.5_cm/2.;
 //    b.dimensions.x = 6._cm;
 //    b.dimensions.y = 6._cm;
-//    b.dimensions.z = 14.5_cm;
+//    b.dimensions.z = 19.5_cm;
 //    jmc.graspAt(b);
 //  }
 //

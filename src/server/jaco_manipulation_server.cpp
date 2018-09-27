@@ -42,7 +42,7 @@ JacoManipulationServer::JacoManipulationServer() :
 }
 
 void JacoManipulationServer::prepMoveItMoveGroup() {
-  move_group_.setPlanningTime(1.2);
+  move_group_.setPlanningTime(1.5);
   move_group_.setPlannerId("RRTConnectkConfigDefault");
 //  move_group_.setPlannerId("RRTstarkConfigDefault");
   move_group_.setNumPlanningAttempts(10);
@@ -149,7 +149,6 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAn
 
   attachObstacle(goal);
   closeGripper(goal->bounding_box);
-//  closeGripper();
   ROS_STATUS("Gripper closed. Object grasped.");
 
   // once gripped we simply move up a little

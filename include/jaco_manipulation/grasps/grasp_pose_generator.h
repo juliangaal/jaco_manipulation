@@ -195,7 +195,7 @@ class GraspPoseGenerator {
   tf::TransformListener tf_listener_;
 
   /// Minimum height for top grasp in BASE_LINK
-  constexpr static double min_height_top_grasp_ = 18._cm;
+  constexpr static double min_height_top_grasp_ = 20._cm;
 
   /// min_height_jaco is defined in jaco's lonk (root). This will define it in base link
   double absolute_height_top_grasp_;
@@ -213,7 +213,7 @@ class GraspPoseGenerator {
   constexpr static double stack_offset_ = 1._cm;
 
   /// offset for grasping: distance between jaco_link_hand and palm
-  constexpr static double grasp_offset_ = 17._cm;
+  constexpr static double grasp_offset_ = 14._cm;
 };
 
 } // namespace grasps

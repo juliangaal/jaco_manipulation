@@ -29,13 +29,11 @@ void GraspPoseGenerator::adjustPose(geometry_msgs::PoseStamped &pose,
   switch(type) {
     case TOP_GRASP:
       adjustPosition(pose, box, TOP_GRASP);
-      transformGoalIntoRobotFrame(pose, box);
       adjustToTopOrientation(pose);
       adjustOrientationToShape(pose, box);
       break;
     case TOP_DROP:
       adjustPosition(pose, box, TOP_DROP);
-      transformGoalIntoRobotFrame(pose, box);
       adjustToTopOrientation(pose);
       break;
     case FRONT_GRASP:
@@ -45,7 +43,6 @@ void GraspPoseGenerator::adjustPose(geometry_msgs::PoseStamped &pose,
       break;
     default:
       adjustPosition(pose, box, TOP_DROP);
-      transformGoalIntoRobotFrame(pose, box);
       adjustToTopOrientation(pose);
   }
 }
@@ -84,6 +81,8 @@ void GraspPoseGenerator::adjustPosition(geometry_msgs::PoseStamped &pose,
            pose.pose.position.x,
            pose.pose.position.y,
            pose.pose.position.z);
+
+  transformGoalIntoRobotFrame(pose, box);
 
   switch(type) {
     case TOP_GRASP:
@@ -213,39 +212,45 @@ void GraspPoseGenerator::setAbsoluteHeight(const BoundingBox &box) {
   }
 
   const auto height_diff = std::fabs(out_pt.point.z - in_pt.point.z);
-  absolute_height_top_grasp_ += height_diff;
+  // subtract height diff and add 2.5cm, so it's always above!
+  absolute_height_top_grasp_ -= height_diff;
+  absolute_height_top_grasp_ += 2.5_cm;
+
   absolute_height_front_grasp_ -= height_diff/2;
 }
 
 void GraspPoseGenerator::adjustHeightForTopPose(geometry_msgs::PoseStamped &pose,
                                                 const BoundingBox &box) {
+  if (pose.pose.position.z < absolute_height_top_grasp_) {
+    ROS_WARN_STREAM("Correction: Top Grasp Pose too low: correcting to " << absolute_height_top_grasp_);
+    pose.pose.position.z = absolute_height_top_grasp_;
+  }
   // we adjust height according to width of bounding box
-  const auto min = absolute_height_top_grasp_;
-  const double max = 0.265;
-
   // Because of inherent properties and the "angle" of the fingers, we have to adjust the height of the grasp pose
   // according to the size of the object.
   // function described by y = mx + b
-  // m = delta y/ delta x = 7/2.5 = 2.8
+  // m = delta y/ delta x = 4.5/6.5 = 0.85
   // b = 2.7
-  // function (defined after x(width) > 0.065: y = x + 0.027
-  if ((box.dimensions.x > 0.065 && box.dimensions.x <= box.dimensions.y) ||
-      (box.dimensions.y > 0.065 && box.dimensions.y <= box.dimensions.x)) {
+  // function (defined after x(width) > 0.065: y = mx + b
+  constexpr double min = min_height_top_grasp_; // minimum height: current min
+  constexpr double max = 25.5_cm; // maximum heihgt for gripping an object of around 13 cm x/y
+  constexpr double delta_y = max - min;
+  constexpr double delta_x = 13._cm - 7.2_cm;
+  constexpr double m = delta_y / delta_x;
+  constexpr double b = 20._cm - m * 7.2_cm;
 
-    pose.pose.position.z = absolute_height_top_grasp_; // min height grasp pose for objects <= 6.5cms
+  if ((box.dimensions.x > 7.2_cm && box.dimensions.x <= box.dimensions.y) ||
+      (box.dimensions.y > 7.2_cm && box.dimensions.y <= box.dimensions.x)) {
     // min because we turn rotation for best fit in hand.
     // see adjustOrientationToShape
-    auto dim = std::min(box.dimensions.x, box.dimensions.y);
-    auto height_correction = 0.028 * dim + 0.027;
-    auto global_height = min + height_correction;
-    auto height_diff = std::fabs(global_height - min);
-    ROS_INFO("H/W Fix : %f -> %f for width %f", pose.pose.position.z,
-                                               pose.pose.position.z + height_diff,
-                                               dim);
+    const auto &y = pose.pose.position.z;
+    auto x = std::min(box.dimensions.x, box.dimensions.y);
+    auto height_correction = m*x + b;
+    auto height_diff = std::fabs(height_correction - y);
+    ROS_INFO("H/W Fix : %f -> %f for width %f and diff %f", y, y + height_diff, x, height_diff);
+    ROS_INFO("mx + b %f %f %f", m, x, b);
     pose.pose.position.z += height_diff;
   }
-  if (pose.pose.position.z < absolute_height_top_grasp_)
-    pose.pose.position.z = absolute_height_top_grasp_;
 }
 
 void GraspPoseGenerator::adjustHeightForTopDropPose(geometry_msgs::PoseStamped &pose, const BoundingBox &box) {
@@ -254,8 +259,10 @@ void GraspPoseGenerator::adjustHeightForTopDropPose(geometry_msgs::PoseStamped &
 }
 
 void GraspPoseGenerator::adjustHeightForFrontPose(geometry_msgs::PoseStamped &pose, const BoundingBox &box) {
-  if (pose.pose.position.z < absolute_height_front_grasp_)
+  if (pose.pose.position.z < absolute_height_front_grasp_) {
+    ROS_WARN_STREAM("Correction: Front Grasp Pose too low: correcting to" << min_height_front_grasp_);
     pose.pose.position.z = absolute_height_front_grasp_;
+  }
 }
 
 void GraspPoseGenerator::adjustPositionForFrontPose(geometry_msgs::PoseStamped &pose) {
