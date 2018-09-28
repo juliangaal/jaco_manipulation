@@ -28,13 +28,6 @@ class Test:
     def write(self, line):
         self.file.write(line + '\n')
 
-    def pose_to_string(self, pose):
-        return "({x},{y},{z})/({xx},{yy},{zz},{ww})".format(
-            x=pose.pose.position.x, y=pose.pose.position.y, z=pose.pose.position.z,
-            xx=pose.pose.orientation.x, yy=pose.pose.orientation.y,
-            zz=pose.pose.orientation.z, ww=pose.pose.orientation.w
-        )
-
     def __del__(self):
         self.file.close()
         print "Logged to", self.filename
