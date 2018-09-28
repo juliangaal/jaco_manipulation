@@ -18,7 +18,7 @@ from test import Test
 
 
 class AnchoringTest(Test):
-    def __init__(self, filename, labels='anchoring labels', delimiter=','):
+    def __init__(self, filename, labels='anchoring labels', delimiter=';'):
         Test.__init__(self, filename, labels)
         self.delimiter = delimiter
         rospy.init_node('anchoring_tester', anonymous=True)

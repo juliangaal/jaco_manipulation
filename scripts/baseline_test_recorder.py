@@ -21,7 +21,7 @@ from geometry_msgs.msg import Point
 
 
 class BaseLineTest(Test):
-    def __init__(self, filename, labels='baseline labels', delimiter=','):
+    def __init__(self, filename, labels='baseline labels', delimiter=';'):
         Test.__init__(self, filename, labels)
         self.delimiter = delimiter
         rospy.init_node('base_line_tester', anonymous=True)
