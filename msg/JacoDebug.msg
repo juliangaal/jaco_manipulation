@@ -1,4 +1,4 @@
-std_msgs/Time timestamp
+string timestamp
 jaco_manipulation/MoveItConfig config
 jaco_manipulation/MoveItGoal goal
 bool result
