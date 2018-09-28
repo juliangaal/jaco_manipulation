@@ -16,7 +16,7 @@
 #include <jaco_manipulation/units.h>
 #include <thread>
 #include <chrono>
-#include "../../include/jaco_manipulation/server/jaco_manipulation_server.h"
+#include <ctime>
 
 using moveit::planning_interface::MoveItErrorCode;
 using namespace jaco_manipulation::server;
@@ -295,7 +295,9 @@ void JacoManipulationServer::fillMoveItGoalMsg(jaco_manipulation::MoveItGoal &go
 }
 
 void JacoManipulationServer::pubDebugMsg(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal, bool result) {
-  debug_msg_.timestamp.data = ros::Time::now();
+  auto sysTimePoint = std::chrono::system_clock::now();
+  auto tp = std::chrono::system_clock::to_time_t(sysTimePoint);
+  debug_msg_.timestamp = std::asctime(std::gmtime(&tp));
   debug_msg_.goal.description = goal->goal_type;
   fillMoveItConfigMsg(debug_msg_.config);
   fillMoveItGoalMsg(debug_msg_.goal, goal);
