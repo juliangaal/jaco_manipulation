@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -15,12 +16,18 @@ class Point:
 
 class ResultPlotter:
 	def __init__(self, file, labels, delimiter=','):
+		self.current_dir = os.path.dirname(os.path.realpath(__file__))
 		self.file = file
+		self.figure_path = self.current_dir + '/fig.png'
 		self.labels = labels
 		self.delimiter = delimiter
 		self.points = []
 		self.df = pd.read_csv(file, names=self.labels, sep=self.delimiter)
  	
+
+	def __del__(self):
+		print "Generated figure saved to:", self.figure_path
+			
 	def __extract_point(self, key):
 		data = self.df[key]
 		results = self.df['Result']
@@ -60,8 +67,7 @@ class ResultPlotter:
 		ax.set_ylabel('Y')
 		ax.set_zlabel('Z')
 		
-		plt.savefig('fig.png', dpi=200)
-		plt.show()
+		plt.savefig('fig.png', dpi=300)
 		
 plotter = ResultPlotter('fake_data.csv',['Time','Current Pose','Target Pose','Result'],';')
 plotter.saveResultFrom('Target Pose');
