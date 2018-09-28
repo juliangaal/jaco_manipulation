@@ -34,8 +34,8 @@ class BaseLineTest(Test):
 
     def __msg_to_string(self, msg):
         time = msg.timestamp.strip('\n')
-        current_pose = Conversions.pose_to_string(self, msg.goal.current_pose).strip('\n')
-        target_pose  = Conversions.pose_to_string(self, msg.goal.target_pose).strip('\n')
+        current_pose = Conversions.pose_to_string(msg.goal.current_pose).strip('\n')
+        target_pose  = Conversions.pose_to_string(msg.goal.target_pose).strip('\n')
         result = ('success' if True else 'failure').strip('\n')
         return time + self.delimiter + current_pose + self.delimiter + target_pose + self.delimiter + result
 
@@ -43,4 +43,4 @@ class BaseLineTest(Test):
         Test.write(self, line)
 
 
-test = BaseLineTest("baseline.csv", "Time,CurrentPose,TargetPose,Result")
+test = BaseLineTest("baseline_test_recording.csv", "Time,CurrentPose,TargetPose,Result")

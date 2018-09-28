@@ -43,4 +43,4 @@ class AnchoringTest(Test):
         Test.write(self, line)
 
 
-anchor_test = AnchoringTest("anchoring.csv", "Time,Command,CurrentPose,TargetPose,Result")
+anchor_test = AnchoringTest("anchoring_test_recording.csv", "Time,Command,CurrentPose,TargetPose,Result")
