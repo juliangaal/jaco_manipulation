@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="baseline_test" type="baseline_test" pkg="baseline_test" output="screen"/>
+</launch>

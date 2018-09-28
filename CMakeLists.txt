@@ -80,12 +80,16 @@ add_executable(client_test test/client_test.cpp)
 # Test client for jaco_manipulation grasping
 add_executable(client_grasp_test test/client_grasp_test.cpp)
 
+# Baseline test
+add_executable(baseline_test test/baseline_test.cpp)
+
 add_executable(jaco_manipulation_server src/${PROJECT_NAME}_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(jaco2_manipulation ${PROJECT_NAME}_generate_messages_cpp ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(client_test ${PROJECT_NAME}_generate_messages_cpp jaco2_manipulation)
+add_dependencies(baseline_test ${PROJECT_NAME}_generate_messages_cpp jaco2_manipulation)
 add_dependencies(grasp_pose_generator ${PROJECT_NAME}_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
@@ -102,5 +106,9 @@ target_link_libraries(client_test
                       jaco2_manipulation)
 
 target_link_libraries(client_grasp_test
+                      ${catkin_LIBRARIES}
+                      jaco2_manipulation)
+
+target_link_libraries(baseline_test
                       ${catkin_LIBRARIES}
                       jaco2_manipulation)
