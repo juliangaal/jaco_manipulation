@@ -8,8 +8,10 @@ class Point:
 		self.x = x
 		self.y = y
 		self.z = z
-		self.result = result
-
+		self.success = result
+	
+	def __str__(self):
+		return "({} {} {})".format(self.x, self.y, self.z)
 
 class ResultPlotter:
 	def __init__(self, file, labels, delimiter=','):
@@ -30,32 +32,36 @@ class ResultPlotter:
 			point, _ = d.split('/')
 			point = point.replace('(','').replace(')','')
 			x, y, z = point.split(',')
-			self.points.append(Point(x,y,z,r))			
+			self.points.append(Point(x,y,z,True if r == 'success' else False))			
 
 	def saveResultFrom(self, key):
 		self.__extract_point(key)
-		
-		X = [float(p.x) for p in self.points]
-		Y = [float(p.y) for p in self.points]
-		Z = [float(p.z) for p in self.points]
-		Results = [p.result for p in self.points]
 
 		fig = plt.figure()
 		ax = fig.add_subplot(111, projection='3d')
-
-		x = [1,2,3,4,5,6,7,8,9,10]
-		y = [5,6,2,3,13,4,1,2,4,8]
-		z = [2,3,3,3,5,7,9,11,9,10]
-
+		
+		X = [float(p.x) for p in self.points if p.success]
+		Y = [float(p.y) for p in self.points if p.success]
+		Z = [float(p.z) for p in self.points if p.success]
+		
 		ax.scatter(X, Y, Z, c='r', marker='o')
+			
+		X = [float(p.x) for p in self.points if not p.success]
+		Y = [float(p.y) for p in self.points if not p.success]
+		Z = [float(p.z) for p in self.points if not p.success]
 
+		ax.scatter(X, Y, Z, c='g', marker='o')
+
+		# in visualization, x and y axis are flipped
+		ax.set_xlim3d(0.2,0.7)
+		ax.set_ylim3d(0.0,0.58)
+		ax.set_zlim3d(0.0,0.2)
 		ax.set_xlabel('X')
 		ax.set_ylabel('Y')
 		ax.set_zlabel('Z')
-
-		plt.show()
-		plt.savefig('fig.png')
-
 		
-plotter = ResultPlotter('test.csv',['Time','Current Pose','Target Pose','Result'],';')
+		plt.savefig('fig.png', dpi=200)
+		plt.show()
+		
+plotter = ResultPlotter('fake_data.csv',['Time','Current Pose','Target Pose','Result'],';')
 plotter.saveResultFrom('Target Pose');
