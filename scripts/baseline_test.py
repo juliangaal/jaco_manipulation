@@ -13,7 +13,11 @@
 
 import rospy
 from jaco_manipulation.msg import JacoDebug
+from arm_service.srv import ArmInstruction
+from anchor_msgs.msg import Anchor
 from test import Test
+from conversions import Conversions
+from geometry_msgs.msg import Point
 
 
 class BaseLineTest(Test):
@@ -30,8 +34,8 @@ class BaseLineTest(Test):
 
     def __msg_to_string(self, msg):
         time = msg.timestamp.strip('\n')
-        current_pose = Test.pose_to_string(self, msg.goal.current_pose).strip('\n')
-        target_pose  = Test.pose_to_string(self, msg.goal.target_pose).strip('\n')
+        current_pose = Conversions.pose_to_string(self, msg.goal.current_pose).strip('\n')
+        target_pose  = Conversions.pose_to_string(self, msg.goal.target_pose).strip('\n')
         result = ('success' if True else 'failure').strip('\n')
         return time + self.delimiter + current_pose + self.delimiter + target_pose + self.delimiter + result
 
