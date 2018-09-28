@@ -103,3 +103,9 @@ jmc.dropAt(b);
 ```
 
 Examples can be found [here](test/).
+
+
+## TODO
+- [ ] seperate action: pre-grasp pose
+- [ ] grasp pose generator configurable
+- [ ] call analyser when shutting down test
