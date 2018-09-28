@@ -8,7 +8,7 @@ file = open(dir_path + "/baseline_poses.csv", "w")
 file.write("x,y,z,dim_x,dim_y,dim_z\n")
 
 fake_file = open(dir_path + "/fake_data.csv", "w")
-fake_file.write("Time;Current Pose;Target Pose;Result")
+fake_file.write("Time;Current Pose;Target Pose;Result\n")
 
 num_of_pose = 0
 valid_pose = True
