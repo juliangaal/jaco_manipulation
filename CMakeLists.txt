@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
              moveit_visual_tools
              pluginlib
              roscpp
+             rospy
              std_msgs
              tf
              message_generation
@@ -45,7 +46,7 @@ generate_messages(
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES jaco2_manipulation grasp_pose_generator
-    CATKIN_DEPENDS actionlib actionlib_msgs cmake_modules geometry_msgs moveit_core moveit_ros_planning_interface pluginlib roscpp std_msgs tf message_runtime wpi_jaco_msgs)
+    CATKIN_DEPENDS roscpp rospy actionlib actionlib_msgs cmake_modules geometry_msgs moveit_core moveit_ros_planning_interface pluginlib roscpp std_msgs tf message_runtime wpi_jaco_msgs)
 
 include_directories(
     include
