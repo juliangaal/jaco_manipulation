@@ -103,7 +103,7 @@ int main(int argn, char *args[]) {
   client::JacoManipulationClient jmc;
 
   for (const auto &box: data) {
-    ROS_STATUS("Test " << test_num++);
+    ROS_INFO_STREAM("\n---\nTest " << test_num++ << "\n---");
     jmc.graspAt(box);
     jmc.dropAt(box);
   }
