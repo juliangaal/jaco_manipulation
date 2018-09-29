@@ -293,7 +293,23 @@ void JacoManipulationServer::fillMoveItConfigMsg(jaco_manipulation::MoveItConfig
 void JacoManipulationServer::fillMoveItGoalMsg(jaco_manipulation::MoveItGoal &goal_msg,
                                                const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
   goal_msg.current_pose = move_group_.getCurrentPose();
-  goal_msg.target_pose = goal->pose_goal;
+  geometry_msgs::PointStamped out_pt;
+  geometry_msgs::PointStamped in_pt;
+  in_pt.header = goal->pose_goal.header;
+  in_pt.point = goal->pose_goal.pose.position;
+
+  // transform point into base link for logging
+  try {
+    tf_listener_.waitForTransform("base_link", move_group_.getPlanningFrame(), goal->pose_goal.header.stamp, ros::Duration(1));
+    tf_listener_.transformPoint("base_link", in_pt, out_pt);
+  }
+  catch (tf::TransformException &exception) {
+    ROS_INFO_STREAM("Transform failed. Why? - " << exception.what());
+  }
+  geometry_msgs::PoseStamped pose;
+  pose.pose.position = out_pt.point;
+  pose.pose.orientation = goal->pose_goal.pose.orientation;
+  goal_msg.target_pose = pose;
   goal_msg.bounding_box = goal->bounding_box;
 }
 
@@ -304,7 +320,7 @@ void JacoManipulationServer::pubDebugMsg(const jaco_manipulation::PlanAndMoveArm
   debug_msg_.goal.description = goal->goal_type;
   fillMoveItConfigMsg(debug_msg_.config);
   fillMoveItGoalMsg(debug_msg_.goal, goal);
-  debug_msg_.result = result;
+  debug_msg_.result = (result == true) ? "success" : "failure";
   debug_pub_.publish(debug_msg_);
 }
 

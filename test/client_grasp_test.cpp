@@ -109,8 +109,8 @@ int main(int argn, char *args[]) {
     b.header.frame_id = "base_link";
     b.description = "box";
     b.point.x = 0.5_m;
-    b.point.y = 0.3_m;
-    b.point.z = 6.5_cm/2.;
+    b.point.y = 0.2_m;
+    b.point.z = 20._cm + 6.5_cm/2.;
     b.dimensions.x = 7.2_cm;
     b.dimensions.y = 7.2_cm;
     b.dimensions.z = 6.5_cm;

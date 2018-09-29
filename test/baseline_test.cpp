@@ -77,7 +77,6 @@ class CSVReader {
 
     while (getline(file, line)) {
       ++line_counter;
-
       vector<string> vec;
       boost::algorithm::split(vec, line, boost::is_any_of(delimiter));
       if (line_counter == 1)
@@ -98,14 +97,18 @@ int main(int argn, char *args[]) {
 
   CSVReader reader("/home/chitt/julian/reground_workspace/src/arm/jaco_manipulation/scripts/baseline_poses.csv");
   auto data = reader.getData();
-  size_t test_num = 0;
+  int test_num = 0;
 
   client::JacoManipulationClient jmc;
 
   for (const auto &box: data) {
-    ROS_INFO_STREAM("\n---\nTest " << test_num++ << "\n---");
-    jmc.graspAt(box);
-    jmc.dropAt(box);
+    bool grip = test_num % 2 == 0 || test_num == 0;
+    ROS_INFO_STREAM("\n---\nTest " << ++test_num << (grip ? ": Grip" : ": Drop") << "\n---");
+
+    if (grip)
+      jmc.graspAt(box);
+    else
+      jmc.dropAt(box);
   }
 
 

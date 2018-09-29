@@ -14,7 +14,7 @@ num_of_pose = 0
 valid_pose = True
 
 while (num_of_pose <= 100):
-    x = random.uniform(0.2, 0.7)
+    x = random.uniform(0.25, 0.7)
     y = random.uniform(0.0, 0.58)
     z = random.uniform(0.0, 0.2)	
 	

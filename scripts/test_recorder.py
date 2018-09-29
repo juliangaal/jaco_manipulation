@@ -11,7 +11,7 @@
 #     You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-import os
+import rospy
 from analyse import ResultPlotter
 
 
@@ -23,7 +23,7 @@ class Test:
         self.__setup_log_file()
 
     def __setup_log_file(self):
-        self.file = open(self.filename, "w")
+        self.file = open(self.filename, "w", buffering=0)
         self.write(self.labels)
 
     def curr_file(self):
@@ -34,4 +34,4 @@ class Test:
 
     def __del__(self):
         self.file.close()
-        print "Logged to", self.filename
+        rospy.loginfo("Logged to", self.filename)

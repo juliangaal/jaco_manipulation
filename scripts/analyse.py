@@ -26,14 +26,15 @@ class ResultPlotter:
         self.df = pd.read_csv(file, names=self.labels, sep=self.delimiter)
 
     def __del__(self):
-        print "Generated figure saved to:", self.figure_path
+        print "Generated figure with", len(self.points), "data points saved to:", self.figure_path
 
     def __extract_point(self, key):
         data = self.df[key]
         results = self.df['Result']
 
         for d, r in zip(data, results):
-            if d == key or r == key:
+            if d == key or r == "Result":
+                print "skipping labels"
                 continue
 
             point, _ = d.split('/')
@@ -51,18 +52,18 @@ class ResultPlotter:
         Y = [float(p.y) for p in self.points if p.success]
         Z = [float(p.z) for p in self.points if p.success]
 
-        ax.scatter(X, Y, Z, c='r', marker='o')
+        ax.scatter(X, Y, Z, c='g', marker='o')
 
         X = [float(p.x) for p in self.points if not p.success]
         Y = [float(p.y) for p in self.points if not p.success]
         Z = [float(p.z) for p in self.points if not p.success]
 
-        ax.scatter(X, Y, Z, c='g', marker='o')
+        ax.scatter(X, Y, Z, c='r', marker='o')
 
         # in visualization, x and y axis are flipped
         ax.set_xlim3d(0.2, 0.7)
         ax.set_ylim3d(0.0, 0.58)
-        ax.set_zlim3d(0.0, 0.2)
+        ax.set_zlim3d(0.15, 0.3)
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')

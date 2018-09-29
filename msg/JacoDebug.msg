@@ -1,4 +1,4 @@
 string timestamp
 jaco_manipulation/MoveItConfig config
 jaco_manipulation/MoveItGoal goal
-bool result
+string result

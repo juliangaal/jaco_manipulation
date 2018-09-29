@@ -96,17 +96,17 @@ void JacoManipulationClient::tryDifferentGraspPoses(T &goal_type, const std::str
       ROS_ERROR_STREAM("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << " failed.\n");
     }
   }
-  {
-    goals::GraspGoal goal(goal_type,
-                          jaco_manipulation::grasps::GraspType::FRONT_GRASP,
-                          description);
-    if (execute(goal, false)) {
-      ROS_SUCCESS("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << "succeeded.\n");
-      return;
-    } else {
-      ROS_ERROR_STREAM("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << "failed.\n");
-    }
-  }
+//  {
+//    goals::GraspGoal goal(goal_type,
+//                          jaco_manipulation::grasps::GraspType::FRONT_GRASP,
+//                          description);
+//    if (execute(goal, false)) {
+//      ROS_SUCCESS("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << "succeeded.\n");
+//      return;
+//    } else {
+//      ROS_ERROR_STREAM("Status  : Move to " << goal.info() << " with " << goal.requestedOrientation() << "failed.\n");
+//    }
+//  }
 }
 
 void JacoManipulationClient::updatePlanningScene(const jaco_manipulation::BoundingBox &box) {
