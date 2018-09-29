@@ -106,6 +106,12 @@ Examples can be found [here](test/).
 
 
 ## TODO
-- [ ] seperate action: pre-grasp pose
+- [x] seperate action: pre-grasp pose
+- [ ] define file as input arg python scripts
 - [ ] grasp pose generator configurable
-- [ ] call analyser when shutting down test
+- [ ] call analyser when shutting down test: destructor?
+- [ ] accepts labels as list
+- [ ] no whitespace in individual label!
+- [ ] catch file not found
+
+For tests: disable wall and front grasp
