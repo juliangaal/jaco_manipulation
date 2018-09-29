@@ -247,8 +247,6 @@ void GraspPoseGenerator::adjustHeightForTopPose(geometry_msgs::PoseStamped &pose
     auto x = std::min(box.dimensions.x, box.dimensions.y);
     auto height_correction = m*x + b;
     auto height_diff = std::fabs(height_correction - y);
-    ROS_INFO("H/W Fix : %f -> %f for width %f and diff %f", y, y + height_diff, x, height_diff);
-    ROS_INFO("mx + b %f %f %f", m, x, b);
     pose.pose.position.z += height_diff;
   }
 }
