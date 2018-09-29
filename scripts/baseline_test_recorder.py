@@ -12,12 +12,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 import rospy
+import sys
 from jaco_manipulation.msg import JacoDebug
-from arm_service.srv import ArmInstruction
-from anchor_msgs.msg import Anchor
 from test import Test
 from conversions import Conversions
-from geometry_msgs.msg import Point
 
 
 class BaseLineTest(Test):
@@ -43,4 +41,4 @@ class BaseLineTest(Test):
         Test.write(self, line)
 
 
-test = BaseLineTest("baseline_test_recording.csv", "Time,CurrentPose,TargetPose,Result")
+test = BaseLineTest("baseline_test_recording.csv", "Time;CurrentPose;TargetPose;Result")

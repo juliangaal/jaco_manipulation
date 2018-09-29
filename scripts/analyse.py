@@ -1,73 +1,74 @@
 import os
-import pandas as pd
-import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+import pandas as pd
 
 
 class Point:
-	def __init__(self, x, y, z, result):
-		self.x = x
-		self.y = y
-		self.z = z
-		self.success = result
-	
-	def __str__(self):
-		return "({} {} {})".format(self.x, self.y, self.z)
+    def __init__(self, x, y, z, result):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.success = result
+
+    def __str__(self):
+        return "({} {} {})".format(self.x, self.y, self.z)
+
 
 class ResultPlotter:
-	def __init__(self, file, labels, delimiter=','):
-		self.current_dir = os.path.dirname(os.path.realpath(__file__))
-		self.file = file
-		self.figure_path = self.current_dir + '/fig.png'
-		self.labels = labels
-		self.delimiter = delimiter
-		self.points = []
-		self.df = pd.read_csv(file, names=self.labels, sep=self.delimiter)
- 	
+    def __init__(self, file, labels, delimiter=','):
+        self.current_dir = os.path.dirname(os.path.realpath(__file__))
+        self.file = file
+        self.figure_path = self.current_dir + '/fig.png'
+        self.labels = labels
+        self.delimiter = delimiter
+        self.points = []
+        self.df = pd.read_csv(file, names=self.labels, sep=self.delimiter)
 
-	def __del__(self):
-		print "Generated figure saved to:", self.figure_path
-			
-	def __extract_point(self, key):
-		data = self.df[key]
-		results = self.df['Result']
+    def __del__(self):
+        print "Generated figure saved to:", self.figure_path
 
-		for d,r in zip(data,results):
-			if d == key or r == key:
-				continue
-			
-			point, _ = d.split('/')
-			point = point.replace('(','').replace(')','')
-			x, y, z = point.split(',')
-			self.points.append(Point(x,y,z,True if r == 'success' else False))			
+    def __extract_point(self, key):
+        data = self.df[key]
+        results = self.df['Result']
 
-	def saveResultFrom(self, key):
-		self.__extract_point(key)
+        for d, r in zip(data, results):
+            if d == key or r == key:
+                continue
 
-		fig = plt.figure()
-		ax = fig.add_subplot(111, projection='3d')
-		
-		X = [float(p.x) for p in self.points if p.success]
-		Y = [float(p.y) for p in self.points if p.success]
-		Z = [float(p.z) for p in self.points if p.success]
-		
-		ax.scatter(X, Y, Z, c='r', marker='o')
-			
-		X = [float(p.x) for p in self.points if not p.success]
-		Y = [float(p.y) for p in self.points if not p.success]
-		Z = [float(p.z) for p in self.points if not p.success]
+            point, _ = d.split('/')
+            point = point.replace('(', '').replace(')', '')
+            x, y, z = point.split(',')
+            self.points.append(Point(x, y, z, True if r == 'success' else False))
 
-		ax.scatter(X, Y, Z, c='g', marker='o')
+    def saveResultFrom(self, key):
+        self.__extract_point(key)
 
-		# in visualization, x and y axis are flipped
-		ax.set_xlim3d(0.2,0.7)
-		ax.set_ylim3d(0.0,0.58)
-		ax.set_zlim3d(0.0,0.2)
-		ax.set_xlabel('X')
-		ax.set_ylabel('Y')
-		ax.set_zlabel('Z')
-		
-		plt.savefig('fig.png', dpi=300)
-		
-plotter = ResultPlotter('fake_data.csv',['Time','Current Pose','Target Pose','Result'],';')
-plotter.saveResultFrom('Target Pose');
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+
+        X = [float(p.x) for p in self.points if p.success]
+        Y = [float(p.y) for p in self.points if p.success]
+        Z = [float(p.z) for p in self.points if p.success]
+
+        ax.scatter(X, Y, Z, c='r', marker='o')
+
+        X = [float(p.x) for p in self.points if not p.success]
+        Y = [float(p.y) for p in self.points if not p.success]
+        Z = [float(p.z) for p in self.points if not p.success]
+
+        ax.scatter(X, Y, Z, c='g', marker='o')
+
+        # in visualization, x and y axis are flipped
+        ax.set_xlim3d(0.2, 0.7)
+        ax.set_ylim3d(0.0, 0.58)
+        ax.set_zlim3d(0.0, 0.2)
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')
+
+        plt.savefig('fig.png', dpi=300)
+
+
+plotter = ResultPlotter('baseline_test_recording.csv', ['Time', 'CurrentPose', 'TargetPose', 'Result'], ';')
+plotter.saveResultFrom('TargetPose')
