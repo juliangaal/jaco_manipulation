@@ -42,12 +42,14 @@ void JacoManipulationClient::moveTo(const sensor_msgs::JointState &joint_goal, c
 void JacoManipulationClient::graspAt(const goals::goal_input::LimitedPose &grasp_pose_goal,
                                      const std::string &description) {
   tryDifferentGraspPoses(grasp_pose_goal, description);
+  moveTo("post_grasp");
 }
 
 
 void JacoManipulationClient::graspAt(const jaco_manipulation::BoundingBox &bounding_box_goal,
                                      const std::string &description) {
   tryDifferentGraspPoses(bounding_box_goal, description);
+  moveTo("post_grasp");
 }
 
 void JacoManipulationClient::dropAt(const goals::goal_input::LimitedPose &drop_pose_goal,

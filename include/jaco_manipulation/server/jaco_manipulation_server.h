@@ -192,6 +192,11 @@ class JacoManipulationServer {
   bool planAndMoveAndGrasp(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
   /**
+   * Convenience function to plan, execute the post grasp lift up of object
+   */
+  bool planAndMovePostGrasp();
+
+  /**
    * Convenience function to plan, execute the pose and drop an object specified by pose_goal.
    * @param goal to move to and drop
   */

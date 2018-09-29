@@ -118,6 +118,9 @@ void JacoManipulationServer::processGoal(const jaco_manipulation::PlanAndMoveArm
     wipeKinectObstacles();
     pam_server_.setSucceeded();
     return;
+  } else if (goal->goal_type == "post_grasp") {
+    result_value = planAndMovePostGrasp();
+    pubDebugMsg(goal, result_value);
   } else if (goal->goal_type == "remove_obstacle") {
     removeObstacle(goal);
     pam_server_.setSucceeded();
@@ -195,16 +198,16 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAn
   closeGripper(goal->bounding_box);
   ROS_STATUS("Gripper closed. Object grasped.");
 
-  // once gripped we simply move up a little
-  jaco_manipulation::PlanAndMoveArmGoal new_goal(*goal);
-  new_goal.pose_goal.pose.position.z += 12.0_cm;
-
-  moved = planAndMove(new_goal.pose_goal);
-  if (!moved) return false;
-
-  ROS_STATUS("Moved to pose gripping state");
-
   return true;
+}
+
+bool JacoManipulationServer::planAndMovePostGrasp() {
+  ROS_STATUS("Goal received: post grasp pose");
+
+  auto pose_goal = move_group_.getCurrentPose();
+  pose_goal.pose.position.z += 13._cm;
+
+  return planAndMove(pose_goal);
 }
 
 bool JacoManipulationServer::planAndMoveAndDrop(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
@@ -264,7 +267,7 @@ void JacoManipulationServer::closeGripper(const jaco_manipulation::BoundingBox &
   auto amount = static_cast<float>(-43333.333 * size + 6500.0);
 
   // give it a tiny extra squeeze, for heavier objects e.g.
-  constexpr float squeeze = 800.0;
+  constexpr float squeeze = 1000.;
   amount += squeeze;
 
   if (amount < 0.0) {
