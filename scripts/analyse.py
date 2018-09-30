@@ -18,7 +18,7 @@ class Point:
 class ResultPlotter:
     def __init__(self, file, labels, delimiter=','):
         self.current_dir = os.path.dirname(os.path.realpath(__file__))
-        self.file = file
+        self.file = self.current_dir + '/' + file
         self.figure_path = self.current_dir + '/fig.png'
         self.labels = labels
         self.delimiter = delimiter
@@ -34,7 +34,6 @@ class ResultPlotter:
 
         for d, r in zip(data, results):
             if d == key or r == "Result":
-                print "skipping labels"
                 continue
 
             point, _ = d.split('/')
@@ -69,7 +68,3 @@ class ResultPlotter:
         ax.set_zlabel('Z')
 
         plt.savefig('fig.png', dpi=300)
-
-
-plotter = ResultPlotter('baseline_test_recording.csv', ['Time', 'CurrentPose', 'TargetPose', 'Result'], ';')
-plotter.saveResultFrom('TargetPose')
