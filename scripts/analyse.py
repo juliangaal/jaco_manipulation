@@ -19,7 +19,7 @@ class ResultPlotter:
     def __init__(self, file, labels, delimiter=','):
         self.current_dir = os.path.dirname(os.path.realpath(__file__))
         self.file = self.current_dir + '/' + file
-        self.figure_path = self.current_dir + '/fig.png'
+        self.figure_path = os.path.dirname(file) + '/fig.png'
         self.labels = labels
         self.delimiter = delimiter
         self.points = []
@@ -67,4 +67,4 @@ class ResultPlotter:
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
 
-        plt.savefig('fig.png', dpi=300)
+        plt.savefig(self.figure_path, dpi=300)
