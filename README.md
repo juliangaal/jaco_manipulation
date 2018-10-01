@@ -8,13 +8,14 @@ Depends on installation of [MoveIt!](https://moveit.ros.org/) and it's [visual t
 
 ## Server: jaco\_manipulation_server
 ### Config
-Define these properties in the [launch file](launch/jaco_manipulation.launch)
-* `planner_id type`: e.g. RRTConnectkConfigDefault, RRTstarkConfigDefault, etc
-* `planning_time`: time in seconds 
-* `planning_attempts`: number of planning attempts 
-* `allow_replanning`: true/false 
-* `allow_looking`: true/false
-* `publish_debug`: true/false. If true, [this message](msg/JacoDebug.msg) is published on topic `/jaco_manipulation/debug`
+Define these ROS parameters in the [launch file](launch/jaco_manipulation.launch)
+* `planner_id type`: e.g. RRTConnectkConfigDefault, RRTstarkConfigDefault, etc. **Default**: RRTConnectkConfigDefault
+* `planning_time`: time in seconds **Default**: 1.5
+* `planning_attempts`: number of planning attempts **Default**: 10
+* `allow_replanning`: true/false **Default**: true
+* `allow_looking`: true/false **Default**: true
+* `publish_debug`: true/false. **Default**: true. If true, [this message](msg/JacoDebug.msg) is published on topic `/jaco_manipulation/debug`
+
 Messages defined in [action/PlanAndMoveArm.action](action/PlanAndMoveArm.action)
 
 ### Input
