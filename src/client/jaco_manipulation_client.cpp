@@ -21,7 +21,9 @@
 using namespace jaco_manipulation::client;
 
 JacoManipulationClient::JacoManipulationClient() : client_("plan_and_move_arm", true) {
+  ROS_WARN_STREAM("Waiting for jaco_manipulation_server");
   client_.waitForServer();
+  ROS_SUCCESS("Connected to jaco_manipulation_server");
 }
 
 void JacoManipulationClient::moveTo(const std::string &moveit_goal, const std::string &description) {
