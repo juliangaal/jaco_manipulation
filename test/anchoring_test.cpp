@@ -165,15 +165,13 @@ int main(int argc, char** argv)
   auto data = reader.getData();
   AnchorTest l(data);
 
-  ROS_INFO_STREAM("Starting anchoring test");
-
   ros::Rate loop_rate(1);
   while(!l.anchors_published()) {
     ROS_WARN_STREAM("Anchors don't appear to be published");
     loop_rate.sleep();
   }
 
-  ROS_INFO_STREAM("Starting test");
+  ROS_INFO_STREAM("Starting anchoring test");
 
   while(!ros::isShuttingDown()) {
     ros::spinOnce();
