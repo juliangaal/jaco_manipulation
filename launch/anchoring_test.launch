@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <launch>
     <arg name="rviz_config" default="baseline_test.rviz" />
+    <!--Delete all current anchors-->
+    <node name="drop_db" pkg="jaco_manipulation" type="drop_anchoring_db.bash" output="screen" />
 
-    <node name="jaco_rviz" pkg="rviz" type="rviz" args="-d $(find jaco_manipulation)/launch/$(arg rviz_config)"/>
-    <node pkg="jaco_manipulation" name="baseline_test" type="baseline_test" output="screen"/>
-    <node pkg="jaco_manipulation" name="baseline_test_recorder" type="baseline_test_recorder.py" output="screen"/>
+    <node pkg="jaco_manipulation" name="anchoring_test" type="anchoring_test" output="screen"/>
+    <node pkg="jaco_manipulation" name="anchoring_test_recorder" type="anchoring_test_recorder.py" output="screen"/>
+    <!--<node name="jaco_rviz" pkg="rviz" type="rviz" args="-d $(find jaco_manipulation)/launch/$(arg rviz_config)"/>-->
 </launch>

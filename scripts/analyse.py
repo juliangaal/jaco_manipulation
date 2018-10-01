@@ -19,7 +19,7 @@ class ResultPlotter:
     def __init__(self, file, labels, delimiter=','):
         self.current_dir = os.path.dirname(os.path.realpath(__file__))
         self.file = self.current_dir + '/' + file
-        self.figure_path = os.path.dirname(file) + '/fig.png'
+        self.figure_path = self.current_dir + '/fig.png'
         self.labels = labels
         self.delimiter = delimiter
         self.points = []
