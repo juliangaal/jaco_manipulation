@@ -12,4 +12,25 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-#include "csv_reader.h"
+#include <jaco_manipulation/test/csv_reader.h>
+#include <ros/console.h>
+
+using namespace jaco_manipulation::test;
+
+CSVReader::CSVReader(const std::string filename, std::string delim) : delimiter(delim) {
+  file = std::ifstream(filename);
+  if (file) {
+    data.reserve(100);
+  } else {
+    ROS_ERROR_STREAM("Can't open file " << filename << ". Exiting.");
+  }
+}
+
+CSVReader::~CSVReader() {
+  if (file)
+    file.close();
+}
+
+const std::vector<jaco_manipulation::BoundingBox>& CSVReader::getData() const {
+  return data;
+}

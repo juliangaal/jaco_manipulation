@@ -15,12 +15,22 @@
 #ifndef PROJECT_BASELINE_CSV_READER_H
 #define PROJECT_BASELINE_CSV_READER_H
 
+#include <jaco_manipulation/test/csv_reader.h>
 
+namespace jaco_manipulation {
+namespace test {
 
-class baseline_csv_reader {
-
+class BaselineCSVReader : public CSVReader {
+ public:
+  BaselineCSVReader() = delete;
+  BaselineCSVReader(std::string filename, std::string delimiter=",");
+  ~BaselineCSVReader() = default;
+ private:
+  void saveVec(const std::vector<std::string> &line) override;
+  void processFile(const std::string &filename) override;
 };
 
-
+} // namespace test
+} // namespace jaco_manipulation
 
 #endif //PROJECT_BASELINE_CSV_READER_H

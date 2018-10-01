@@ -26,20 +26,18 @@ namespace test {
 class CSVReader {
  public:
   CSVReader() = delete;
-  CSVReader(const std::string filename, std::string delim = ",");
-
   virtual ~CSVReader();
 
-  std::vector<jaco_manipulation::BoundingBox> getData() const;
+  const std::vector<jaco_manipulation::BoundingBox>& getData() const;
 
- private:
-  void saveVec(const std::vector<std::string> &line);
+  virtual void saveVec(const std::vector<std::string> &line) = 0;
+  virtual void processFile(const std::string &filename) = 0;
 
-  void processFile(const std::string &filename);
-
+ protected:
+  CSVReader(const std::string filename, std::string delim = ",");
   std::vector<jaco_manipulation::BoundingBox> data;
-  std::string delimiter;
   std::ifstream file;
+  std::string delimiter;
 };
 
 } // namespace test
