@@ -15,6 +15,7 @@ import rospy
 from jaco_manipulation.msg import JacoDebug
 from std_msgs.msg import String
 from test import Test
+from conversions import Conversions
 
 
 class AnchoringTest(Test):
@@ -31,16 +32,17 @@ class AnchoringTest(Test):
         self.__write(line)
 
     def __msg_to_string(self, msg):
+        type_ = msg.goal.description
         time = msg.timestamp.strip('\n')
         command = '"Pick up the ball"'
-        current_pose = Test.pose_to_string(self, msg.goal.current_pose).strip('\n')
-        target_pose  = Test.pose_to_string(self, msg.goal.target_pose).strip('\n')
-        result = ('success' if True else 'failure').strip('\n')
-        return time + self.delimiter + command + self.delimiter + current_pose + \
+        current_pose = Conversions.pose_to_string(msg.goal.current_pose).strip('\n')
+        target_pose  = Conversions.pose_to_string(msg.goal.target_pose).strip('\n')
+        result = msg.result.strip('\n')
+        return time + self.delimiter + command + self.delimiter + type_ + self.delimiter + current_pose + \
                self.delimiter + target_pose + self.delimiter + result
 
     def __write(self, line):
         Test.write(self, line)
 
 
-anchor_test = AnchoringTest("anchoring_test_recording.csv", "Time;Command;CurrentPose;TargetPose;Result")
+anchor_test = AnchoringTest("anchoring_test_recording.csv", "Time;Command;Type;CurrentPose;TargetPose;Result")
