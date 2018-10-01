@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+             anchor_msgs
              actionlib
              actionlib_msgs
              cmake_modules
@@ -21,6 +22,8 @@ find_package(catkin REQUIRED COMPONENTS
              tf
              message_generation
              wpi_jaco_msgs)
+
+find_package(Boost REQUIRED)
 
 add_message_files(
     FILES
@@ -46,10 +49,11 @@ generate_messages(
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES jaco2_manipulation grasp_pose_generator
-    CATKIN_DEPENDS roscpp rospy actionlib actionlib_msgs cmake_modules geometry_msgs moveit_core moveit_ros_planning_interface pluginlib roscpp std_msgs tf message_runtime wpi_jaco_msgs)
+    CATKIN_DEPENDS anchor_msgs roscpp rospy actionlib actionlib_msgs cmake_modules geometry_msgs moveit_core moveit_ros_planning_interface pluginlib roscpp std_msgs tf message_runtime wpi_jaco_msgs)
 
 include_directories(
     include
+    test/include
     ${catkin_INCLUDE_DIRS})
 
 set(SERVER_SOURCES
@@ -67,48 +71,18 @@ set(CLIENT_SOURCES
     src/goals/joint_goal.cpp)
 
 ## Declare a cpp library --> DoroManipulation
-add_library(jaco2_manipulation
-            ${SERVER_SOURCES}
-            ${CLIENT_SOURCES})
-
-add_library(grasp_pose_generator
-            src/grasps/grasp_pose_generator.cpp)
-
-# Test client for jaco_manipulation action server
-add_executable(client_test test/client_test.cpp)
-
-# Test client for jaco_manipulation grasping
-add_executable(client_grasp_test test/client_grasp_test.cpp)
-
-# Baseline test
-add_executable(baseline_test test/baseline_test.cpp)
-
-add_executable(jaco_manipulation_server src/${PROJECT_NAME}_node.cpp)
-
-## Add cmake target dependencies of the executable/library
-## as an example, message headers may need to be generated before nodes
+add_library(jaco2_manipulation ${SERVER_SOURCES} ${CLIENT_SOURCES})
 add_dependencies(jaco2_manipulation ${PROJECT_NAME}_generate_messages_cpp ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(client_test ${PROJECT_NAME}_generate_messages_cpp jaco2_manipulation)
-add_dependencies(baseline_test ${PROJECT_NAME}_generate_messages_cpp jaco2_manipulation)
-add_dependencies(grasp_pose_generator ${PROJECT_NAME}_generate_messages_cpp)
-
-## Specify libraries to link a library or executable target against
 target_link_libraries(jaco2_manipulation
                       ${catkin_LIBRARIES}
                       grasp_pose_generator)
 
+add_library(grasp_pose_generator src/grasps/grasp_pose_generator.cpp)
+add_dependencies(grasp_pose_generator ${PROJECT_NAME}_generate_messages_cpp)
+
+add_executable(jaco_manipulation_server src/${PROJECT_NAME}_node.cpp)
 target_link_libraries(jaco_manipulation_server
                       ${catkin_LIBRARIES}
                       jaco2_manipulation)
 
-target_link_libraries(client_test
-                      ${catkin_LIBRARIES}
-                      jaco2_manipulation)
-
-target_link_libraries(client_grasp_test
-                      ${catkin_LIBRARIES}
-                      jaco2_manipulation)
-
-target_link_libraries(baseline_test
-                      ${catkin_LIBRARIES}
-                      jaco2_manipulation)
+add_subdirectory(test)
