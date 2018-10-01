@@ -33,7 +33,8 @@ JacoManipulationServer::JacoManipulationServer() :
     allow_looking_(false),
     planning_time_(10.),
     planning_attempts_(1),
-    planner_id_("RRTConnectkConfigDefault")
+    planner_id_("RRTConnectkConfigDefault"),
+    publish_debug_(false)
 {
   ROS_INFO("Initializing Jaco Manipulation!");
 
@@ -80,6 +81,12 @@ void JacoManipulationServer::prepMoveItMoveGroup() {
     ROS_INFO_STREAM("Got param 'allow_looking': " << allow_looking_);
   } else {
     ROS_ERROR_STREAM("Failed to get param 'allow_looking'");
+  }
+
+  if (nh_.getParam("jaco_manipulation_server/publish_debug", publish_debug_)) {
+    ROS_INFO_STREAM("Got param 'publish_debug': " << (publish_debug_ ? "True" : "False"));
+  } else {
+    ROS_ERROR_STREAM("Failed to get param 'publish_debug'");
   }
 
   move_group_.setPlannerId(planner_id_);
@@ -314,6 +321,8 @@ void JacoManipulationServer::fillMoveItGoalMsg(jaco_manipulation::MoveItGoal &go
 }
 
 void JacoManipulationServer::pubDebugMsg(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal, bool result) {
+  if (!publish_debug_) return;
+
   auto sysTimePoint = std::chrono::system_clock::now();
   auto tp = std::chrono::system_clock::to_time_t(sysTimePoint);
   debug_msg_.timestamp = std::asctime(std::gmtime(&tp));

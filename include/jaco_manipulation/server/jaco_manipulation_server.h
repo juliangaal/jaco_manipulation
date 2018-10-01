@@ -149,6 +149,11 @@ class JacoManipulationServer {
   std::string planner_id_;
 
   /**
+   * Publishes to /jaco_manipulation/debug if set true from launch file
+   */
+  bool publish_debug_;
+
+  /**
   * A function to prepare MoveIt movegroup and cofigure it for all future plans
  */
   void prepMoveItMoveGroup();
