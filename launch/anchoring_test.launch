@@ -6,5 +6,5 @@
 
     <node pkg="jaco_manipulation" name="anchoring_test" type="anchoring_test" output="screen"/>
     <node pkg="jaco_manipulation" name="anchoring_test_recorder" type="anchoring_test_recorder.py" output="screen"/>
-    <!--<node name="jaco_rviz" pkg="rviz" type="rviz" args="-d $(find jaco_manipulation)/launch/$(arg rviz_config)"/>-->
+    <node name="jaco_rviz" pkg="rviz" type="rviz" args="-d $(find jaco_manipulation)/launch/$(arg rviz_config)"/>
 </launch>

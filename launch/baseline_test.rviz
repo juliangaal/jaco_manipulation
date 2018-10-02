@@ -208,6 +208,18 @@ Visualization Manager:
           Value: false
         jaco_small_ring_cover_3:
           Value: false
+        kinect2_ir_optical_frame:
+          Value: true
+        kinect2_link:
+          Value: true
+        kinect2_rgb_optical_frame:
+          Value: true
+        kinect_base_link:
+          Value: true
+        kinect_rotate_link:
+          Value: true
+        kinect_tilt_link:
+          Value: true
         root:
           Value: true
       Marker Scale: 0.5
@@ -218,7 +230,13 @@ Visualization Manager:
       Tree:
         root:
           base_link:
-            {}
+            kinect_base_link:
+              kinect_tilt_link:
+                kinect_rotate_link:
+                  kinect2_link:
+                    kinect2_rgb_optical_frame:
+                      kinect2_ir_optical_frame:
+                        {}
           jaco_link_base:
             jaco_large_ring_cover_1:
               {}
@@ -603,4 +621,4 @@ Window Geometry:
     collapsed: true
   Width: 834
   X: 1005
-  Y: 592
+  Y: 555
