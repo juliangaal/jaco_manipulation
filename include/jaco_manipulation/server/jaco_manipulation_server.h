@@ -121,7 +121,16 @@ class JacoManipulationServer {
    */
   ros::Publisher debug_pub_;
 
+  /**
+   * A message with dug information that is published at /jaco_manipulation/debug
+   */
   jaco_manipulation::JacoDebug debug_msg_;
+
+  /**
+   * True if object is gripped. This needs to be handled server side due to
+   * a bug in MoveIt!, where the attached object is not correctly tracked while the robot is moving
+   */
+  bool has_gripped_;
 
   /**
    * Fallback for ROS paramter llow_replanning
@@ -136,7 +145,7 @@ class JacoManipulationServer {
   /**
    * Fallback for ROS paramter planning_time
    */
-  double planning_time_;
+  float planning_time_;
 
   /**
    * Fallback for ROS paramter planning_attempts

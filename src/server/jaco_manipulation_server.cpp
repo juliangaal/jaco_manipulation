@@ -29,6 +29,7 @@ JacoManipulationServer::JacoManipulationServer() :
     haa_client_("jaco_arm/home_arm", true),
     moveit_visuals_(nh_, "root", move_group_, plan_),
     tf_listener_(nh_, ros::Duration(10)),
+    has_gripped_(false),
     allow_replanning_(false),
     allow_looking_(false),
     planning_time_(10.),
@@ -45,7 +46,7 @@ JacoManipulationServer::JacoManipulationServer() :
 
   prepMoveItMoveGroup();
 
-  sleep(3);
+  sleep(1); // give moveit some time for rviz and others
 
   openGripper();
 }
@@ -192,6 +193,11 @@ bool JacoManipulationServer::planAndMove(const std::string &pose_goal_string) {
 
 bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
   ROS_STATUS("Grasp request received");
+  if (has_gripped_) {
+    ROS_ERROR_STREAM("Object already attached. Can't grasp");
+    has_gripped_ = false;
+    return false;
+  }
 
   addObstacle(goal);
 
@@ -203,6 +209,7 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAn
 
   attachObstacle(goal);
   closeGripper(goal->bounding_box);
+  has_gripped_ = true;
   ROS_STATUS("Gripper closed. Object grasped.");
 
   return true;
@@ -210,11 +217,15 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAn
 
 bool JacoManipulationServer::planAndMovePostGrasp() {
   ROS_STATUS("Goal received: post grasp pose");
+  if (has_gripped_) {
+    auto pose_goal = move_group_.getCurrentPose();
+    pose_goal.pose.position.z += 13._cm;
 
-  auto pose_goal = move_group_.getCurrentPose();
-  pose_goal.pose.position.z += 13._cm;
+    return planAndMove(pose_goal);
+  }
 
-  return planAndMove(pose_goal);
+  has_gripped_= true; // so the next grasp pose with object iin hand fails as well
+  return false;
 }
 
 bool JacoManipulationServer::planAndMoveAndDrop(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
@@ -229,7 +240,7 @@ bool JacoManipulationServer::planAndMoveAndDrop(const jaco_manipulation::PlanAnd
 
   openGripper();
   detachObstacle(goal);
-
+  has_gripped_ = false;
   ROS_STATUS("Gripper opened. Object dropped.");
 
   return true;
