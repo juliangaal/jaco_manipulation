@@ -229,6 +229,11 @@ bool JacoManipulationServer::planAndMovePostGrasp() {
 }
 
 bool JacoManipulationServer::planAndMoveAndDrop(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
+  if (!has_gripped_) {
+    ROS_WARN_STREAM("Skipping drop pose. Nothing grasped");
+    return true; // we need to return true. It is not a moveit error, we just don't want to move to drop pose, if we didn't grip the object
+  }
+
   ROS_STATUS("Drop request received");
 
   bool moved = planAndMove(goal->pose_goal);
