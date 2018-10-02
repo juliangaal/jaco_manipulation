@@ -18,7 +18,7 @@ class PoseGenerator:
 
     def __generate(self):
         num_of_pose = 0
-        while (num_of_pose < self.total_poses):
+        while num_of_pose < self.total_poses:
             x = random.uniform(0.25, 0.7)
             y = random.uniform(0.0, 0.58)
             z = random.uniform(0.0, 0.2)
