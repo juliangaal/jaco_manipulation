@@ -193,16 +193,9 @@ bool JacoManipulationServer::planAndMove(const std::string &pose_goal_string) {
 
 bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
   ROS_STATUS("Grasp request received");
-  if (has_gripped_) {
-    ROS_ERROR_STREAM("Object already attached. Can't grasp");
-    has_gripped_ = false;
-    return false;
-  }
-
   addObstacle(goal);
 
   bool moved = planAndMove(goal->pose_goal);
-
   if (!moved) {
     return false;
   }
@@ -217,23 +210,19 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAn
 
 bool JacoManipulationServer::planAndMovePostGrasp() {
   ROS_STATUS("Goal received: post grasp pose");
-  if (has_gripped_) {
-    auto pose_goal = move_group_.getCurrentPose();
-    pose_goal.pose.position.z += 13._cm;
 
-    return planAndMove(pose_goal);
+  if (!has_gripped_) {
+    ROS_WARN_STREAM("Not moving to pose grasp pose: notthin gripped");
+    return true;
   }
 
-  has_gripped_= true; // so the next grasp pose with object iin hand fails as well
-  return false;
+  auto pose_goal = move_group_.getCurrentPose();
+  pose_goal.pose.position.z += 13._cm;
+
+  return planAndMove(pose_goal);
 }
 
 bool JacoManipulationServer::planAndMoveAndDrop(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
-  if (!has_gripped_) {
-    ROS_WARN_STREAM("Skipping drop pose. Nothing grasped");
-    return true; // we need to return true. It is not a moveit error, we just don't want to move to drop pose, if we didn't grip the object
-  }
-
   ROS_STATUS("Drop request received");
 
   bool moved = planAndMove(goal->pose_goal);
