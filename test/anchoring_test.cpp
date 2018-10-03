@@ -30,6 +30,7 @@ class AnchorTest {
   AnchorTest(const std::vector<BoundingBox> &datapoints)
   : data(datapoints),
     trial_counter(0),
+    grip_counter(0),
     current_box_it(begin(data)),
     found_anchor(false),
     topic("/anchors")
@@ -62,12 +63,10 @@ class AnchorTest {
 
     anchors = *msg;
 
-    show_test_info();
-
-    if (trial_counter % 2 == 0) {
+    if (trial_counter++ % 2 == 0) {
+      show_test_info();
       auto box = createBoundingBoxFromAnchors();
       jmc.graspAt(box);
-      system("spd-say 'reecord'");
     } else {
       jmc.dropAt(*current_box_it);
 
@@ -81,8 +80,6 @@ class AnchorTest {
         return;
       }
     }
-
-    ++trial_counter;
   }
 
   bool anchors_published() const {
@@ -99,6 +96,7 @@ class AnchorTest {
  private:
     const std::vector<BoundingBox> &data;
     size_t trial_counter;
+    size_t grip_counter;
     bool found_anchor;
     const std::string topic;
     BoundingBox drop_box;
@@ -152,7 +150,7 @@ class AnchorTest {
 
     void show_test_info() {
       ROS_SUCCESS("----");
-      ROS_SUCCESS("Test " << trial_counter + 1);
+      ROS_SUCCESS("Test " << ++grip_counter);
       ROS_SUCCESS("Attempting to move to anchor");
       ROS_SUCCESS("----");
     }
@@ -166,10 +164,8 @@ int main(int argc, char** argv)
   auto data = reader.getData();
   AnchorTest l(data);
 
-  ros::Rate loop_rate(1);
-  while(!l.anchors_published()) {
+  if (!l.anchors_published()) {
     ROS_WARN_STREAM("Anchors don't appear to be published");
-    loop_rate.sleep();
   }
 
   ROS_INFO_STREAM("Starting anchoring test");
