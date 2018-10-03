@@ -1,4 +1,11 @@
 from analyse import ResultPlotter
+from analyse import FileReader
+import os
 
-plotter = ResultPlotter('results/baseline/combined/baseline_combined_recording.csv', ['Time', 'CurrentPose', 'TargetPose', 'Result'], ';')
-plotter.saveResultFrom('TargetPose')
+if __name__ == "__main__":
+    reader = FileReader('baseline_recordings.txt')
+    for file in reader.files:
+        print '\nAnalysing', os.path.basename(file)
+        plotter = ResultPlotter(file, ['Time', 'Type', 'CurrentPose', 'TargetPose', 'Result'], ';')
+        plotter.save3DResultFrom('TargetPose','Gripped')
+        plotter.save2DResultFrom('TargetPose','Gripped')

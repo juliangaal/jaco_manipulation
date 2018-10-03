@@ -29,19 +29,55 @@ class Color:
     failure = 'r'
     kinda = 'yellow'
 
+class FileReader:
+    def __init__(self, file):
+        self.file = open(os.path.abspath(file), 'r')
+        if not self.file:
+            print 'Filereader: Cant open file', file
+            exit()
+
+        self.files = [os.path.abspath(line).rstrip() for line in self.file]
+
+    def __str__(self):
+        return ''.join(str(s) for s in self.files)
+
+    def __del__(self):
+        self.file.close()
+
 class ResultPlotter:
     def __init__(self, file, labels, delimiter=','):
-        self.current_dir = os.path.dirname(os.path.realpath(__file__))
-        self.file = self.current_dir + '/' + file
-        self.figure_path_3d = self.current_dir + '/3d_fig.png'
-        self.figure_path_2d = self.current_dir + '/2d_fig.png'
+        self.current_dir = os.getcwd()
+        if not os.path.exists(file):
+            print "ResultPlotter: File does not exist:", file, "Exiting..."
+            exit()
+
+        # get desctiptor in front of file: e.g. 01
+        filename_only = os.path.basename(os.path.normpath(file))
+        self.descriptor = filename_only.partition("_")[0]
+        self.test_type = ''
+        # get test type
+        if 'anchoring' in filename_only:
+            self.test_type = 'anchoring'
+
+        if 'baseline' in filename_only:
+            self.test_type = 'baseline'
+
+        # set target dir and file names
+        results_dir = os.path.abspath(os.path.join(self.current_dir, os.pardir)) + '/results/' + self.test_type
+        self.target_dir = results_dir + '/' + self.descriptor
+
+        self.file = file
+        self.figure_path_3d = self.target_dir + '/' + self.descriptor + '_3d_fig.png'
+        self.figure_path_2d = self.target_dir + '/' + self.descriptor + '_2d_fig.png'
         self.labels = labels
         self.delimiter = delimiter
         self.points = []
-        self.df = pd.read_csv(file, names=self.labels, sep=self.delimiter)
+        self.df = pd.read_csv(self.file, names=self.labels, sep=self.delimiter)
 
-    def __del__(self):
-        print "Done: generated plots"
+        # change working directory
+        if not os.path.exists(self.target_dir):
+            print 'Creating', self.target_dir
+            os.mkdir(self.target_dir)
 
     def __extract_point(self, key, result_key):
         data = self.df[key]
@@ -101,7 +137,7 @@ class ResultPlotter:
         ax.set_zlabel('Z')
 
         plt.savefig(self.figure_path_3d, dpi=300)
-        print "Generated figure with", len(self.points), "data points saved to:", self.figure_path_3d
+        print "- Generated figure with", len(self.points), "data points saved to:", self.figure_path_3d
 
     def save2DResultFrom(self, key, result_key='Result'):
         plt.figure()
@@ -134,4 +170,4 @@ class ResultPlotter:
 
 
         plt.savefig(self.figure_path_2d, dpi=300)
-        print "Generated figure with", len(self.points), "data points saved to:", self.figure_path_2d
+        print "- Generated figure with", len(self.points), "data points saved to:", self.figure_path_2d
