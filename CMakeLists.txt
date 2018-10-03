@@ -3,6 +3,13 @@ project(jaco_manipulation)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+catkin_python_setup()
+#catkin_install_python(PROGRAMS
+#                      scripts/record/test_recorder.py
+#                      scripts/record/baseline_test_recorder.py
+#                      scripts/record/anchoring_test_recorder.py
+#                      DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -50,6 +57,7 @@ catkin_package(
     INCLUDE_DIRS include
     LIBRARIES jaco2_manipulation grasp_pose_generator
     CATKIN_DEPENDS anchor_msgs roscpp rospy actionlib actionlib_msgs cmake_modules geometry_msgs moveit_core moveit_ros_planning_interface pluginlib roscpp std_msgs tf message_runtime wpi_jaco_msgs)
+
 
 include_directories(
     include
