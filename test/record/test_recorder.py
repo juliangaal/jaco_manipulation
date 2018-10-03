@@ -10,15 +10,15 @@
 # GNU General Public License for more details.
 #     You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
-
 import rospy
-from analyse import ResultPlotter
-
+import os
+import rospkg
 
 class Test:
     def __init__(self, filename, labels='empty labels', ):
-        self.dir_path = os.path.dirname(os.path.realpath(__file__))
-        self.filename = self.dir_path + '/' + filename
+        self.rospack = rospkg.RosPack()
+        self.root_dir = self.rospack.get_path("jaco_manipulation")
+        self.filename = self.root_dir + '/scripts/' + filename
         self.labels = labels
         self.__setup_log_file()
 
@@ -34,4 +34,4 @@ class Test:
 
     def __del__(self):
         self.file.close()
-        rospy.loginfo("Logged to", self.filename)
+        rospy.loginfo("Logged to %s", self.filename)

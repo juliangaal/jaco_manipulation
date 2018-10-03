@@ -12,155 +12,139 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-#include <jaco_manipulation/client/jaco_manipulation_client.h>
 #include <jaco_manipulation/test/baseline_csv_reader.h>
-#include <anchor_msgs/AnchorArray.h>
-#include <jaco_manipulation/BoundingBox.h>
-#include <jaco_manipulation/units.h>
+#include <jaco_manipulation/test/anchoring_test.h>
 #include <geometry_msgs/Point.h>
 #include <vector>
 #include <algorithm>
 #include <ros/ros.h>
 #include <sstream>
 
-using namespace jaco_manipulation;
+using namespace jaco_manipulation::test;
 
-class AnchorTest {
- public:
-  AnchorTest(const std::vector<BoundingBox> &datapoints)
-  : data(datapoints),
-    trial_counter(0),
-    grip_counter(0),
-    current_box_it(begin(data)),
-    found_anchor(false),
-    topic("/anchors")
-  {
-    drop_box.header.frame_id = "base_link";
-    drop_box.description = "box";
-    drop_box.point.x = 0.5_m;
-    drop_box.point.y = 0.3_m;
-    drop_box.point.z = 6.5_cm/2.;
-    drop_box.dimensions.x = 6.5_cm;
-    drop_box.dimensions.y = 6.5_cm;
-    drop_box.dimensions.z = 6.5_cm;
+AnchorTest::AnchorTest(const std::vector<BoundingBox> &datapoints)
+: data(datapoints),
+  trial_counter(0),
+  grip_counter(0),
+  current_box_it(begin(data)),
+  found_anchor(false),
+  topic("/anchors")
+{
+  drop_box.header.frame_id = "base_link";
+  drop_box.description = "box";
+  drop_box.point.x = 0.5_m;
+  drop_box.point.y = 0.3_m;
+  drop_box.point.z = 6.5_cm/2.;
+  drop_box.dimensions.x = 6.5_cm;
+  drop_box.dimensions.y = 6.5_cm;
+  drop_box.dimensions.z = 6.5_cm;
 
-    sub = n.subscribe(topic, 1, &AnchorTest::anchorArrayCallback, this);
-    sleep(1); // let anchoring system get up to speed
+  sub = n.subscribe(topic, 1, &AnchorTest::anchorArrayCallback, this);
+  sleep(1); // let anchoring system get up to speed
+
+  if (data.empty()) {
+    ROS_ERROR_STREAM("No data received! Did you generate poses?");
+    ros::shutdown();
+  }
+}
+
+void AnchorTest::anchorArrayCallback(const anchor_msgs::AnchorArray::ConstPtr &msg) {
+  if (msg->anchors.size() > 1) {
+    ROS_WARN_STREAM("Too many active anchors. Skipping. . .");
+    return;
   }
 
-  ~AnchorTest() = default;
+  if (msg->anchors.size() == 0) {
+    ROS_WARN_STREAM("No anchors found. Skipping. . .");
+    return;
+  }
 
-  void anchorArrayCallback(const anchor_msgs::AnchorArray::ConstPtr &msg) {
-    if (msg->anchors.size() > 1) {
-      ROS_WARN_STREAM("Too many active anchors. Skipping. . .");
+  anchors = *msg;
+
+  if (trial_counter++ % 2 == 0) {
+    show_test_info();
+    auto box = createBoundingBoxFromAnchors();
+    jmc.graspAt(box);
+  } else {
+    jmc.dropAt(*current_box_it);
+
+    if (next_point() == end(data)) {
+      ROS_WARN_STREAM("Reached end of test.");
+      ROS_WARN_STREAM("Waiting for last status from Jaco . . .");
+      sleep(3);
+      ROS_WARN_STREAM("Finishing up");
+      sub.shutdown();
+      ros::shutdown();
       return;
     }
+  }
+}
 
-    if (msg->anchors.size() == 0) {
-      ROS_WARN_STREAM("No anchors found. Skipping. . .");
-      return;
-    }
+bool AnchorTest::anchors_published() const {
+  ros::master::V_TopicInfo master_topics;
+  ros::master::getTopics(master_topics);
 
-    anchors = *msg;
+  auto topic_found_it = std::find_if(begin(master_topics), end(master_topics), [&](auto &top) {
+    return top.name == topic;
+  });
 
-    if (trial_counter++ % 2 == 0) {
-      show_test_info();
-      auto box = createBoundingBoxFromAnchors();
-      jmc.graspAt(box);
-    } else {
-      jmc.dropAt(*current_box_it);
+  return topic_found_it != end(master_topics);
+}
 
-      if (next_point() == end(data)) {
-        ROS_WARN_STREAM("Reached end of test.");
-        ROS_WARN_STREAM("Waiting for last status from Jaco . . .");
-        sleep(3);
-        ROS_WARN_STREAM("Finishing up");
-        sub.shutdown();
-        ros::shutdown();
-        return;
-      }
-    }
+std::vector<jaco_manipulation::BoundingBox>::const_iterator AnchorTest::next_point() {
+  if (current_box_it == end(data)-1) {
+    return end(data);
+  } else {
+    return ++current_box_it;
+  }
+}
+
+jaco_manipulation::BoundingBox AnchorTest::createBoundingBoxFromAnchors() const {
+  if (anchors.anchors.size() > 1) {
+    ROS_WARN_STREAM("Can't create bounding box from anchor array > 1");
+    return drop_box;
   }
 
-  bool anchors_published() const {
-    ros::master::V_TopicInfo master_topics;
-    ros::master::getTopics(master_topics);
+  const auto &anchor = anchors.anchors[0];
+  const auto &poss_labels = anchor.caffe.symbols;
+  const auto& target_label = poss_labels[0];
+  show_summary(poss_labels);
 
-    auto topic_found_it = std::find_if(begin(master_topics), end(master_topics), [&](auto &top) {
-      return top.name == topic;
-    });
+  jaco_manipulation::BoundingBox box;
+  box.header.frame_id = "base_link";
+  // target label has to be the same for all boxes in the test. This way the old target gets replaced
+  // with the new target, not added! The how MoveIt handles objects in moveit_visuals
+  box.description = "box";
+  box.point = anchor.position.data.pose.position;
+  box.point.x += anchor.shape.data.x * 0.5; // correction: centroid is infront of bounding box from kinect
+  box.dimensions = anchor.shape.data;
 
-    return topic_found_it != end(master_topics);
-  }
+  return box;
+}
 
- private:
-    const std::vector<BoundingBox> &data;
-    size_t trial_counter;
-    size_t grip_counter;
-    bool found_anchor;
-    const std::string topic;
-    BoundingBox drop_box;
-    ros::NodeHandle n;
-    ros::Subscriber sub;
-    anchor_msgs::AnchorArray anchors;
-    client::JacoManipulationClient jmc;
-    std::vector<BoundingBox>::const_iterator current_box_it;
+void AnchorTest::show_summary(const std::vector<std::string> &labels) const {
+  const auto &target_label = labels[0];
+  ROS_WARN_STREAM("-----");
+  ROS_WARN_STREAM("Anchor " << target_label);
+  std::stringstream ss;
+  std::copy(begin(labels), end(labels), std::ostream_iterator<std::string>(ss," "));
+  ROS_WARN_STREAM("Labels: " << ss.str());
+  ROS_INFO_STREAM("Picking up anchor " << target_label);
+  ROS_WARN_STREAM("-----");
+}
 
-    std::vector<BoundingBox>::const_iterator next_point() {
-      if (current_box_it == end(data)-1) {
-        return end(data);
-      } else {
-        return ++current_box_it;
-      }
-    }
-
-    jaco_manipulation::BoundingBox createBoundingBoxFromAnchors() {
-      if (anchors.anchors.size() > 1) {
-        ROS_WARN_STREAM("Can't create bounding box from anchor array > 1");
-        return drop_box;
-      }
-
-      const auto &anchor = anchors.anchors[0];
-      const auto &poss_labels = anchor.caffe.symbols;
-      const auto& target_label = poss_labels[0];
-      show_summary(poss_labels);
-
-      jaco_manipulation::BoundingBox box;
-      box.header.frame_id = "base_link";
-      // target label has to be the same for all boxes in the test. This way the old target gets replaced
-      // with the new target, not added! The how MoveIt handles objects in moveit_visuals
-      box.description = "box";
-      box.point = anchor.position.data.pose.position;
-      box.point.x += anchor.shape.data.x * 0.5; // correction: centroid is infront of bounding box from kinect
-      box.dimensions = anchor.shape.data;
-
-      return box;
-    }
-
-    void show_summary(const std::vector<std::string> &labels) const {
-      const auto &target_label = labels[0];
-      ROS_WARN_STREAM("-----");
-      ROS_WARN_STREAM("Anchor " << target_label);
-      std::stringstream ss;
-      std::copy(begin(labels), end(labels), std::ostream_iterator<std::string>(ss," "));
-      ROS_WARN_STREAM("Labels: " << ss.str());
-      ROS_INFO_STREAM("Picking up anchor " << target_label);
-      ROS_WARN_STREAM("-----");
-    }
-
-    void show_test_info() {
-      ROS_SUCCESS("----");
-      ROS_SUCCESS("Test " << ++grip_counter);
-      ROS_SUCCESS("Attempting to move to anchor");
-      ROS_SUCCESS("----");
-    }
-};
+void AnchorTest::show_test_info() {
+  ROS_SUCCESS("----");
+  ROS_SUCCESS("Test " << ++grip_counter);
+  ROS_SUCCESS("Attempting to move to anchor");
+  ROS_SUCCESS("----");
+}
 
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "AnchorTest");
 
-  test::BaselineCSVReader reader("/home/chitt/julian/reground_workspace/src/arm/jaco_manipulation/scripts/anchoring_poses.csv");
+  BaselineCSVReader reader("/home/chitt/julian/reground_workspace/src/arm/jaco_manipulation/scripts/anchoring_poses.csv");
   auto data = reader.getData();
   AnchorTest l(data);
 

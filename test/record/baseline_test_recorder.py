@@ -11,9 +11,8 @@
 #     You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 import rospy
-import sys
 from jaco_manipulation.msg import JacoDebug
-from test import Test
+from record.test_recorder import Test
 from conversions import Conversions
 
 
@@ -43,4 +42,5 @@ class BaseLineTest(Test):
         Test.write(self, line)
 
 
-test = BaseLineTest("baseline_test_recording.csv", "Time;Type;CurrentPose;TargetPose;Result")
+if __name__ == "__main__":
+    test = BaseLineTest("baseline_test_recording.csv", "Time;Type;CurrentPose;TargetPose;Result")

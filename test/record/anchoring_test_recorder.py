@@ -14,9 +14,8 @@
 import rospy
 from jaco_manipulation.msg import JacoDebug
 from std_msgs.msg import String
-from test import Test
 from conversions import Conversions
-
+from record.test_recorder import Test
 
 class AnchoringTest(Test):
     def __init__(self, filename, labels='anchoring labels', delimiter=';'):
@@ -47,4 +46,5 @@ class AnchoringTest(Test):
         Test.write(self, line)
 
 
-anchor_test = AnchoringTest("anchoring_test_recording.csv", "Time;Type;CurrentPose;TargetPose;Result;Gripped")
+if __name__ == "__main__":
+    anchor_test = AnchoringTest("anchoring_test_recording.csv", "Time;Type;CurrentPose;TargetPose;Result;Gripped")
