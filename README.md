@@ -6,6 +6,18 @@ Depends on [wpi_jaco](), a custom driver for the robotic arm.
 
 Depends on installation of [MoveIt!](https://moveit.ros.org/) and it's [visual tools](https://github.com/ros-planning/moveit_visual_tools)
 
+If you want to run the tests, you need to have the full ReGround workspace installed []( TODO . Install python requirements from the project root directory:
+
+via Pip:
+```
+$ pip install -r py_requirements.txt
+```
+
+via Anaconda:
+```
+$ conda install --yes --file py_requirements.txt
+```
+
 ## Server: jaco\_manipulation_server
 ### Config
 Define these ROS parameters in the [launch file](launch/jaco_manipulation.launch)
