@@ -15,23 +15,17 @@
 #include <jaco_manipulation/test/anchoring_base_test.h>
 #include <jaco_manipulation/test/baseline_csv_reader.h>
 #include <jaco_manipulation/test/anchoring_test.h>
-#include <geometry_msgs/Point.h>
-#include <vector>
-#include <algorithm>
-#include <ros/ros.h>
-#include <sstream>
 
 using namespace jaco_manipulation::test;
 
 AnchorTest::AnchorTest(const std::vector<BoundingBox> &datapoints)
-: AnchoringBaseTest(datapoints),
-  found_anchor(false)
-{
+    : AnchorBaseTest(datapoints),
+      found_anchor(false) {
   drop_box.header.frame_id = "base_link";
   drop_box.description = "box";
   drop_box.point.x = 0.5_m;
   drop_box.point.y = 0.3_m;
-  drop_box.point.z = 6.5_cm/2.;
+  drop_box.point.z = 6.5_cm / 2.;
   drop_box.dimensions.x = 6.5_cm;
   drop_box.dimensions.y = 6.5_cm;
   drop_box.dimensions.z = 6.5_cm;
@@ -59,11 +53,11 @@ void AnchorTest::anchorArrayCallback(const anchor_msgs::AnchorArray::ConstPtr &m
   anchors = *msg;
 
   if (trial_counter++ % 2 == 0) {
-    AnchoringBaseTest::show_test_info();
-    auto box = createBoundingBoxFromAnchors();
-    jmc.graspAt(box);
+    AnchorBaseTest::show_test_info();
+    current_anchor_box = createBoundingBoxFromAnchors();
+    jmc.graspAt(current_anchor_box);
   } else {
-    jmc.dropAt(*current_box_it);
+    jmc.dropAt(adaptDropBoxToAnchorDims(current_drop_box_it));
 
     if (next_point() == end(data)) {
       ROS_WARN_STREAM("Reached end of test.");
@@ -96,8 +90,8 @@ jaco_manipulation::BoundingBox AnchorTest::createBoundingBoxFromAnchors() const 
 
   const auto &anchor = anchors.anchors[0];
   const auto &poss_labels = anchor.caffe.symbols;
-  const auto& target_label = poss_labels[0];
-  AnchoringBaseTest::show_summary(poss_labels);
+  const auto &target_label = poss_labels[0];
+  AnchorBaseTest::show_summary(poss_labels);
 
   jaco_manipulation::BoundingBox box;
   box.header.frame_id = "base_link";
@@ -111,11 +105,19 @@ jaco_manipulation::BoundingBox AnchorTest::createBoundingBoxFromAnchors() const 
   return box;
 }
 
-int main(int argc, char** argv)
-{
+jaco_manipulation::BoundingBox
+AnchorTest::adaptDropBoxToAnchorDims(std::vector<jaco_manipulation::BoundingBox>::const_iterator current_drop_box_it) const {
+  jaco_manipulation::BoundingBox box = *current_drop_box_it;
+  box.dimensions = current_anchor_box.dimensions;
+  box.point.z = box.dimensions.z / 2.;
+  return box;
+}
+
+int main(int argc, char **argv) {
   ros::init(argc, argv, "AnchorTest");
 
-  BaselineCSVReader reader("/home/chitt/julian/reground_workspace/src/arm/jaco_manipulation/scripts/anchoring_poses.csv");
+  BaselineCSVReader
+      reader("/home/chitt/julian/reground_workspace/src/arm/jaco_manipulation/scripts/anchoring_poses.csv");
   auto data = reader.getData();
   AnchorTest l(data);
 
@@ -125,7 +127,7 @@ int main(int argc, char** argv)
 
   ROS_INFO_STREAM("Starting anchoring test");
 
-  while(!ros::isShuttingDown()) {
+  while (!ros::isShuttingDown()) {
     ros::spinOnce();
   }
 
