@@ -225,6 +225,11 @@ bool JacoManipulationServer::planAndMovePostGrasp() {
 bool JacoManipulationServer::planAndMoveAndDrop(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
   ROS_STATUS("Drop request received");
 
+  if (!has_gripped_) {
+    ROS_WARN_STREAM("Not moving to drop pose: notthin gripped. Moving home");
+    return planAndMove("home");
+  }
+
   bool moved = planAndMove(goal->pose_goal);
   if (!moved) {
     openGripper();
