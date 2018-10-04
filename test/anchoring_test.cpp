@@ -12,6 +12,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
+#include <jaco_manipulation/test/anchoring_base_test.h>
 #include <jaco_manipulation/test/baseline_csv_reader.h>
 #include <jaco_manipulation/test/anchoring_test.h>
 #include <geometry_msgs/Point.h>
@@ -23,12 +24,8 @@
 using namespace jaco_manipulation::test;
 
 AnchorTest::AnchorTest(const std::vector<BoundingBox> &datapoints)
-: data(datapoints),
-  trial_counter(0),
-  grip_counter(0),
-  current_box_it(begin(data)),
-  found_anchor(false),
-  topic("/anchors")
+: AnchoringBaseTest(datapoints),
+  found_anchor(false)
 {
   drop_box.header.frame_id = "base_link";
   drop_box.description = "box";
@@ -62,7 +59,7 @@ void AnchorTest::anchorArrayCallback(const anchor_msgs::AnchorArray::ConstPtr &m
   anchors = *msg;
 
   if (trial_counter++ % 2 == 0) {
-    show_test_info();
+    AnchoringBaseTest::show_test_info();
     auto box = createBoundingBoxFromAnchors();
     jmc.graspAt(box);
   } else {
@@ -91,14 +88,6 @@ bool AnchorTest::anchors_published() const {
   return topic_found_it != end(master_topics);
 }
 
-std::vector<jaco_manipulation::BoundingBox>::const_iterator AnchorTest::next_point() {
-  if (current_box_it == end(data)-1) {
-    return end(data);
-  } else {
-    return ++current_box_it;
-  }
-}
-
 jaco_manipulation::BoundingBox AnchorTest::createBoundingBoxFromAnchors() const {
   if (anchors.anchors.size() > 1) {
     ROS_WARN_STREAM("Can't create bounding box from anchor array > 1");
@@ -108,7 +97,7 @@ jaco_manipulation::BoundingBox AnchorTest::createBoundingBoxFromAnchors() const 
   const auto &anchor = anchors.anchors[0];
   const auto &poss_labels = anchor.caffe.symbols;
   const auto& target_label = poss_labels[0];
-  show_summary(poss_labels);
+  AnchoringBaseTest::show_summary(poss_labels);
 
   jaco_manipulation::BoundingBox box;
   box.header.frame_id = "base_link";
@@ -120,24 +109,6 @@ jaco_manipulation::BoundingBox AnchorTest::createBoundingBoxFromAnchors() const 
   box.dimensions = anchor.shape.data;
 
   return box;
-}
-
-void AnchorTest::show_summary(const std::vector<std::string> &labels) const {
-  const auto &target_label = labels[0];
-  ROS_WARN_STREAM("-----");
-  ROS_WARN_STREAM("Anchor " << target_label);
-  std::stringstream ss;
-  std::copy(begin(labels), end(labels), std::ostream_iterator<std::string>(ss," "));
-  ROS_WARN_STREAM("Labels: " << ss.str());
-  ROS_INFO_STREAM("Picking up anchor " << target_label);
-  ROS_WARN_STREAM("-----");
-}
-
-void AnchorTest::show_test_info() {
-  ROS_SUCCESS("----");
-  ROS_SUCCESS("Test " << ++grip_counter);
-  ROS_SUCCESS("Attempting to move to anchor");
-  ROS_SUCCESS("----");
 }
 
 int main(int argc, char** argv)
