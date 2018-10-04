@@ -20,20 +20,12 @@ using namespace jaco_manipulation::test;
 
 AnchorTest::AnchorTest(const std::vector<BoundingBox> &datapoints)
     : AnchorBaseTest(datapoints),
-      found_anchor(false) {
-  drop_box.header.frame_id = "base_link";
-  drop_box.description = "box";
-  drop_box.point.x = 0.5_m;
-  drop_box.point.y = 0.3_m;
-  drop_box.point.z = 6.5_cm / 2.;
-  drop_box.dimensions.x = 6.5_cm;
-  drop_box.dimensions.y = 6.5_cm;
-  drop_box.dimensions.z = 6.5_cm;
-
-  sub = n.subscribe(topic, 1, &AnchorTest::anchorArrayCallback, this);
+      found_anchor_(false) 
+{
+  sub_ = nh_.subscribe(topic_, 1, &AnchorTest::anchorArrayCallback, this);
   sleep(1); // let anchoring system get up to speed
 
-  if (data.empty()) {
+  if (data_.empty()) {
     ROS_ERROR_STREAM("No data received! Did you generate poses?");
     ros::shutdown();
   }
@@ -50,21 +42,21 @@ void AnchorTest::anchorArrayCallback(const anchor_msgs::AnchorArray::ConstPtr &m
     return;
   }
 
-  anchors = *msg;
+  anchors_ = *msg;
 
-  if (trial_counter++ % 2 == 0) {
+  if (trial_counter_++ % 2 == 0) {
     AnchorBaseTest::show_test_info();
-    current_anchor_box = createBoundingBoxFromAnchors();
-    jmc.graspAt(current_anchor_box);
+    current_anchor_box_ = createBoundingBoxFromAnchors();
+    jmc_.graspAt(current_anchor_box_);
   } else {
-    jmc.dropAt(adaptDropBoxToAnchorDims(current_drop_box_it));
+    jmc_.dropAt(adaptDropBoxToAnchorDims(current_drop_box_it_));
 
-    if (next_point() == end(data)) {
+    if (next_point() == end(data_)) {
       ROS_WARN_STREAM("Reached end of test.");
       ROS_WARN_STREAM("Waiting for last status from Jaco . . .");
       sleep(3);
       ROS_WARN_STREAM("Finishing up");
-      sub.shutdown();
+      sub_.shutdown();
       ros::shutdown();
       return;
     }
@@ -76,19 +68,19 @@ bool AnchorTest::anchors_published() const {
   ros::master::getTopics(master_topics);
 
   auto topic_found_it = std::find_if(begin(master_topics), end(master_topics), [&](auto &top) {
-    return top.name == topic;
+    return top.name == topic_;
   });
 
   return topic_found_it != end(master_topics);
 }
 
 jaco_manipulation::BoundingBox AnchorTest::createBoundingBoxFromAnchors() const {
-  if (anchors.anchors.size() > 1) {
+  if (anchors_.anchors.size() > 1) {
     ROS_WARN_STREAM("Can't create bounding box from anchor array > 1");
-    return drop_box;
+    return drop_box_;
   }
 
-  const auto &anchor = anchors.anchors[0];
+  const auto &anchor = anchors_.anchors[0];
   const auto &poss_labels = anchor.caffe.symbols;
   const auto &target_label = poss_labels[0];
   AnchorBaseTest::show_summary(poss_labels);
@@ -108,7 +100,7 @@ jaco_manipulation::BoundingBox AnchorTest::createBoundingBoxFromAnchors() const 
 jaco_manipulation::BoundingBox
 AnchorTest::adaptDropBoxToAnchorDims(std::vector<jaco_manipulation::BoundingBox>::const_iterator current_drop_box_it) const {
   jaco_manipulation::BoundingBox box = *current_drop_box_it;
-  box.dimensions = current_anchor_box.dimensions;
+  box.dimensions = current_anchor_box_.dimensions;
   box.point.z = box.dimensions.z / 2.;
   return box;
 }
@@ -116,9 +108,8 @@ AnchorTest::adaptDropBoxToAnchorDims(std::vector<jaco_manipulation::BoundingBox>
 int main(int argc, char **argv) {
   ros::init(argc, argv, "AnchorTest");
 
-  BaselineCSVReader
-      reader("/home/chitt/julian/reground_workspace/src/arm/jaco_manipulation/scripts/anchoring_poses.csv");
-  auto data = reader.getData();
+  BaselineCSVReader reader("/home/chitt/julian/reground_workspace/src/arm/jaco_manipulation/scripts/anchoring_poses.csv");
+  const auto &data = reader.getData();
   AnchorTest l(data);
 
   if (!l.anchors_published()) {

@@ -16,23 +16,37 @@
 
 using namespace jaco_manipulation::test;
 
-AnchoringBaseTest::AnchoringBaseTest(const std::vector<jaco_manipulation::BoundingBox> &datapoints)
-: data(datapoints),
-  trial_counter(0),
-  grip_counter(0),
-  current_box_it(begin(data)),
-  topic("/anchors")
-{}
+AnchorBaseTest::AnchorBaseTest(const std::vector<jaco_manipulation::BoundingBox> &datapoints)
+: data_(datapoints),
+  trial_counter_(0),
+  grip_counter_(0),
+  current_drop_box_it_(begin(data_)),
+  topic_("/anchors")
+{
+  drop_box_.header.frame_id = "base_link";
+  drop_box_.description = "box";
+  drop_box_.point.x = 0.5_m;
+  drop_box_.point.y = 0.3_m;
+  drop_box_.point.z = 6.5_cm / 2.;
+  drop_box_.dimensions.x = 6.5_cm;
+  drop_box_.dimensions.y = 6.5_cm;
+  drop_box_.dimensions.z = 6.5_cm;
+}
 
-std::vector<jaco_manipulation::BoundingBox>::const_iterator AnchoringBaseTest::next_point() {
-  if (current_box_it == end(data)-1) {
-    return end(data);
+std::vector<jaco_manipulation::BoundingBox>::const_iterator AnchorBaseTest::next_point() {
+  if (current_drop_box_it_ == end(data_)) {
+    ROS_ERROR_STREAM("Reached end of data. But node did not successfully call ros::shudown(). This node will crash");
+    return end(data_);
+  }
+
+  if (current_drop_box_it_ == end(data_)-1) {
+    return end(data_);
   } else {
-    return ++current_box_it;
+    return ++current_drop_box_it_;
   }
 }
 
-void AnchoringBaseTest::show_summary(const std::vector<std::string> &labels) const {
+void AnchorBaseTest::show_summary(const std::vector<std::string> &labels) const {
   const auto &target_label = labels[0];
   ROS_WARN_STREAM("-----");
   ROS_WARN_STREAM("Anchor " << target_label);
@@ -43,9 +57,9 @@ void AnchoringBaseTest::show_summary(const std::vector<std::string> &labels) con
   ROS_WARN_STREAM("-----");
 }
 
-void AnchoringBaseTest::show_test_info() {
+void AnchorBaseTest::show_test_info() {
   ROS_SUCCESS("----");
-  ROS_SUCCESS("Test " << ++grip_counter);
+  ROS_SUCCESS("Test " << ++grip_counter_);
   ROS_SUCCESS("Attempting to move to anchor");
   ROS_SUCCESS("----");
 }

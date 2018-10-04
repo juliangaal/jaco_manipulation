@@ -34,7 +34,7 @@ class CSVReader {
   virtual void processFile(const std::string &filename) = 0;
 
  protected:
-  CSVReader(const std::string filename, std::string delim = ",");
+  explicit CSVReader(const std::string filename, std::string delim = ",");
   std::vector<jaco_manipulation::BoundingBox> data;
   std::ifstream file;
   std::string delimiter;

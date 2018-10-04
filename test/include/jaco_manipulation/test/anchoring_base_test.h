@@ -22,20 +22,22 @@
 namespace jaco_manipulation {
 namespace test {
 
-class AnchoringBaseTest {
+class AnchorBaseTest {
  public:
-  virtual ~AnchoringBaseTest() = default;
+  AnchorBaseTest() = delete;
+  virtual ~AnchorBaseTest() = default;
 
  protected:
-  AnchoringBaseTest() = default;
-  explicit AnchoringBaseTest(const std::vector<BoundingBox> &datapoints);
-  const std::vector<jaco_manipulation::BoundingBox> &data;
-  size_t trial_counter;
-  size_t grip_counter;
-  const std::string topic;
-  anchor_msgs::AnchorArray anchors;
-  client::JacoManipulationClient jmc;
-  std::vector<BoundingBox>::const_iterator current_box_it;
+  explicit AnchorBaseTest(const std::vector<jaco_manipulation::BoundingBox> &datapoints);
+  const std::vector<jaco_manipulation::BoundingBox> &data_;
+  size_t trial_counter_;
+  size_t grip_counter_;
+  const std::string topic_;
+  anchor_msgs::AnchorArray anchors_;
+  client::JacoManipulationClient jmc_;
+  jaco_manipulation::BoundingBox drop_box_;
+  std::vector<jaco_manipulation::BoundingBox>::const_iterator current_drop_box_it_;
+  jaco_manipulation::BoundingBox current_anchor_box_;
 
   std::vector<jaco_manipulation::BoundingBox>::const_iterator next_point();
   void show_summary(const std::vector<std::string> &labels) const;

@@ -15,12 +15,27 @@
 #ifndef PROJECT_OBSTACLE_ANCHORING_TEST_H
 #define PROJECT_OBSTACLE_ANCHORING_TEST_H
 
+#include <jaco_manipulation/test/anchoring_base_test.h>
 
+namespace jaco_manipulation {
+namespace test {
 
-class obstacle_anchoring_test {
+class ObstacleAnchorTest : public AnchorBaseTest {
+ public:
+  ObstacleAnchorTest() = delete;
+  explicit ObstacleAnchorTest(const std::vector<jaco_manipulation::BoundingBox> &data);
+  ~ObstacleAnchorTest() final = default;
 
+  void anchorArrayCallback(const anchor_msgs::AnchorArray::ConstPtr &msg);
+
+  bool anchors_published() const;
+
+ private:
+  ros::NodeHandle nh_;
+  ros::Subscriber sub_;
+  bool found_anchor_;
 };
-
-
+} // namespace test
+} // namespace jaco_manipulation
 
 #endif //PROJECT_OBSTACLE_ANCHORING_TEST_H

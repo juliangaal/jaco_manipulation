@@ -23,8 +23,8 @@ namespace test {
 class BaselineCSVReader : public CSVReader {
  public:
   BaselineCSVReader() = delete;
-  BaselineCSVReader(std::string filename, std::string delimiter=",");
-  ~BaselineCSVReader() = default;
+  explicit BaselineCSVReader(std::string filename, std::string delimiter=",");
+  ~BaselineCSVReader() final = default;
  private:
   void saveVec(const std::vector<std::string> &line) override;
   void processFile(const std::string &filename) override;

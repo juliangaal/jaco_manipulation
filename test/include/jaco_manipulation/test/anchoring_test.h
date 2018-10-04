@@ -20,22 +20,23 @@
 namespace jaco_manipulation {
 namespace test {
 
-class AnchorTest : public AnchoringBaseTest {
+class AnchorTest : public AnchorBaseTest {
  public:
   AnchorTest() = delete;
 
-  explicit AnchorTest(const std::vector<BoundingBox> &datapoints);
+  explicit AnchorTest(const std::vector<jaco_manipulation::BoundingBox> &datapoints);
 
-  ~AnchorTest() = default;
+  ~AnchorTest() final= default;
 
   void anchorArrayCallback(const anchor_msgs::AnchorArray::ConstPtr &msg);
+  jaco_manipulation::BoundingBox
+  adaptDropBoxToAnchorDims(std::vector<jaco_manipulation::BoundingBox>::const_iterator current_box_it) const;
   bool anchors_published() const;
 
  private:
-  ros::NodeHandle n;
-  ros::Subscriber sub;
-  BoundingBox drop_box;
-  bool found_anchor;
+  ros::NodeHandle nh_;
+  ros::Subscriber sub_;
+  bool found_anchor_;
   jaco_manipulation::BoundingBox createBoundingBoxFromAnchors() const;
 };
 } // namespace tes
