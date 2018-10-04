@@ -127,6 +127,10 @@ class ResultPlotter:
             Z = [float(p.z) for p in self.points if p.result == 'kinda']
             ax.scatter(X, Y, Z, c=Color.kinda, marker='o')
 
+            X = [float(p.x) for p in self.points if p.result == 'Default']
+            if X:
+                print '!! Some default values were not changed. Adjust them to the recorded gripping status in column "Gripped" !!'
+
 
         # in visualization, x and y axis are flipped
         ax.set_xlim3d(0.2, 0.7)
@@ -137,7 +141,7 @@ class ResultPlotter:
         ax.set_zlabel('Z')
 
         plt.savefig(self.figure_path_3d, dpi=300)
-        print "- Generated figure with", len(self.points), "data points saved to:", self.figure_path_3d
+        print " ==> Generated figure with", len(self.points), "data points saved to:", self.figure_path_3d
 
     def save2DResultFrom(self, key, result_key='Result'):
         plt.figure()
@@ -168,6 +172,11 @@ class ResultPlotter:
             Y = [float(p.y) for p in self.points if p.result == 'kinda']
             plt.scatter(X, Y, marker='o', c=Color.kinda)
 
+            X = [float(p.x) for p in self.points if p.result == 'Default']
+            if X:
+                print '!! Some default values were not changed. Adjust them to the recorded gripping status in column "Gripped" !!'
+
+
 
         plt.savefig(self.figure_path_2d, dpi=300)
-        print "- Generated figure with", len(self.points), "data points saved to:", self.figure_path_2d
+        print " ==> Generated figure with", len(self.points), "data points saved to:", self.figure_path_2d
