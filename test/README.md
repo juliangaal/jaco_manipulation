@@ -15,7 +15,7 @@
 * *Run*: `rosrun jaco_manipulation client_test`
 * *Evaluation*: your eyes
 
-### 3. anchoring_test.cpp
+### 3. anchoring\_test.cpp
 * *Use Case*: continous test of grasping object detected by anchoring system. An object is gripped 100 times and dropped off at random positions
 * *Requirements*: [anchoring]() TODO installed, kinect driver installed, caffe installed. Kinect sensor mounted. A couple of ROS nodes needs to be started. Putting them all into one launch file really generated too much output in the terminal, so start seperately
 	* generate random drop poses in `<node_root>/scripts/generate` with `python generate_anchoring_poses.py`. Default: 100 drop poses. Change it in the file if needed
@@ -32,7 +32,7 @@
         * **If you want to analyse individual files, adjust the path in `analyse_anchoring_template.py`**. Plot will be generated in `<node_root>/scripts/results/anchoring/`
 		* All figures will be generated to `<node_root>/scripts/results/<some_folder>/<descriptor>_<mode>_fig.png>`, where `<mode>` is either '3d' for the 3d plot option and '2d' for the 3d plot option
 
-### 4. baseline_test.cpp
+### 4. baseline\_test.cpp
 * *Use Case*: continous test of grasping object. An object is gripped 50 times and dropped off at random positions 50 times as well. Grasping and dropping alternate.
 * *Requirements*: `jaco_manipulation_server` needs to be running: `roslaunch jaco_manipulation jaco_manipulation`. If you want rviz visualization, use parameter `use_rviz:=true/false`
 *  *Run*: launch anchoring test and recorder `roslaunch jaco_manipulation baseline_test.launch`. The recorder will listen to messages sent by `jaco_manipulation_server` and record them in `<node_root>/scripts/baseline_test_recording.csv`
@@ -43,4 +43,3 @@
 	* run `python analyse_baseline.py` in `<node_root>/scripts/analyse/`. This generates figures for all tests. 
 	* **If you want to analyse individual files, adjust the path in `analyse_baseline_template.py`**. Plot will be generated in `<node_root>/scripts/results/baseline/`
 	* All figures will be generated to `<node_root>/scripts/results/<some_folder>/<descriptor>_<mode>_fig.png>`, where `<mode>` is either '3d' for the 3d plot option and '2d' for the 3d plot option. Red points in the plot correspond to failed attempts, while green points refer to the successful ones.	
- 
