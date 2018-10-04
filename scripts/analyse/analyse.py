@@ -45,8 +45,10 @@ class FileReader:
         self.file.close()
 
 class ResultPlotter:
-    def __init__(self, file, labels, delimiter=','):
+    def __init__(self, file, labels, delimiter=',', template=False):
         self.current_dir = os.getcwd()
+        # catch possible relative paths from baseline/anchoring template files
+        file = os.path.abspath(file)
         if not os.path.exists(file):
             print "ResultPlotter: File does not exist:", file, "Exiting..."
             exit()
@@ -64,7 +66,11 @@ class ResultPlotter:
 
         # set target dir and file names
         results_dir = os.path.abspath(os.path.join(self.current_dir, os.pardir)) + '/results/' + self.test_type
-        self.target_dir = results_dir + '/' + self.descriptor
+        if not template:
+            self.target_dir = results_dir + '/' + self.descriptor
+        else:
+            self.target_dir = results_dir
+
 
         self.file = file
         self.figure_path_3d = self.target_dir + '/' + self.descriptor + '_3d_fig.png'
@@ -79,29 +85,31 @@ class ResultPlotter:
             print 'Creating', self.target_dir
             os.mkdir(self.target_dir)
 
-    def __extract_point(self, key, result_key):
-        data = self.df[key]
-        results = self.df[result_key]
+    def __extract_point(self, result_key, grip_result_key):
+        data = self.df[result_key]
+        results = self.df[grip_result_key]
 
         for d, r in zip(data, results):
-            if d == key or r == result_key:
+            if d == result_key or r == grip_result_key:
                 continue
 
             point, _ = d.split('/')
             point = point.replace('(', '').replace(')', '')
             x, y, z = point.split(',')
-            if result_key == 'Result':
+            if grip_result_key == 'Result':
                 self.points.append(Point(x, y, z, True if r == 'success' else False))
             else:
                 self.points.append(AnchorPoint(x,y,z,r))
 
-    def save3DResultFrom(self, key, result_key='Result'):
+    def save3DResultFrom(self, result_key, grip_result_key='Result'):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
 
-        self.__extract_point(key, result_key)
+        self.__extract_point(result_key, grip_result_key)
 
-        if result_key == 'Result':
+        print "Attempting to generate 3d plot"
+
+        if grip_result_key == 'Result':
             X = [float(p.x) for p in self.points if p.success]
             Y = [float(p.y) for p in self.points if p.success]
             Z = [float(p.z) for p in self.points if p.success]
@@ -111,6 +119,9 @@ class ResultPlotter:
             Y = [float(p.y) for p in self.points if not p.success]
             Z = [float(p.z) for p in self.points if not p.success]
             ax.scatter(X, Y, Z, c=Color.failure, marker='o')
+
+            plt.savefig(self.figure_path_3d, dpi=300)
+            print " ==> Generated figure with", len(self.points), "data points saved to:", self.figure_path_3d
         else:
             X = [float(p.x) for p in self.points if p.result == 'success']
             Y = [float(p.y) for p in self.points if p.result == 'success']
@@ -128,30 +139,33 @@ class ResultPlotter:
             ax.scatter(X, Y, Z, c=Color.kinda, marker='o')
 
             X = [float(p.x) for p in self.points if p.result == 'Default']
-            if X:
-                print '!! Some default values were not changed. Adjust them to the recorded gripping status in column "Gripped" !!'
+            if len(X) == len(self.points):
+                print '!! NO default values were changed. Adjust them to the recorded gripping status in column "Gripped" !!'
+                print '!! Plot will not be saved !!'
+            elif X:
+                print '!! Some default values were NOT changed. Adjust them to the recorded gripping status in column "Gripped" !!'
+            else:
+                ax.set_xlim3d(0.2, 0.7)
+                ax.set_ylim3d(0.0, 0.58)
+                ax.set_zlim3d(0.15, 0.3)
+                ax.set_xlabel('robotic arm          <- X ->          kinect')
+                ax.set_ylabel('Y')
+                ax.set_zlabel('Z')
 
+                plt.savefig(self.figure_path_3d, dpi=300)
+                print " ==> Generated figure with", len(self.points), "data points saved to:", self.figure_path_3d
 
-        # in visualization, x and y axis are flipped
-        ax.set_xlim3d(0.2, 0.7)
-        ax.set_ylim3d(0.0, 0.58)
-        ax.set_zlim3d(0.15, 0.3)
-        ax.set_xlabel('robotic arm          <- X ->          kinect')
-        ax.set_ylabel('Y')
-        ax.set_zlabel('Z')
-
-        plt.savefig(self.figure_path_3d, dpi=300)
-        print " ==> Generated figure with", len(self.points), "data points saved to:", self.figure_path_3d
-
-    def save2DResultFrom(self, key, result_key='Result'):
+    def save2DResultFrom(self, result_key, grip_result_key='Result'):
         plt.figure()
         plt.ylabel('Y')
         plt.xlabel('robotic arm          <- X ->          kinect')
 
         if not self.points:
-            self.__extract_point(key, result_key)
+            self.__extract_point(result_key, grip_result_key)
 
-        if result_key == 'Result':
+        print "Attempting to generate 2d plot"
+
+        if grip_result_key == 'Result':
             X = [float(p.x) for p in self.points if p.success]
             Y = [float(p.y) for p in self.points if p.success]
             plt.scatter(X, Y, marker='o', c=Color.success)
@@ -159,6 +173,9 @@ class ResultPlotter:
             X = [float(p.x) for p in self.points if not p.success]
             Y = [float(p.y) for p in self.points if not p.success]
             plt.scatter(X, Y, marker='o', c=Color.failure)
+
+            plt.savefig(self.figure_path_2d, dpi=300)
+            print " ==> Generated figure with", len(self.points), "data points saved to:", self.figure_path_2d
         else:
             X = [float(p.x) for p in self.points if p.result == 'success']
             Y = [float(p.y) for p in self.points if p.result == 'success']
@@ -173,10 +190,12 @@ class ResultPlotter:
             plt.scatter(X, Y, marker='o', c=Color.kinda)
 
             X = [float(p.x) for p in self.points if p.result == 'Default']
-            if X:
-                print '!! Some default values were not changed. Adjust them to the recorded gripping status in column "Gripped" !!'
-
-
-
-        plt.savefig(self.figure_path_2d, dpi=300)
-        print " ==> Generated figure with", len(self.points), "data points saved to:", self.figure_path_2d
+            if len(X) == len(self.points):
+                print '!! NO default values were changed. Adjust them to the recorded gripping status in column "Gripped" !!'
+                print '!! Plot will not be saved !!'
+            elif X:
+                print '!! Some default values were NOT changed. Adjust them to the recorded gripping status in column "Gripped" !!'
+                print '!! Plot will not be saved !!'
+            else:
+                plt.savefig(self.figure_path_2d, dpi=300)
+                print " ==> Generated figure with", len(self.points), "data points saved to:", self.figure_path_2d
