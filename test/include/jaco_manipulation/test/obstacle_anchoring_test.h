@@ -16,9 +16,12 @@
 #define PROJECT_OBSTACLE_ANCHORING_TEST_H
 
 #include <jaco_manipulation/test/anchoring_base_test.h>
+#include <tuple>
 
 namespace jaco_manipulation {
 namespace test {
+
+using SeparatedObstacles = std::tuple<std::vector<jaco_manipulation::BoundingBox>, jaco_manipulation::BoundingBox>;
 
 class ObstacleAnchorTest : public AnchorBaseTest {
  public:
@@ -34,6 +37,8 @@ class ObstacleAnchorTest : public AnchorBaseTest {
   ros::NodeHandle nh_;
   ros::Subscriber sub_;
   bool found_anchor_;
+
+  SeparatedObstacles extractObstacles(const anchor_msgs::AnchorArray::ConstPtr &msg) const;
 };
 } // namespace test
 } // namespace jaco_manipulation

@@ -32,7 +32,8 @@ AnchorTest::AnchorTest(const std::vector<BoundingBox> &datapoints)
 }
 
 void AnchorTest::anchorArrayCallback(const anchor_msgs::AnchorArray::ConstPtr &msg) {
-  if (msg->anchors.size() > 1) {
+  static bool about_to_drop = false;
+  if (msg->anchors.size() > 1 && !about_to_drop) {
     ROS_WARN_STREAM("Too many active anchors. Skipping. . .");
     return;
   }
@@ -48,10 +49,12 @@ void AnchorTest::anchorArrayCallback(const anchor_msgs::AnchorArray::ConstPtr &m
     AnchorBaseTest::show_test_info();
     current_anchor_box_ = createBoundingBoxFromAnchors();
     jmc_.graspAt(current_anchor_box_);
+    about_to_drop = true; // sometimes the anchoring system detectes the arm as  multiple obstacles
+    // set to true so the number of anchors are ignored after lifiting to get into callback to generate drop motion
   } else {
     jmc_.dropAt(adaptDropBoxToAnchorDims(current_drop_box_it_));
-
-    if (next_point() == end(data_)) {
+    about_to_drop = false;
+    if (next_drop_box() == end(data_)) {
       ROS_WARN_STREAM("Reached end of test.");
       ROS_WARN_STREAM("Waiting for last status from Jaco . . .");
       sleep(3);
@@ -85,24 +88,7 @@ jaco_manipulation::BoundingBox AnchorTest::createBoundingBoxFromAnchors() const 
   const auto &target_label = poss_labels[0];
   AnchorBaseTest::show_summary(poss_labels);
 
-  jaco_manipulation::BoundingBox box;
-  box.header.frame_id = "base_link";
-  // target label has to be the same for all boxes in the test. This way the old target gets replaced
-  // with the new target, not added! The how MoveIt handles objects in moveit_visuals
-  box.description = "box";
-  box.point = anchor.position.data.pose.position;
-  box.point.x += anchor.shape.data.x * 0.5; // correction: centroid is infront of bounding box from kinect
-  box.dimensions = anchor.shape.data;
-
-  return box;
-}
-
-jaco_manipulation::BoundingBox
-AnchorTest::adaptDropBoxToAnchorDims(std::vector<jaco_manipulation::BoundingBox>::const_iterator current_drop_box_it) const {
-  jaco_manipulation::BoundingBox box = *current_drop_box_it;
-  box.dimensions = current_anchor_box_.dimensions;
-  box.point.z = box.dimensions.z / 2.;
-  return box;
+  return AnchorBaseTest::createBoundingBoxFromAnchor(anchor);
 }
 
 int main(int argc, char **argv) {

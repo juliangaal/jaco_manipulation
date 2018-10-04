@@ -39,7 +39,11 @@ class AnchorBaseTest {
   std::vector<jaco_manipulation::BoundingBox>::const_iterator current_drop_box_it_;
   jaco_manipulation::BoundingBox current_anchor_box_;
 
-  std::vector<jaco_manipulation::BoundingBox>::const_iterator next_point();
+  jaco_manipulation::BoundingBox
+  adaptDropBoxToAnchorDims(std::vector<jaco_manipulation::BoundingBox>::const_iterator current_drop_box_it) const;
+  jaco_manipulation::BoundingBox
+  createBoundingBoxFromAnchor(const anchor_msgs::Anchor &anchor, bool const_label=true) const;
+  std::vector<jaco_manipulation::BoundingBox>::const_iterator next_drop_box();
   void show_summary(const std::vector<std::string> &labels) const;
   void show_test_info();
 };

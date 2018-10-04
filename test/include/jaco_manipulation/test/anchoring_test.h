@@ -29,8 +29,6 @@ class AnchorTest : public AnchorBaseTest {
   ~AnchorTest() final= default;
 
   void anchorArrayCallback(const anchor_msgs::AnchorArray::ConstPtr &msg);
-  jaco_manipulation::BoundingBox
-  adaptDropBoxToAnchorDims(std::vector<jaco_manipulation::BoundingBox>::const_iterator current_box_it) const;
   bool anchors_published() const;
 
  private:

@@ -33,7 +33,7 @@ AnchorBaseTest::AnchorBaseTest(const std::vector<jaco_manipulation::BoundingBox>
   drop_box_.dimensions.z = 6.5_cm;
 }
 
-std::vector<jaco_manipulation::BoundingBox>::const_iterator AnchorBaseTest::next_point() {
+std::vector<jaco_manipulation::BoundingBox>::const_iterator AnchorBaseTest::next_drop_box() {
   if (current_drop_box_it_ == end(data_)) {
     ROS_ERROR_STREAM("Reached end of data. But node did not successfully call ros::shudown(). This node will crash");
     return end(data_);
@@ -46,6 +46,32 @@ std::vector<jaco_manipulation::BoundingBox>::const_iterator AnchorBaseTest::next
   }
 }
 
+jaco_manipulation::BoundingBox
+AnchorBaseTest::adaptDropBoxToAnchorDims(std::vector<jaco_manipulation::BoundingBox>::const_iterator current_drop_box_it) const {
+  jaco_manipulation::BoundingBox box = *current_drop_box_it;
+  box.dimensions = current_anchor_box_.dimensions;
+  box.point.z = box.dimensions.z / 2.;
+  return box;
+}
+
+jaco_manipulation::BoundingBox
+AnchorBaseTest::createBoundingBoxFromAnchor(const anchor_msgs::Anchor &anchor, bool const_label) const {
+  jaco_manipulation::BoundingBox box;
+  box.header.frame_id = "base_link";
+  if (const_label) {
+    // target label has to be the same for all boxes in the test. This way the old target gets replaced
+    // with the new target, not added! The how MoveIt handles objects in moveit_visuals
+    box.description = "box";
+  } else {
+    box.description = anchor.x;
+  }
+  box.point = anchor.position.data.pose.position;
+  box.point.x += anchor.shape.data.x * 0.5; // correction: centroid is infront of bounding box from kinect
+  box.dimensions = anchor.shape.data;
+
+  return box;
+}
+
 void AnchorBaseTest::show_summary(const std::vector<std::string> &labels) const {
   const auto &target_label = labels[0];
   ROS_WARN_STREAM("-----");
@@ -53,7 +79,6 @@ void AnchorBaseTest::show_summary(const std::vector<std::string> &labels) const 
   std::stringstream ss;
   std::copy(begin(labels), end(labels), std::ostream_iterator<std::string>(ss," "));
   ROS_WARN_STREAM("Labels: " << ss.str());
-  ROS_INFO_STREAM("Picking up anchor " << target_label);
   ROS_WARN_STREAM("-----");
 }
 
