@@ -49,7 +49,8 @@ AnchorTest::AnchorTest(const std::vector<BoundingBox> &datapoints)
 }
 
 void AnchorTest::anchorArrayCallback(const anchor_msgs::AnchorArray::ConstPtr &msg) {
-  if (msg->anchors.size() > 1) {
+  static bool about_to_drop = false;
+  if (msg->anchors.size() > 1 && not about_to_drop) {
     ROS_WARN_STREAM("Too many active anchors. Skipping. . .");
     return;
   }
@@ -65,6 +66,8 @@ void AnchorTest::anchorArrayCallback(const anchor_msgs::AnchorArray::ConstPtr &m
     show_test_info();
     auto box = createBoundingBoxFromAnchors();
     jmc.graspAt(box);
+    about_to_drop = true; // sometimes the anchoring system detectes the arm as  multiple obstacles
+// set to true so the number of anchors are ignored after lifiting to get into callback to generate drop motion
   } else {
     jmc.dropAt(*current_box_it);
 
