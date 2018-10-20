@@ -33,3 +33,10 @@ target_link_libraries(anchoring_test
                       ${catkin_LIBRARIES}
                       jaco2_manipulation
                       csv_reader)
+# obstacle anchoring test
+#add_executable(obstacle_anchoring_test src/obstacle_anchoring_test.cpp src/anchoring_base_test.cpp src/baseline_csv_reader.cpp)
+#add_dependencies(obstacle_anchoring_test ${PROJECT_NAME}_generate_messages_cpp jaco2_manipulation anchor_msgs)
+#target_link_libraries(obstacle_anchoring_test
+#                      ${catkin_LIBRARIES}
+#                      jaco2_manipulation
+#                      csv_reader)

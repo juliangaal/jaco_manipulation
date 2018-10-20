@@ -316,7 +316,7 @@ void JacoManipulationServer::fillMoveItGoalMsg(jaco_manipulation::MoveItGoal &go
     tf_listener_.transformPoint("base_link", in_pt, out_pt);
   }
   catch (tf::TransformException &exception) {
-    ROS_INFO_STREAM("Transform failed. Why? - " << exception.what());
+    ROS_INFO_STREAM("Debug Pub Transform failed. Why? - " << exception.what());
   }
   geometry_msgs::PoseStamped pose;
   pose.pose.position = out_pt.point;
@@ -332,6 +332,8 @@ void JacoManipulationServer::pubDebugMsg(const jaco_manipulation::PlanAndMoveArm
   auto tp = std::chrono::system_clock::to_time_t(sysTimePoint);
   debug_msg_.timestamp = std::asctime(std::gmtime(&tp));
   debug_msg_.goal.description = goal->goal_type;
+  debug_msg_.planning_scene.num_of_obstacles = moveit_visuals_.numOfObstacles();
+  debug_msg_.planning_scene.obstacles = moveit_visuals_.getObstacles();
   fillMoveItConfigMsg(debug_msg_.config);
   fillMoveItGoalMsg(debug_msg_.goal, goal);
   debug_msg_.result = (result == true) ? "success" : "failure";

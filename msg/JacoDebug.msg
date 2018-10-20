@@ -1,4 +1,5 @@
 string timestamp
 jaco_manipulation/MoveItConfig config
 jaco_manipulation/MoveItGoal goal
+jaco_manipulation/PlanningScene planning_scene
 string result

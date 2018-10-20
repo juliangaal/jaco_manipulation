@@ -24,3 +24,9 @@ class PoseGenerator:
 
             self.file.write("{},{},{},{},{},{}\n".format(x, y, z, 0.06, 0.06, 0.06))
             num_of_pose += 1
+
+    def generate_obstacle_anchoring_drop_poses(self):
+        num_of_pose = 0
+        while num_of_pose < self.total_poses:
+            self.file.write("{},{},{},{},{},{}\n".format(0.65, 0.26, 0.0, 0.06, 0.06, 0.06))
+            num_of_pose += 1
