@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
 <launch>
     <arg name="rviz_config" default="baseline_test.rviz" />
+    <arg name="test_id" default="1" />
     <!--Delete all current anchors-->
     <node name="drop_db" pkg="jaco_manipulation" type="drop_anchoring_db.bash" output="screen" />
 
+    <node pkg="rosbag" type="record" name="rosbag_record_test"
+          args="record -O $(find jaco_manipulation)/test/obstacle_anchoring_test_$(arg test_id).bag -a"/>
     <node pkg="jaco_manipulation" name="obstacle_anchoring_test" type="obstacle_anchoring_test" output="screen"/>
-    <node pkg="jaco_manipulation" name="anchoring_test_recorder" type="anchoring_test_recorder.py" output="screen"/>
+    <node pkg="jaco_manipulation" name="obstacle_anchoring_test_recorder" type="obstacle_anchoring_test_recorder.py" output="screen"/>
     <node name="jaco_rviz" pkg="rviz" type="rviz" args="-d $(find jaco_manipulation)/launch/$(arg rviz_config)"/>
 </launch>

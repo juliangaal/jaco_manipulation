@@ -1,0 +1,2 @@
+uint64 num_of_obstacles
+jaco_manipulation/BoundingBox[] obstacles

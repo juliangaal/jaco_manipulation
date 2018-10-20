@@ -48,6 +48,8 @@ class MoveitVisuals {
   void detachObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
   void removeObstacle(const std::string id);
   void wipeKinectObstacles();
+  unsigned long numOfObstacles();
+  const std::vector<jaco_manipulation::BoundingBox>& getObstacles();
 
  private:
 
@@ -58,6 +60,8 @@ class MoveitVisuals {
   ros::Publisher planning_scene_diff_publisher_;
 
   moveit_msgs::PlanningScene planning_scene_;
+
+  std::vector<jaco_manipulation::BoundingBox> obstacles_;
 
   /**
    * MoveIt visual tools

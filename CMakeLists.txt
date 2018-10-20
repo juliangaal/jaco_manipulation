@@ -2,6 +2,30 @@ cmake_minimum_required(VERSION 2.8.3)
 project(jaco_manipulation)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+set(COMPILER "UNKNOWN")
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+  set(COMPILER "G")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
+  set(COMPILER "Apple Clang")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
+  set(COMPILER "Clang")
+endif()
+
+if("${COMPILER}" STREQUAL "UNKNOWN")
+  message(FATAL_ERROR "Invalid Compiler")
+endif()
+
+message(STATUS "${COMPILER}++ Version : " ${CMAKE_CXX_COMPILER_VERSION})
+message(STATUS "${COMPILER}++ Location: " ${CMAKE_CXX_COMPILER})
+
+### Require out-of-source builds
+file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" LOC_PATH)
+if(EXISTS "${LOC_PATH}")
+  message(FATAL_ERROR "You cannot build in a source directory (or any directory with a CMakeLists.txt file). Please make a build subdirectory. Feel free to remove CMakeCache.txt and CMakeFiles.")
+endif()
 
 catkin_python_setup()
 #catkin_install_python(PROGRAMS
@@ -37,6 +61,7 @@ add_message_files(
     BoundingBox.msg
     MoveItGoal.msg
     MoveItConfig.msg
+    PlanningScene.msg
     JacoDebug.msg)
 
 ## Generate actions in the 'action' folder

@@ -45,7 +45,7 @@ class AnchorBaseTest {
   createBoundingBoxFromAnchor(const anchor_msgs::Anchor &anchor, bool const_label=true) const;
   std::vector<jaco_manipulation::BoundingBox>::const_iterator next_drop_box();
   void show_summary(const std::vector<std::string> &labels) const;
-  void show_test_info();
+  void show_test_info(std::string name = "Anchor");
 };
 } // namespace test
 } // namespace jaco_manipulation

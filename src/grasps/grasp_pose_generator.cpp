@@ -19,7 +19,7 @@ using namespace jaco_manipulation::grasps;
 GraspPoseGenerator::GraspPoseGenerator()
   : tf_listener_(nh_, ros::Duration(10)),
     absolute_height_top_grasp_(min_height_top_grasp_),
-    absolute_height_front_grasp_(min_height_front_grasp_) {}
+    absolute_height_front_grasp_(min_height_front_grasp_) { sleep(1); }
 
 void GraspPoseGenerator::adjustPose(geometry_msgs::PoseStamped &pose,
                                     const BoundingBox &box,
@@ -147,7 +147,7 @@ void GraspPoseGenerator::transformGoalIntoRobotFrame(geometry_msgs::PoseStamped 
 
   // transform point into root frame
   try {
-    tf_listener_.waitForTransform("root", box.header.frame_id, box.header.stamp, ros::Duration(1));
+    tf_listener_.waitForTransform("root", box.header.frame_id, box.header.stamp, ros::Duration(2));
     tf_listener_.transformPoint("root", in_pt, out_pt);
   }
   catch (tf::TransformException &exception) {
@@ -204,7 +204,7 @@ void GraspPoseGenerator::setAbsoluteHeight(const BoundingBox &box) {
 
   // transform point into root frame
   try {
-    tf_listener_.waitForTransform("root", box.header.frame_id, box.header.stamp, ros::Duration(1));
+    tf_listener_.waitForTransform("root", box.header.frame_id, ros::Time::now(), ros::Duration(1));
     tf_listener_.transformPoint("root", in_pt, out_pt);
   }
   catch (tf::TransformException &exception) {
@@ -234,13 +234,14 @@ void GraspPoseGenerator::adjustHeightForTopPose(geometry_msgs::PoseStamped &pose
   // function (defined after x(width) > 0.065: y = mx + b
   constexpr double min = min_height_top_grasp_; // minimum height: current min
   constexpr double max = 25.5_cm; // maximum heihgt for gripping an object of around 13 cm x/y
+  constexpr double min_size = 7.2_cm;
   constexpr double delta_y = max - min;
-  constexpr double delta_x = 13._cm - 7.2_cm;
+  constexpr double delta_x = 13._cm - min_size;
   constexpr double m = delta_y / delta_x;
-  constexpr double b = 20._cm - m * 7.2_cm;
+  constexpr double b = 20._cm - m * min_size;
 
-  if ((box.dimensions.x > 7.2_cm && box.dimensions.x <= box.dimensions.y) ||
-      (box.dimensions.y > 7.2_cm && box.dimensions.y <= box.dimensions.x)) {
+  if ((box.dimensions.x > min_size && box.dimensions.x <= box.dimensions.y) ||
+      (box.dimensions.y > min_size && box.dimensions.y <= box.dimensions.x)) {
     // min because we turn rotation for best fit in hand.
     // see adjustOrientationToShape
     const auto &y = pose.pose.position.z;

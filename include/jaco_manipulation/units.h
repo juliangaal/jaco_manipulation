@@ -53,6 +53,15 @@ constexpr double operator "" _deg(long double amount) {
   return static_cast<double>(amount);
 }
 
+/**
+ * User defined literal: Percent
+ * @param amount
+ * @return amount in percent
+ */
+constexpr double operator "" _percent(long double amount) {
+  return static_cast<double>(amount);
+}
+
 } // namespace jaco_manipulation
 
 #endif //PROJECT_UNITS_H

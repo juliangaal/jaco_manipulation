@@ -277,9 +277,18 @@ void MoveitVisuals::detachObstacle(const jaco_manipulation::PlanAndMoveArmGoalCo
 }
 
 void MoveitVisuals::removeObstacle(const std::string id) {
-  std::vector<std::string> object_ids;
-  object_ids.push_back(id);
-  planning_scene_interface_.removeCollisionObjects(object_ids);
+//  std::vector<std::string> object_ids;
+//  object_ids.push_back(id);
+//  planning_scene_interface_.removeCollisionObjects(object_ids);
+  moveit_msgs::CollisionObject remove_object;
+  remove_object.id = id;
+  remove_object.header.frame_id = move_group_.getPlanningFrame();
+  remove_object.operation = remove_object.REMOVE;
+
+  planning_scene_.robot_state.attached_collision_objects.clear();
+  planning_scene_.world.collision_objects.clear();
+  planning_scene_.world.collision_objects.push_back(remove_object);
+  planning_scene_diff_publisher_.publish(planning_scene_);
   ROS_SUCCESS("Removed Object " << id << " from planning scene");
 }
 
@@ -304,5 +313,31 @@ void MoveitVisuals::showStatus() {
     if (it->first == "table" || it->first == "wall") continue;
     ROS_STATUS(it->second);
   }
+}
+
+unsigned long MoveitVisuals::numOfObstacles() {
+  return planning_scene_interface_.getObjects().size();
+}
+
+const std::vector<jaco_manipulation::BoundingBox> &MoveitVisuals::getObstacles() {
+  obstacles_.clear();
+  auto all_objects = planning_scene_interface_.getObjects();
+  for (auto it = begin(all_objects); it != end(all_objects); ++it) {
+    const auto& collision_object = it->second;
+    jaco_manipulation::BoundingBox box;
+    box.description = collision_object.id;
+    box.header = collision_object.header;
+    if (collision_object.primitives[collision_object.primitives.size()-1].dimensions.size() >= 3)
+    {
+      box.dimensions.x = collision_object.primitives[collision_object.primitives.size()-1].dimensions[0];
+      box.dimensions.y = collision_object.primitives[collision_object.primitives.size()-1].dimensions[1];
+      box.dimensions.z = collision_object.primitives[collision_object.primitives.size()-1].dimensions[2];
+    } else {
+      ROS_ERROR_STREAM("Can't add collisition box information to debug publisher: " << box.description);
+    }
+    box.point = collision_object.primitive_poses[collision_object.primitive_poses.size()-1].position;
+    obstacles_.push_back(box);
+  }
+  return obstacles_;
 }
 

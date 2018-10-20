@@ -21,7 +21,13 @@
 namespace jaco_manipulation {
 namespace test {
 
-using SeparatedObstacles = std::tuple<std::vector<jaco_manipulation::BoundingBox>, jaco_manipulation::BoundingBox>;
+struct Seconds {
+  Seconds(size_t duration) : duration(duration) {}
+  ~Seconds() = default;
+  size_t duration;
+};
+
+using SeparatedObstacles = std::tuple<std::vector<jaco_manipulation::BoundingBox>, jaco_manipulation::BoundingBox, bool>;
 
 class ObstacleAnchorTest : public AnchorBaseTest {
  public:
@@ -37,7 +43,11 @@ class ObstacleAnchorTest : public AnchorBaseTest {
   ros::NodeHandle nh_;
   ros::Subscriber sub_;
   bool found_anchor_;
-
+  bool time_to_add_obstacles_;
+  double surface_coverage;
+  int surface_obstacles_necessary;
+  const int grasps_per_obstacle_coverage;
+  void countdown(struct Seconds seconds, bool target_found = true) const;
   SeparatedObstacles extractObstacles(const anchor_msgs::AnchorArray::ConstPtr &msg) const;
 };
 } // namespace test
