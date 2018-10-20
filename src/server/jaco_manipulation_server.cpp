@@ -46,8 +46,6 @@ JacoManipulationServer::JacoManipulationServer() :
 
   prepMoveItMoveGroup();
 
-  sleep(5); // give moveit some time for rviz and others
-
   openGripper();
 }
 
@@ -313,11 +311,12 @@ void JacoManipulationServer::fillMoveItGoalMsg(jaco_manipulation::MoveItGoal &go
   geometry_msgs::PointStamped out_pt;
   geometry_msgs::PointStamped in_pt;
   in_pt.header = goal->pose_goal.header;
+  in_pt.header.stamp = ros::Time(0);
   in_pt.point = goal->pose_goal.pose.position;
 
   // transform point into base link for logging
   try {
-    tf_listener_.waitForTransform("base_link", move_group_.getPlanningFrame(), goal->pose_goal.header.stamp, ros::Duration(1));
+    tf_listener_.waitForTransform("base_link", move_group_.getPlanningFrame(), in_pt.header.stamp, ros::Duration(2));
     tf_listener_.transformPoint("base_link", in_pt, out_pt);
   }
   catch (tf::TransformException &exception) {

@@ -28,8 +28,9 @@ MoveitVisuals::MoveitVisuals(ros::NodeHandle &nh, const std::string frame,
 
   planning_scene_diff_publisher_ = nh_.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
   prepMoveItVisualTools();
+  sleep(3);
+
   addTableObstacle();
-  sleep(1);
 }
 
 MoveitVisuals::~MoveitVisuals() {

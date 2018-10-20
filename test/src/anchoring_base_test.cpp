@@ -58,7 +58,7 @@ jaco_manipulation::BoundingBox
 AnchorBaseTest::createBoundingBoxFromAnchor(const anchor_msgs::Anchor &anchor, bool const_label) const {
   jaco_manipulation::BoundingBox box;
   box.header.frame_id = "base_link";
-  box.header.stamp = ros::Time::now();
+  box.header.stamp = ros::Time(0);
   if (const_label) {
     // target label has to be the same for all boxes in the test. This way the old target gets replaced
     // with the new target, not added! The how MoveIt handles objects in moveit_visuals

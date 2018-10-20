@@ -84,8 +84,8 @@ void ObstacleAnchorTest::anchorArrayCallback(const anchor_msgs::AnchorArray::Con
   } else {
     jmc_.dropAt(target_object);
 
-    if (next_drop_box() == end(data_) or trial_counter_ == 30) {
-      ROS_WARN_STREAM("Reached end of test.");
+    if (next_drop_box() == end(data_) or grip_counter_ == 30) {
+      ROS_WARN_STREAM("Reached end of test. " << grip_counter_ << " Tests run");
       ROS_WARN_STREAM("Waiting for last status from Jaco . . .");
       sleep(3);
       ROS_WARN_STREAM("Finishing up");
@@ -152,6 +152,7 @@ void ObstacleAnchorTest::countdown(struct Seconds seconds, bool target_found) co
   using namespace std;
   chrono::seconds countdown(seconds.duration);
   chrono::seconds stop(1);
+  chrono::seconds head_start(2);
 
   while (countdown.count() > 0)
   {
@@ -167,6 +168,8 @@ void ObstacleAnchorTest::countdown(struct Seconds seconds, bool target_found) co
     if (time_to_add_obstacles_)
       ROS_ERROR_STREAM("ADD NEW OBSTACLES!");
   }
+
+  this_thread::sleep_for(head_start);
 }
 
 int main(int argc, char **argv) {

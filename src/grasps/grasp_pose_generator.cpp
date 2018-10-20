@@ -19,7 +19,8 @@ using namespace jaco_manipulation::grasps;
 GraspPoseGenerator::GraspPoseGenerator()
   : tf_listener_(nh_, ros::Duration(10)),
     absolute_height_top_grasp_(min_height_top_grasp_),
-    absolute_height_front_grasp_(min_height_front_grasp_) { sleep(1); }
+    absolute_height_front_grasp_(min_height_front_grasp_)
+    {}
 
 void GraspPoseGenerator::adjustPose(geometry_msgs::PoseStamped &pose,
                                     const BoundingBox &box,
