@@ -7,7 +7,10 @@ file_descriptions = {'../results/baseline/01/01_baseline_test_recording.csv': 'R
                     '../results/baseline/combined/combined_baseline_test_recording.csv': 'Result',
                     '../results/anchoring/01/01_anchoring_test_recording.csv': 'Gripped',
                     '../results/anchoring/02/02_anchoring_test_recording.csv': 'Gripped',
-                    '../results/anchoring/combined/combined_anchoring_test_recording.csv': 'Gripped'}
+                    '../results/anchoring/combined/combined_anchoring_test_recording.csv': 'Gripped',
+                     '../results/edge_case_anchoring/connect/combined/combined_anchoring_test_recording.csv': 'Gripped',
+                     '../results/edge_case_anchoring/connect/01/01_anchoring_test_recording.csv': 'Gripped',
+                     '../results/edge_case_anchoring/connect/02/02_anchoring_test_recording.csv': 'Gripped',}
 
 
 def create_summary(output_file, name, result, trials):
