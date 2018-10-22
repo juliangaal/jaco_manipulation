@@ -1,3 +1,7 @@
 ../results/anchoring/01/01_anchoring_test_recording.csv
 ../results/anchoring/02/02_anchoring_test_recording.csv
 ../results/anchoring/combined/combined_anchoring_test_recording.csv
+../results/edge_case_anchoring/connect/02/02_anchoring_test_recording.csv
+../results/edge_case_anchoring/stark/01/01_anchoring_test_recording.csv
+../results/edge_case_anchoring/connect/01/01_anchoring_test_recording.csv
+../results/edge_case_anchoring/connect/combined/combined_anchoring_test_recording.csv

@@ -57,7 +57,7 @@ void AnchorEdgeCaseTest::anchorArrayCallback(const anchor_msgs::AnchorArray::Con
     jmc_.dropAt(current_anchor_box_);
     about_to_drop = false;
     // edge cases are 17
-    if (trial_counter_ == data_.size()) {
+    if (grip_counter_ == 17) {
       ROS_WARN_STREAM("Reached end of test.");
       ROS_WARN_STREAM("Waiting for last status from Jaco . . .");
       sleep(3);

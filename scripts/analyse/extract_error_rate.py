@@ -8,9 +8,13 @@ file_descriptions = {'../results/baseline/01/01_baseline_test_recording.csv': 'R
                     '../results/anchoring/01/01_anchoring_test_recording.csv': 'Gripped',
                     '../results/anchoring/02/02_anchoring_test_recording.csv': 'Gripped',
                     '../results/anchoring/combined/combined_anchoring_test_recording.csv': 'Gripped',
-                     '../results/edge_case_anchoring/connect/combined/combined_anchoring_test_recording.csv': 'Gripped',
-                     '../results/edge_case_anchoring/connect/01/01_anchoring_test_recording.csv': 'Gripped',
-                     '../results/edge_case_anchoring/connect/02/02_anchoring_test_recording.csv': 'Gripped',}
+                    '../results/edge_case_anchoring/connect/combined/combined_anchoring_test_recording.csv': 'Gripped',
+                    '../results/edge_case_anchoring/connect/01/01_anchoring_test_recording.csv': 'Gripped',
+                    '../results/edge_case_anchoring/connect/02/02_anchoring_test_recording.csv': 'Gripped',
+                    '../results/edge_case_anchoring/stark/1.5/01/01_anchoring_test_recording.csv': 'Gripped',
+                    '../results/edge_case_anchoring/stark/1.5/02/02_anchoring_test_recording.csv': 'Gripped',
+                    '../results/edge_case_anchoring/combined_anchoring_test_recording_fails.csv': 'Gripped',
+                    '../results/edge_case_anchoring/stark/1.5/combined/combined_anchoring_test_recording.csv': 'Gripped',}
 
 
 def create_summary(output_file, name, result, trials):
@@ -43,5 +47,5 @@ if __name__ == "__main__":
             results[result] += 1
             total_trials += 1
 
-        create_summary(outputfile, os.path.basename(filename), results, total_trials)
+        create_summary(outputfile, filename, results, total_trials)
         print "Analysed", filename

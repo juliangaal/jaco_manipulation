@@ -14,6 +14,7 @@
 
 #include <jaco_manipulation/visuals/moveit_visuals.h>
 #include <jaco_manipulation/server/jaco_manipulation_server.h>
+#include <jaco_manipulation/units.h>
 
 using namespace jaco_manipulation::visuals;
 
@@ -28,10 +29,7 @@ MoveitVisuals::MoveitVisuals(ros::NodeHandle &nh, const std::string frame,
 
   planning_scene_diff_publisher_ = nh_.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
   prepMoveItVisualTools();
-
   addTableObstacle();
-  sleep(1);
-
 }
 
 MoveitVisuals::~MoveitVisuals() {
@@ -57,6 +55,11 @@ void MoveitVisuals::showPlannedPath() {
 }
 
 void MoveitVisuals::addTableObstacle() {
+  constexpr double table_width = 65._cm;
+  constexpr double table_length = 1.18_m;
+  constexpr double table_height = 1._cm;
+  sleep(1);
+
   std::vector<moveit_msgs::CollisionObject> collision_objects;
   {
     moveit_msgs::CollisionObject collision_object;
@@ -66,9 +69,9 @@ void MoveitVisuals::addTableObstacle() {
     shape_msgs::SolidPrimitive primitive;
     primitive.type = primitive.BOX;
     primitive.dimensions.resize(3);
-    primitive.dimensions[0] = 1.18;
-    primitive.dimensions[1] = 0.62;
-    primitive.dimensions[2] = 0.01;
+    primitive.dimensions[0] = table_length;
+    primitive.dimensions[1] = table_width;
+    primitive.dimensions[2] = table_height;
 
     geometry_msgs::PointStamped out_pt;
     geometry_msgs::PointStamped in_pt;
@@ -84,7 +87,7 @@ void MoveitVisuals::addTableObstacle() {
       tf_listener_.transformPoint("root", in_pt, out_pt);
     }
     catch (tf::TransformException &exception) {
-      ROS_INFO_STREAM("Transform failed. Why? - " << exception.what());
+      ROS_INFO_STREAM("MoveIt visuals: Transform failed. Why? - " << exception.what());
     }
 
     geometry_msgs::Pose pose;
@@ -109,16 +112,16 @@ void MoveitVisuals::addTableObstacle() {
 //    shape_msgs::SolidPrimitive primitive;
 //    primitive.type = primitive.BOX;
 //    primitive.dimensions.resize(3);
-//    primitive.dimensions[0] = 1.18;
-//    primitive.dimensions[1] = 0.01;
-//    primitive.dimensions[2] = 0.40;
+//    primitive.dimensions[0] = table_length;
+//    primitive.dimensions[1] = table_height;
+//    primitive.dimensions[2] = 1._m;
 //
 //    geometry_msgs::PointStamped out_pt;
 //    geometry_msgs::PointStamped in_pt;
 //    in_pt.header.frame_id = "base_link";
 //    in_pt.header.stamp = ros::Time(0);
 //    in_pt.point.x = primitive.dimensions[0] * 0.5;
-//    in_pt.point.y = 0.62 + primitive.dimensions[1] * 0.5;
+//    in_pt.point.y = table_width + 10._cm + primitive.dimensions[1] * 0.5;
 //    in_pt.point.z = primitive.dimensions[2] * 0.5;
 //
 //    // transform point
@@ -127,7 +130,7 @@ void MoveitVisuals::addTableObstacle() {
 //      tf_listener_.transformPoint("root", in_pt, out_pt);
 //    }
 //    catch (tf::TransformException &exception) {
-//      ROS_INFO_STREAM("Transform failed. Why? - " << exception.what());
+//      ROS_INFO_STREAM("MoveIt visuals: Transform failed. Why? - " << exception.what());
 //    }
 //
 //    geometry_msgs::Pose pose;
@@ -143,8 +146,183 @@ void MoveitVisuals::addTableObstacle() {
 //  }
 //
 //  ROS_SUCCESS("Added left Wall as obstacle");
+//
+//  {
+//    moveit_msgs::CollisionObject collision_object;
+//    collision_object.header.frame_id = move_group_.getPlanningFrame();;
+//    collision_object.id = "right-wall";
+//
+//    shape_msgs::SolidPrimitive primitive;
+//    primitive.type = primitive.BOX;
+//    primitive.dimensions.resize(3);
+//    primitive.dimensions[0] = table_length;
+//    primitive.dimensions[1] = table_height;
+//    primitive.dimensions[2] = 1._m;
+//
+//    geometry_msgs::PointStamped out_pt;
+//    geometry_msgs::PointStamped in_pt;
+//    in_pt.header.frame_id = "base_link";
+//    in_pt.header.stamp = ros::Time(0);
+//    in_pt.point.x = primitive.dimensions[0] * 0.5;
+//    in_pt.point.y = -10._cm + primitive.dimensions[1] * 0.5;
+//    in_pt.point.z = primitive.dimensions[2] * 0.5;
+//
+//    // transform point
+//    try {
+//      tf_listener_.waitForTransform("root", in_pt.header.frame_id, in_pt.header.stamp, ros::Duration(2));
+//      tf_listener_.transformPoint("root", in_pt, out_pt);
+//    }
+//    catch (tf::TransformException &exception) {
+//      ROS_INFO_STREAM("MoveIt visuals: Transform failed. Why? - " << exception.what());
+//    }
+//
+//    geometry_msgs::Pose pose;
+//    pose.position.x = out_pt.point.x;
+//    pose.position.y = out_pt.point.y;
+//    pose.position.z = out_pt.point.z;
+//    pose.orientation.w = 0.0;
+//
+//    collision_object.operation = collision_object.ADD;
+//    collision_object.primitives.push_back(primitive);
+//    collision_object.primitive_poses.push_back(pose);
+//    collision_objects.push_back(collision_object);
+//  }
+//
+//  ROS_SUCCESS("Added right Wall as obstacle");
+//
+//  {
+//    moveit_msgs::CollisionObject collision_object;
+//    collision_object.header.frame_id = move_group_.getPlanningFrame();;
+//    collision_object.id = "back-wall";
+//
+//    shape_msgs::SolidPrimitive primitive;
+//    primitive.type = primitive.BOX;
+//    primitive.dimensions.resize(3);
+//    primitive.dimensions[0] = table_width + 20._cm;
+//    primitive.dimensions[1] = table_height;
+//    primitive.dimensions[2] = 1._m;
+//
+//    geometry_msgs::PointStamped out_pt;
+//    geometry_msgs::PointStamped in_pt;
+//    in_pt.header.frame_id = "base_link";
+//    in_pt.header.stamp = ros::Time(0);
+//    in_pt.point.x = -0.55_m + primitive.dimensions[0] * 0.5;
+//    in_pt.point.y = table_width * 0.5; //26._cm + primitive.dimensions[1] * 0.5;
+//    in_pt.point.z = primitive.dimensions[2] * 0.5;
+//
+//    // transform point
+//    try {
+//      tf_listener_.waitForTransform("root", in_pt.header.frame_id, in_pt.header.stamp, ros::Duration(2));
+//      tf_listener_.transformPoint("root", in_pt, out_pt);
+//    }
+//    catch (tf::TransformException &exception) {
+//      ROS_INFO_STREAM("MoveIt visuals: Transform failed. Why? - " << exception.what());
+//    }
+//
+//    geometry_msgs::Pose pose;
+//    pose.position.x = out_pt.point.x;
+//    pose.position.y = out_pt.point.y;
+//    pose.position.z = out_pt.point.z;
+//    pose.orientation.x = std::sqrt(0.5);
+//    pose.orientation.y = std::sqrt(0.5);
+//
+//    collision_object.operation = collision_object.ADD;
+//    collision_object.primitives.push_back(primitive);
+//    collision_object.primitive_poses.push_back(pose);
+//    collision_objects.push_back(collision_object);
+//  }
+//
+//  ROS_SUCCESS("Added back Wall as obstacle");
+//
+//  {
+//    moveit_msgs::CollisionObject collision_object;
+//    collision_object.header.frame_id = move_group_.getPlanningFrame();;
+//    collision_object.id = "back-wall-obstacle";
+//
+//    shape_msgs::SolidPrimitive primitive;
+//    primitive.type = primitive.BOX;
+//    primitive.dimensions.resize(3);
+//    primitive.dimensions[0] = table_width + 20._cm;
+//    primitive.dimensions[1] = 20._cm;
+//    primitive.dimensions[2] = 0.5_m;
+//
+//    geometry_msgs::PointStamped out_pt;
+//    geometry_msgs::PointStamped in_pt;
+//    in_pt.header.frame_id = "base_link";
+//    in_pt.header.stamp = ros::Time(0);
+//    in_pt.point.x = -0.55_m + primitive.dimensions[0] * 0.5;
+//    in_pt.point.y = table_width * 0.5;//26._cm + primitive.dimensions[1] * 0.5;
+//    in_pt.point.z = table_height * 0.5 + 10._cm;
+//
+//    // transform point
+//    try {
+//      tf_listener_.waitForTransform("root", in_pt.header.frame_id, in_pt.header.stamp, ros::Duration(2));
+//      tf_listener_.transformPoint("root", in_pt, out_pt);
+//    }
+//    catch (tf::TransformException &exception) {
+//      ROS_INFO_STREAM("MoveIt visuals: Transform failed. Why? - " << exception.what());
+//    }
+//
+//    geometry_msgs::Pose pose;
+//    pose.position.x = out_pt.point.x;
+//    pose.position.y = out_pt.point.y;
+//    pose.position.z = out_pt.point.z;
+//    pose.orientation.x = std::sqrt(0.5);
+//    pose.orientation.y = std::sqrt(0.5);
+//
+//    collision_object.operation = collision_object.ADD;
+//    collision_object.primitives.push_back(primitive);
+//    collision_object.primitive_poses.push_back(pose);
+//    collision_objects.push_back(collision_object);
+//  }
+//
+//  ROS_SUCCESS("Added back Wall obstacle as obstacle");
+//
+//  {
+//    moveit_msgs::CollisionObject collision_object;
+//    collision_object.header.frame_id = move_group_.getPlanningFrame();;
+//    collision_object.id = "top-wall";
+//
+//    shape_msgs::SolidPrimitive primitive;
+//    primitive.type = primitive.BOX;
+//    primitive.dimensions.resize(3);
+//    primitive.dimensions[0] = table_length * 0.5;
+//    primitive.dimensions[1] = table_width;
+//    primitive.dimensions[2] = table_height;
+//
+//    geometry_msgs::PointStamped out_pt;
+//    geometry_msgs::PointStamped in_pt;
+//    in_pt.header.frame_id = "base_link";
+//    in_pt.header.stamp = ros::Time(0);
+//    in_pt.point.x = primitive.dimensions[0] * 0.5;
+//    in_pt.point.y = primitive.dimensions[1] * 0.5;
+//    in_pt.point.z = 90._cm + primitive.dimensions[2] * 0.5;
+//
+//    // transform point
+//    try {
+//      tf_listener_.waitForTransform("root", in_pt.header.frame_id, in_pt.header.stamp, ros::Duration(2));
+//      tf_listener_.transformPoint("root", in_pt, out_pt);
+//    }
+//    catch (tf::TransformException &exception) {
+//      ROS_INFO_STREAM("MoveIt Visuals: Transform failed. Why? - " << exception.what());
+//    }
+//
+//    geometry_msgs::Pose pose;
+//    pose.position.x = out_pt.point.x;
+//    pose.position.y = out_pt.point.y;
+//    pose.position.z = out_pt.point.z - 0.05;
+//    pose.orientation.w = 1.0;
+//
+//    collision_object.operation = collision_object.ADD;
+//    collision_object.primitives.push_back(primitive);
+//    collision_object.primitive_poses.push_back(pose);
+//    collision_objects.push_back(collision_object);
+//  }
+//
+//  ROS_SUCCESS("Added top wall as obstacle");
 
   planning_scene_interface_.addCollisionObjects(collision_objects);
+  sleep(1);
 }
 
 void MoveitVisuals::addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
@@ -178,7 +356,7 @@ void MoveitVisuals::addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConst
     tf_listener_.transformPoint("root", in_pt, out_pt);
   }
   catch (tf::TransformException &exception) {
-    ROS_INFO_STREAM("Transform failed. Why? - " << exception.what());
+    ROS_INFO_STREAM("MoveIt visuals: Transform failed. Why? - " << exception.what());
   }
 
   geometry_msgs::Pose pose;
@@ -310,9 +488,10 @@ void MoveitVisuals::showStatus() {
   }
 
   ROS_STATUS("All Objects: ");
+  auto contains = [](const std::string& label, const std::string& target) { return label.find(target) != std::string::npos; };
   auto all_objects = planning_scene_interface_.getObjects();
   for (auto it = begin(all_objects); it != end(all_objects); ++it) {
-    if (it->first == "table" || it->first == "wall") continue;
+    if (it->first == "table" || contains(it->first, "wall")) continue;
     ROS_STATUS(it->second);
   }
 }
@@ -342,4 +521,3 @@ const std::vector<jaco_manipulation::BoundingBox> &MoveitVisuals::getObstacles()
   }
   return obstacles_;
 }
-

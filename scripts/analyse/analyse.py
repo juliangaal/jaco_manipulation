@@ -1,4 +1,5 @@
 import os
+import sys
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -56,13 +57,21 @@ class ResultPlotter:
         # get desctiptor in front of file: e.g. 01
         filename_only = os.path.basename(os.path.normpath(file))
         self.descriptor = filename_only.partition("_")[0]
-        self.test_type = ''
+        self.test_type = 'ERROR'
         # get test type
-        if 'anchoring' in filename_only:
+        if 'anchoring_edge_case' in filename_only:
+            self.test_type = 'anchoring_edge_case'
+        elif 'anchoring' in filename_only:
             self.test_type = 'anchoring'
+        else:
+            pass
 
         if 'baseline' in filename_only:
             self.test_type = 'baseline'
+
+        if self.test_type == 'ERROR':
+            print "Files are not named correctly. Must include 'baseline', 'anchoring' or 'anchoring_edge_case'"
+            sys.exit()
 
         # set target dir and file names
         results_dir = os.path.abspath(os.path.join(self.current_dir, os.pardir)) + '/results/' + self.test_type

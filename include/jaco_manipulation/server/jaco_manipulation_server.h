@@ -89,6 +89,11 @@ class JacoManipulationServer {
   jaco_manipulation::visuals::MoveitVisuals moveit_visuals_;
 
   /**
+   * Whether or not to lock jaco in a cage
+   */
+  bool enable_cage_;
+
+  /**
    * Action client to home home the arm.
   */
   actionlib::SimpleActionClient<wpi_jaco_msgs::HomeArmAction> haa_client_;
