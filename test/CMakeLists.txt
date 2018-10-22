@@ -27,16 +27,24 @@ target_link_libraries(baseline_test
                       jaco2_manipulation
                       csv_reader)
 # anchoring test
-add_executable(anchoring_test src/anchoring_test.cpp src/anchoring_base_test.cpp src/baseline_csv_reader.cpp)
-add_dependencies(anchoring_test ${PROJECT_NAME}_generate_messages_cpp jaco2_manipulation anchor_msgs)
+add_executable(anchoring_test src/run_anchoring_test.cpp src/anchoring_test.cpp src/anchoring_base_test.cpp src/baseline_csv_reader.cpp)
+add_dependencies(anchoring_test ${PROJECT_NAME}_generate_messages_cpp jaco2_manipulation)
 target_link_libraries(anchoring_test
                       ${catkin_LIBRARIES}
                       jaco2_manipulation
                       csv_reader)
 
+# edge case anchoring test
+add_executable(anchoring_edge_case_test src/run_anchoring_edge_case_test.cpp src/anchoring_edge_case_test.cpp src/anchoring_base_test.cpp src/baseline_csv_reader.cpp)
+add_dependencies(anchoring_edge_case_test ${PROJECT_NAME}_generate_messages_cpp jaco2_manipulation)
+target_link_libraries(anchoring_edge_case_test
+                      ${catkin_LIBRARIES}
+                      jaco2_manipulation
+                      csv_reader)
+
 # obstacle anchoring test
-add_executable(obstacle_anchoring_test src/obstacle_anchoring_test.cpp src/anchoring_base_test.cpp src/baseline_csv_reader.cpp)
-add_dependencies(obstacle_anchoring_test ${PROJECT_NAME}_generate_messages_cpp jaco2_manipulation anchor_msgs)
+add_executable(obstacle_anchoring_test src/run_obstacle_anchoring_test.cpp src/obstacle_anchoring_test.cpp src/anchoring_base_test.cpp src/baseline_csv_reader.cpp)
+add_dependencies(obstacle_anchoring_test ${PROJECT_NAME}_generate_messages_cpp jaco2_manipulation)
 target_link_libraries(obstacle_anchoring_test
                       ${catkin_LIBRARIES}
                       jaco2_manipulation

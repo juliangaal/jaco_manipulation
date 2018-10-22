@@ -15,12 +15,14 @@
 #include <jaco_manipulation/test/anchoring_base_test.h>
 #include <jaco_manipulation/test/baseline_csv_reader.h>
 #include <jaco_manipulation/test/anchoring_test.h>
+#include <chrono>
+#include <thread>
 
 using namespace jaco_manipulation::test;
 
-AnchorTest::AnchorTest(const std::vector<BoundingBox> &datapoints)
+AnchorTest::AnchorTest(const std::vector<jaco_manipulation::BoundingBox> &datapoints)
     : AnchorBaseTest(datapoints),
-      found_anchor_(false) 
+      found_anchor_(false)
 {
   sub_ = nh_.subscribe(topic_, 1, &AnchorTest::anchorArrayCallback, this);
   sleep(1); // let anchoring system get up to speed
@@ -89,24 +91,4 @@ jaco_manipulation::BoundingBox AnchorTest::createBoundingBoxFromAnchors() const 
   AnchorBaseTest::show_summary(poss_labels);
 
   return AnchorBaseTest::createBoundingBoxFromAnchor(anchor);
-}
-
-int main(int argc, char **argv) {
-  ros::init(argc, argv, "AnchorTest");
-
-  BaselineCSVReader reader("/home/chitt/julian/reground_workspace/src/arm/jaco_manipulation/scripts/anchoring_poses.csv");
-  const auto &data = reader.getData();
-  AnchorTest l(data);
-
-  if (!l.anchors_published()) {
-    ROS_WARN_STREAM("Anchors don't appear to be published");
-  }
-
-  ROS_INFO_STREAM("Starting anchoring test");
-
-  while (!ros::isShuttingDown()) {
-    ros::spinOnce();
-  }
-
-  return 0;
 }

@@ -311,7 +311,7 @@ void JacoManipulationServer::fillMoveItGoalMsg(jaco_manipulation::MoveItGoal &go
   geometry_msgs::PointStamped out_pt;
   geometry_msgs::PointStamped in_pt;
   in_pt.header = goal->pose_goal.header;
-  in_pt.header.stamp = ros::Time(0);
+  in_pt.header.frame_id = move_group_.getPlanningFrame();
   in_pt.point = goal->pose_goal.pose.position;
 
   // transform point into base link for logging

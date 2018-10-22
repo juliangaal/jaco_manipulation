@@ -11,3 +11,28 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
+
+#include <jaco_manipulation/test/obstacle_anchoring_test.h>
+#include <jaco_manipulation/test/baseline_csv_reader.h>
+
+using namespace jaco_manipulation::test;
+
+int main(int argc, char **argv) {
+  ros::init(argc, argv, "ObstacleAnchorTest");
+
+  BaselineCSVReader reader("/home/chitt/julian/reground_workspace/src/arm/jaco_manipulation/scripts/obstacle_anchoring_poses.csv");
+  const auto &data = reader.getData();
+  ObstacleAnchorTest l(data);
+
+  if (!l.anchors_published()) {
+    ROS_ERROR_STREAM("Anchors don't appear to be published");
+  }
+
+  ROS_INFO_STREAM("Starting obstacle anchoring test");
+
+  while (!ros::isShuttingDown()) {
+    ros::spinOnce();
+  }
+
+  return 0;
+}

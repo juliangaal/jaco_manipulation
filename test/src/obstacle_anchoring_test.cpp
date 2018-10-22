@@ -171,23 +171,3 @@ void ObstacleAnchorTest::countdown(struct Seconds seconds, bool target_found) co
 
   this_thread::sleep_for(head_start);
 }
-
-int main(int argc, char **argv) {
-  ros::init(argc, argv, "ObstacleAnchorTest");
-
-  BaselineCSVReader reader("/home/chitt/julian/reground_workspace/src/arm/jaco_manipulation/scripts/obstacle_anchoring_poses.csv");
-  const auto &data = reader.getData();
-  ObstacleAnchorTest l(data);
-
-  if (!l.anchors_published()) {
-    ROS_ERROR_STREAM("Anchors don't appear to be published");
-  }
-
-  ROS_INFO_STREAM("Starting obstacle anchoring test");
-
-  while (!ros::isShuttingDown()) {
-    ros::spinOnce();
-  }
-
-  return 0;
-}

@@ -154,6 +154,7 @@ void GraspPoseGenerator::transformGoalIntoRobotFrame(geometry_msgs::PoseStamped 
   catch (tf::TransformException &exception) {
     ROS_INFO_STREAM("Transform failed. Why? - " << exception.what());
   }
+  pose.header.frame_id = "root";
   pose.pose.position = out_pt.point;
 
   ROS_INFO("Transfrm: \"%s\" (%f,%f,%f) -> \"%s\" (%f,%f,%f)",

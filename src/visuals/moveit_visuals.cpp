@@ -28,9 +28,10 @@ MoveitVisuals::MoveitVisuals(ros::NodeHandle &nh, const std::string frame,
 
   planning_scene_diff_publisher_ = nh_.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
   prepMoveItVisualTools();
-  sleep(3);
 
   addTableObstacle();
+  sleep(1);
+
 }
 
 MoveitVisuals::~MoveitVisuals() {
@@ -72,7 +73,7 @@ void MoveitVisuals::addTableObstacle() {
     geometry_msgs::PointStamped out_pt;
     geometry_msgs::PointStamped in_pt;
     in_pt.header.frame_id = "base_link";
-    in_pt.header.stamp = ros::Time::now();
+    in_pt.header.stamp = ros::Time(0);
     in_pt.point.x = primitive.dimensions[0] * 0.5;
     in_pt.point.y = primitive.dimensions[1] * 0.5;
     in_pt.point.z = primitive.dimensions[2] * 0.5;
@@ -103,7 +104,7 @@ void MoveitVisuals::addTableObstacle() {
 //  {
 //    moveit_msgs::CollisionObject collision_object;
 //    collision_object.header.frame_id = move_group_.getPlanningFrame();;
-//    collision_object.id = "wall";
+//    collision_object.id = "left-wall";
 //
 //    shape_msgs::SolidPrimitive primitive;
 //    primitive.type = primitive.BOX;
@@ -115,7 +116,7 @@ void MoveitVisuals::addTableObstacle() {
 //    geometry_msgs::PointStamped out_pt;
 //    geometry_msgs::PointStamped in_pt;
 //    in_pt.header.frame_id = "base_link";
-//    in_pt.header.stamp = ros::Time::now();
+//    in_pt.header.stamp = ros::Time(0);
 //    in_pt.point.x = primitive.dimensions[0] * 0.5;
 //    in_pt.point.y = 0.62 + primitive.dimensions[1] * 0.5;
 //    in_pt.point.z = primitive.dimensions[2] * 0.5;
@@ -141,7 +142,7 @@ void MoveitVisuals::addTableObstacle() {
 //    collision_objects.push_back(collision_object);
 //  }
 //
-//  ROS_SUCCESS("Added Wall as obstacle");
+//  ROS_SUCCESS("Added left Wall as obstacle");
 
   planning_scene_interface_.addCollisionObjects(collision_objects);
 }

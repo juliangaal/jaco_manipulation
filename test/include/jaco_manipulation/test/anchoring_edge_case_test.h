@@ -15,12 +15,29 @@
 #ifndef PROJECT_ANCHORING_EDGE_CASE_TEST_H
 #define PROJECT_ANCHORING_EDGE_CASE_TEST_H
 
+#include <jaco_manipulation/test/anchoring_base_test.h>
 
+namespace jaco_manipulation {
+namespace test {
 
-class anchoring_edge_case_test {
+class AnchorEdgeCaseTest : public AnchorBaseTest {
+ public:
+  AnchorEdgeCaseTest() = delete;
 
+  explicit AnchorEdgeCaseTest(const std::vector<jaco_manipulation::BoundingBox> &datapoints);
+
+  ~AnchorEdgeCaseTest() final= default;
+
+  void anchorArrayCallback(const anchor_msgs::AnchorArray::ConstPtr &msg);
+  bool anchors_published() const;
+
+ private:
+  ros::NodeHandle nh_;
+  ros::Subscriber sub_;
+  bool found_anchor_;
+  jaco_manipulation::BoundingBox createBoundingBoxFromAnchors() const;
 };
-
-
+} // namespace tes
+} // namespace jaco_manipulation
 
 #endif //PROJECT_ANCHORING_EDGE_CASE_TEST_H
