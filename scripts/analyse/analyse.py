@@ -61,6 +61,7 @@ class ResultPlotter:
         # get test type
         if 'anchoring_edge_case' in filename_only:
             self.test_type = 'anchoring_edge_case'
+            self.descriptor += "/" + os.path.basename(os.path.dirname(os.path.realpath(file)))
         elif 'anchoring' in filename_only:
             self.test_type = 'anchoring'
         else:
@@ -112,6 +113,7 @@ class ResultPlotter:
 
     def save3DResultFrom(self, result_key, grip_result_key='Result'):
         fig = plt.figure()
+        fig.suptitle(self.file)
         ax = fig.add_subplot(111, projection='3d')
 
         self.__extract_point(result_key, grip_result_key)
@@ -166,6 +168,7 @@ class ResultPlotter:
 
     def save2DResultFrom(self, result_key, grip_result_key='Result'):
         plt.figure()
+        plt.title(self.file)
         plt.ylabel('Y')
         plt.xlabel('robotic arm          <- X ->          kinect')
 

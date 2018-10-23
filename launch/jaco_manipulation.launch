@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="viz" default="false"/>
     <!-- is used to override moveit standard rviz start and replace it with own-->
     <arg name="use_rviz" default="false"/>
     <arg name="rviz_config" default="manipulation.rviz" />
+    <!--for example "RRTstarkConfigDefault"-->
+    <arg name="planner" default="RRTConnectkConfigDefault" />
+    <arg name="planning_time" default="1.5" />
 
     <!-- Launches the driver for the arm  -->
     <!--  include file="$(find wpi_jaco_wrapper)/launch/arm.launch" / -->
@@ -11,13 +13,13 @@
 
     <!-- Launches the moveit config for the arm -->
     <include file="$(find jaco_manipulation)/launch/jaco_moveit.launch">
-        <arg name="viz" value="$(arg viz)"/>
+        <arg name="viz" value="$(arg use_rviz)"/>
     </include>
 
     <!-- Launches jaco_manipulation node -->
     <node name="jaco_manipulation_server" type="jaco_manipulation_server" pkg="jaco_manipulation" output="screen">
-        <param name="planner_id" type="str" value="RRTConnectkConfigDefault" />
-        <param name="planning_time" type="double" value="1.5" />
+        <param name="planner_id" type="str" value="$(arg planner)" />
+        <param name="planning_time" type="double" value="$(arg planning_time)" />
         <param name="planning_attempts" type="int" value="10" />
         <param name="allow_replanning" type="bool" value="true" />
         <param name="allow_looking" type="bool" value="true" />
