@@ -27,7 +27,7 @@ namespace jaco_manipulation {
 namespace grasps {
 
 /// enum to define all grasp types
-enum GraspType { TOP_GRASP, TOP_DROP, FRONT_GRASP, LEFT_GRASP, RIGHT_GRASP };
+enum GraspType { PRE_GRASP, TOP_GRASP, TOP_DROP, FRONT_GRASP, LEFT_GRASP, RIGHT_GRASP };
 
 /// enum to define all Rotation types
 enum Rotation { ROLL, PITCH, YAW };

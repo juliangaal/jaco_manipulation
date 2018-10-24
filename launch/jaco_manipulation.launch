@@ -13,7 +13,7 @@
 
     <!-- Launches the moveit config for the arm -->
     <include file="$(find jaco_manipulation)/launch/jaco_moveit.launch">
-        <arg name="viz" value="$(arg use_rviz)"/>
+        <arg name="viz" value="false"/>
     </include>
 
     <!-- Launches jaco_manipulation node -->

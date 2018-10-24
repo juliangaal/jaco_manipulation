@@ -5,8 +5,17 @@ Provides ROS Actionlib Server and Client interface to Jaco Robotic Arm.
 Depends on [wpi_jaco](), a custom driver for the robotic arm.
 
 Depends on installation of [MoveIt!](https://moveit.ros.org/) and it's [visual tools](https://github.com/ros-planning/moveit_visual_tools)
+Test the installation 
+```
+cd <workspace_root>
+catkin_make -j8
+source devel/setup.<bash/zsh>
+roslaunch manipulation_launch manipulation.launch use_rviz:=true
+```
 
-If you want to run the tests, you need to have the full ReGround workspace installed []( TODO . Install python requirements from the project root directory:
+An RViz window should open with Moveit! ready to be used
+
+*Note*: If you have any problems with dependencies, try running `rosdep install --from-paths src -i -y`
 
 via Pip:
 ```

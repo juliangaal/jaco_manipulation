@@ -201,14 +201,21 @@ class JacoManipulationServer {
   /**
    * Convenience function to plan and execute the pose specified by pose_goal.
    * @param pose_goal pose to be planned for and moved to
+   * @param is_pre_grasp_pose whether or not this method is used to execute a pre pose
   */
-  bool planAndMove(const geometry_msgs::PoseStamped &pose_goal);
+  bool planAndMove(const geometry_msgs::PoseStamped &pose_goal, bool is_pre_grasp_pose = false);
 
   /**
    * Convenience function to plan, execute the pose and grasp for an object specified by pose_goal.
    * @param goal to move to and grasp
   */
   bool planAndMoveAndGrasp(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
+
+  /**
+   * Plans and moves to pre grasp
+   * @param grasp goal that will be adjusted in height
+   */
+  bool planAndMovePreGrasp(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
   /**
    * Convenience function to plan, execute the post grasp lift up of object

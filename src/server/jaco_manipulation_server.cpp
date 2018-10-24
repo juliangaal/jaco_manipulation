@@ -144,8 +144,12 @@ void JacoManipulationServer::processGoal(const jaco_manipulation::PlanAndMoveArm
   }
 }
 
-bool JacoManipulationServer::planAndMove(const geometry_msgs::PoseStamped &pose_goal) {
-  ROS_STATUS("Goal received: pose");
+bool JacoManipulationServer::planAndMove(const geometry_msgs::PoseStamped &pose_goal, bool is_pre_grasp_pose) {
+  if (is_pre_grasp_pose) {
+    ROS_STATUS("Goal received: pre grasp pose");
+  } else {
+    ROS_STATUS("Goal received: pose");
+  }
 
   move_group_.setStartStateToCurrentState();
   move_group_.setPoseReferenceFrame(pose_goal.header.frame_id);
@@ -189,7 +193,19 @@ bool JacoManipulationServer::planAndMove(const std::string &pose_goal_string) {
   return move_group_.move() ? true : false;
 }
 
+bool JacoManipulationServer::planAndMovePreGrasp(const jaco_manipulation::PlanAndMoveArmGoalConstPtr& goal)
+{
+  auto pose_goal = goal->pose_goal;
+  pose_goal.pose.position.z += 4._cm;
+  return planAndMove(pose_goal, true);
+}
+
 bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
+  ROS_STATUS("Pre Grasp request received");
+  if (not planAndMovePreGrasp(goal)) {
+    ROS_ERROR("Pre Grasp Failed. Attempting Pose goal though");
+  }
+
   ROS_STATUS("Grasp request received");
   addObstacle(goal);
 
