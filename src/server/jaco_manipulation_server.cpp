@@ -71,13 +71,13 @@ void JacoManipulationServer::prepMoveItMoveGroup() {
   }
 
   if (nh_.getParam("jaco_manipulation_server/allow_replanning", allow_replanning_)) {
-    ROS_INFO_STREAM("Got param 'allow_replanning': " << allow_replanning_);
+    ROS_INFO_STREAM("Got param 'allow_replanning': " << (allow_replanning_ ? "True" : "False"));
   } else {
     ROS_ERROR_STREAM("Failed to get param 'allow_replanning'");
   }
 
   if (nh_.getParam("jaco_manipulation_server/allow_looking", allow_looking_)) {
-    ROS_INFO_STREAM("Got param 'allow_looking': " << allow_looking_);
+    ROS_INFO_STREAM("Got param 'allow_looking': " << (allow_looking_ ? "True" : "False"));
   } else {
     ROS_ERROR_STREAM("Failed to get param 'allow_looking'");
   }

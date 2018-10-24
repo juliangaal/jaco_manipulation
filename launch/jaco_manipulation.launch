@@ -2,10 +2,15 @@
 <launch>
     <!-- is used to override moveit standard rviz start and replace it with own-->
     <arg name="use_rviz" default="false"/>
+    <!--set jaco_manipulation params-->
     <arg name="rviz_config" default="manipulation.rviz" />
     <!--for example "RRTstarkConfigDefault"-->
     <arg name="planner" default="RRTConnectkConfigDefault" />
     <arg name="planning_time" default="1.5" />
+    <arg name="planning_attempts" default="10" />
+    <arg name="allow_replanning" default="true" />
+    <arg name="allow_looking" default="true" />
+    <arg name="publish_debug" default="true" />
 
     <!-- Launches the driver for the arm  -->
     <!--  include file="$(find wpi_jaco_wrapper)/launch/arm.launch" / -->
@@ -20,10 +25,10 @@
     <node name="jaco_manipulation_server" type="jaco_manipulation_server" pkg="jaco_manipulation" output="screen">
         <param name="planner_id" type="str" value="$(arg planner)" />
         <param name="planning_time" type="double" value="$(arg planning_time)" />
-        <param name="planning_attempts" type="int" value="10" />
-        <param name="allow_replanning" type="bool" value="true" />
-        <param name="allow_looking" type="bool" value="true" />
-        <param name="publish_debug" type="bool" value="true" />
+        <param name="planning_attempts" type="int" value="$(arg planning_attempts)" />
+        <param name="allow_replanning" type="bool" value="$(arg allow_replanning)" />
+        <param name="allow_looking" type="bool" value="$(arg allow_looking)" />
+        <param name="publish_debug" type="bool" value="$(arg publish_debug)" />
     </node>
 
     <!--  Static transform publisher root -> base_link -->
