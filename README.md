@@ -2,7 +2,7 @@
 
 Provides ROS Actionlib Server and Client interface to Jaco Robotic Arm.
 
-Depends on [wpi_jaco](https://github.com/ksatyaki/wpi_jaco), a custom driver for the robotic arm. Just dave the repo in your catkin workspace.
+Depends on [wpi_jaco](https://github.com/ksatyaki/wpi_jaco), a custom driver for the robotic arm and [rail_manipulation_msgs](https://github.com/GT-RAIL/rail_manipulation_msgs). Just drop the repos in your catkin workspace, or use the provided `.rosinstall` file in to start a fresh workspace.
 
 Depends on installation of [MoveIt!](https://moveit.ros.org/) and it's [visual tools](https://github.com/ros-planning/moveit_visual_tools)
 Test the installation 
