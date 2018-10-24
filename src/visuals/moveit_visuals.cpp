@@ -36,7 +36,7 @@ MoveitVisuals::~MoveitVisuals() {
   auto all_attached_objects = planning_scene_interface_.getAttachedObjects();
   auto all_objects = planning_scene_interface_.getObjects();
 
-  for (auto it = begin(all_objects); it != end(all_objects); ++it) {
+  for (auto it = std::begin(all_objects); it != std::end(all_objects); ++it) {
     removeObstacle(it->first);
   }
   // TODO remove attached objects as well
@@ -391,12 +391,12 @@ void MoveitVisuals::attachObstacle(const jaco_manipulation::PlanAndMoveArmGoalCo
   const jaco_manipulation::BoundingBox &box = goal->bounding_box;
 
   auto all_objects = planning_scene_interface_.getObjects();
-  if (all_objects.find(box.description) == end(all_objects)) {
+  if (all_objects.find(box.description) == std::end(all_objects)) {
     ROS_ERROR_STREAM("Can't attach object " << box.description << ". Wasn't created!");
     return;
   }
 
-  if (to_be_attached.find((box.description)) == end(to_be_attached)) {
+  if (to_be_attached.find((box.description)) == std::end(to_be_attached)) {
     ROS_ERROR_STREAM("Object to be attached wasn't saved");
     return;
   }
@@ -420,13 +420,13 @@ void MoveitVisuals::attachObstacle(const jaco_manipulation::PlanAndMoveArmGoalCo
 void MoveitVisuals::detachObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal) {
   const jaco_manipulation::BoundingBox &box = goal->bounding_box;
 
-  if (to_be_attached.find(box.description) == end(to_be_attached)) {
+  if (to_be_attached.find(box.description) == std::end(to_be_attached)) {
     ROS_ERROR("Object to be detached wasn't saved as attached object!");
     return;
   }
 
   auto &attached_objects = planning_scene_.robot_state.attached_collision_objects;
-  if (std::none_of(begin(attached_objects), end(attached_objects), [&box](const auto &obj) {
+  if (std::none_of(std::begin(attached_objects), std::end(attached_objects), [&box](const auto &obj) {
     return obj.object.id == box.description;
   })) {
     ROS_ERROR_STREAM("Not attached: " << box.description);
@@ -474,7 +474,7 @@ void MoveitVisuals::removeObstacle(const std::string id) {
 
 void MoveitVisuals::wipeKinectObstacles() {
   auto all_objects = planning_scene_interface_.getObjects();
-  for (auto it = begin(all_objects); it != end(all_objects); ++it) {
+  for (auto it = std::begin(all_objects); it != std::end(all_objects); ++it) {
     if (it->first == "table" || it->first == "wall") continue;
     removeObstacle(it->first);
   }
@@ -483,14 +483,14 @@ void MoveitVisuals::wipeKinectObstacles() {
 void MoveitVisuals::showStatus() {
   auto all_attached_objects = planning_scene_interface_.getAttachedObjects();
   ROS_STATUS("All Attached Objects: ");
-  for (auto it = begin(all_attached_objects); it != end(all_attached_objects); ++it) {
+  for (auto it = std::begin(all_attached_objects); it != std::end(all_attached_objects); ++it) {
     ROS_STATUS(it->second);
   }
 
   ROS_STATUS("All Objects: ");
   auto contains = [](const std::string& label, const std::string& target) { return label.find(target) != std::string::npos; };
   auto all_objects = planning_scene_interface_.getObjects();
-  for (auto it = begin(all_objects); it != end(all_objects); ++it) {
+  for (auto it = std::begin(all_objects); it != std::end(all_objects); ++it) {
     if (it->first == "table" || contains(it->first, "wall")) continue;
     ROS_STATUS(it->second);
   }
@@ -503,7 +503,7 @@ unsigned long MoveitVisuals::numOfObstacles() {
 const std::vector<jaco_manipulation::BoundingBox> &MoveitVisuals::getObstacles() {
   obstacles_.clear();
   auto all_objects = planning_scene_interface_.getObjects();
-  for (auto it = begin(all_objects); it != end(all_objects); ++it) {
+  for (auto it = std::begin(all_objects); it != std::end(all_objects); ++it) {
     const auto& collision_object = it->second;
     jaco_manipulation::BoundingBox box;
     box.description = collision_object.id;
