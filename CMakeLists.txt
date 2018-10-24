@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(jaco_manipulation)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -24,21 +24,11 @@ message(STATUS "${COMPILER}++ Location: " ${CMAKE_CXX_COMPILER})
 ### Require out-of-source builds
 file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" LOC_PATH)
 if(EXISTS "${LOC_PATH}")
-  message(FATAL_ERROR "You cannot build in a source directory (or any directory with a CMakeLists.txt file). Please make a build subdirectory. Feel free to remove CMakeCache.txt and CMakeFiles.")
+  message(FATAL_ERROR "You cannot build in a source directory (or any directory with a CMakeLists.txt file).
+          Please make a build subdirectory. Feel free to remove CMakeCache.txt and CMakeFiles.")
 endif()
 
-catkin_python_setup()
-#catkin_install_python(PROGRAMS
-#                      scripts/record/test_recorder.py
-#                      scripts/record/baseline_test_recorder.py
-#                      scripts/record/anchoring_test_recorder.py
-#                      DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-             anchor_msgs
              actionlib
              actionlib_msgs
              cmake_modules
@@ -81,13 +71,8 @@ generate_messages(
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES jaco2_manipulation grasp_pose_generator
-    CATKIN_DEPENDS anchor_msgs roscpp rospy actionlib actionlib_msgs cmake_modules geometry_msgs moveit_core moveit_ros_planning_interface pluginlib roscpp std_msgs tf message_runtime wpi_jaco_msgs)
-
-
-include_directories(
-    include
-    test/include
-    ${catkin_INCLUDE_DIRS})
+    CATKIN_DEPENDS  roscpp rospy actionlib actionlib_msgs cmake_modules geometry_msgs moveit_core
+                    moveit_ros_planning_interface pluginlib roscpp std_msgs tf message_runtime wpi_jaco_msgs)
 
 set(SERVER_SOURCES
     src/visuals/moveit_visuals.cpp
@@ -105,17 +90,27 @@ set(CLIENT_SOURCES
 
 ## Declare a cpp library --> DoroManipulation
 add_library(jaco2_manipulation ${SERVER_SOURCES} ${CLIENT_SOURCES})
-add_dependencies(jaco2_manipulation ${PROJECT_NAME}_generate_messages_cpp ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(jaco2_manipulation ${PROJECT_NAME}_generate_messages_cpp
+                  ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_include_directories(jaco2_manipulation PUBLIC include ${catkin_INCLUDE_DIRS})
 target_link_libraries(jaco2_manipulation
                       ${catkin_LIBRARIES}
                       grasp_pose_generator)
 
 add_library(grasp_pose_generator src/grasps/grasp_pose_generator.cpp)
+target_include_directories(grasp_pose_generator PUBLIC include ${catkin_INCLUDE_DIRS})
 add_dependencies(grasp_pose_generator ${PROJECT_NAME}_generate_messages_cpp)
 
 add_executable(jaco_manipulation_server src/${PROJECT_NAME}_node.cpp)
+target_include_directories(jaco_manipulation_server PUBLIC include ${catkin_INCLUDE_DIRS})
 target_link_libraries(jaco_manipulation_server
                       ${catkin_LIBRARIES}
                       jaco2_manipulation)
 
-add_subdirectory(test)
+install(TARGETS jaco2_manipulation grasp_pose_generator
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
+
+install(DIRECTORY include/${PROJECT_NAME}/
+        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})

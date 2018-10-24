@@ -211,6 +211,7 @@ bool JacoManipulationServer::planAndMoveAndGrasp(const jaco_manipulation::PlanAn
 
   bool moved = planAndMove(goal->pose_goal);
   if (!moved) {
+    has_gripped_ = false;
     return false;
   }
 
