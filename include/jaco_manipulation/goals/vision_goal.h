@@ -15,7 +15,7 @@
 #ifndef PROJECT_VISION_GOAL_HPP
 #define PROJECT_VISION_GOAL_HPP
 
-#include "pose_goal.h"
+#include <jaco_manipulation/goals/pose_goal.h>
 #include <jaco_manipulation/grasps/grasp_pose_generator.h>
 #include <jaco_manipulation/goals/goal_input.h>
 

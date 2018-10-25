@@ -26,7 +26,7 @@ MoveitVisuals::MoveitVisuals(ros::NodeHandle &nh, const std::string frame,
   plan_(plan),
   visual_tools_(frame),
   tf_listener_(nh_, ros::Duration(10)) {
-
+ void updatePlanningScene(const jaco_manipulation::BoundingBox &box);
   planning_scene_diff_publisher_ = nh_.advertise<moveit_msgs::PlanningScene>("planning_scene", 1);
   prepMoveItVisualTools();
   addTableObstacle();
@@ -457,9 +457,6 @@ void MoveitVisuals::detachObstacle(const jaco_manipulation::PlanAndMoveArmGoalCo
 }
 
 void MoveitVisuals::removeObstacle(const std::string id) {
-//  std::vector<std::string> object_ids;
-//  object_ids.push_back(id);
-//  planning_scene_interface_.removeCollisionObjects(object_ids);
   moveit_msgs::CollisionObject remove_object;
   remove_object.id = id;
   remove_object.header.frame_id = move_group_.getPlanningFrame();

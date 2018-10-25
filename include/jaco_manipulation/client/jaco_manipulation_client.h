@@ -133,7 +133,7 @@ class JacoManipulationClient {
   bool execute(const goals::Goal& goal, bool show_result_information=true);
 
   /**
-   *
+   * Tries different grasp poses AT THE MOMENT ONLY TOP GRASP. GRASP POSE GENERATOR NEEDS FRONT POSE EXTENSION
    */
   template <typename T>
   void tryDifferentGraspPoses(T &goal_type,

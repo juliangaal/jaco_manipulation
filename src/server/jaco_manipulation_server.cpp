@@ -196,7 +196,7 @@ bool JacoManipulationServer::planAndMove(const std::string &pose_goal_string) {
 bool JacoManipulationServer::planAndMovePreGrasp(const jaco_manipulation::PlanAndMoveArmGoalConstPtr& goal)
 {
   auto pose_goal = goal->pose_goal;
-  pose_goal.pose.position.z += 4._cm;
+  pose_goal.pose.position.z += 5._cm;
   return planAndMove(pose_goal, true);
 }
 

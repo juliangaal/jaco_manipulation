@@ -15,7 +15,7 @@
 #ifndef PROJECT_DROP_GOAL_H
 #define PROJECT_DROP_GOAL_H
 
-#include "vision_goal.h"
+#include <jaco_manipulation/goals/vision_goal.h>
 
 namespace jaco_manipulation {
 namespace goals {

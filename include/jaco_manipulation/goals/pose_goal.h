@@ -15,7 +15,7 @@
 #ifndef PROJECT_POSEGOAL_H
 #define PROJECT_POSEGOAL_H
 
-#include "goal.h"
+#include <jaco_manipulation/goals/goal.h>
 
 namespace jaco_manipulation {
 namespace goals {

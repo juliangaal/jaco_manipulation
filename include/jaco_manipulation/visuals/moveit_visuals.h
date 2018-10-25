@@ -29,38 +29,71 @@
 namespace jaco_manipulation {
 namespace visuals {
 
+/**
+ * A class that handles all the interaction with planning scene in rviz
+ */
 class MoveitVisuals {
  public:
   MoveitVisuals() = delete;
+
+  /**
+   * constructor
+   * @param nh nodehandle
+   * @param frame planning frame
+   * @param move_group move group interface
+   * @param plan move it plan interface
+   */
   MoveitVisuals(ros::NodeHandle &nh, const std::string frame,
                 moveit::planning_interface::MoveGroupInterface &move_group,
                 const moveit::planning_interface::MoveGroupInterface::Plan &plan);
+
+  /// destructor
   ~MoveitVisuals();
 
-  /**
-   * A function to visualize planned move in RViz
-   */
+  /// A function to visualize planned move in RViz
   void showPlannedPath();
 
+  /// add obstacle to planning scene. Attached/detached will happen later
   void addObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
 
+  /// attaches obstacle to robot. Trajectory is then planned with obstacle in mind
   void attachObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
+
+  /// detaches obstacle from robot
   void detachObstacle(const jaco_manipulation::PlanAndMoveArmGoalConstPtr &goal);
+
+  /// remove obstacle from planning scene by its id
   void removeObstacle(const std::string id);
+
+  /// Wipe all obstacles that came from the kinect (or ohter vision system), basically everything except table
   void wipeKinectObstacles();
+
+  /// get number of obstacles currently in the scene
   unsigned long numOfObstacles();
+
+  /**
+   * Get obstacles in planning scene. in ROOT frame (moveits planning frame)
+   * @return
+   */
   const std::vector<jaco_manipulation::BoundingBox>& getObstacles();
 
  private:
 
+  /// nodehandle
   ros::NodeHandle &nh_;
 
+  /// transform listener
   tf::TransformListener tf_listener_;
 
+  /// publishes changes to planning scene
   ros::Publisher planning_scene_diff_publisher_;
 
+  /// moveit planning scene
   moveit_msgs::PlanningScene planning_scene_;
 
+  /**
+   * All obstacles in planning scene
+   */
   std::vector<jaco_manipulation::BoundingBox> obstacles_;
 
   /**
@@ -84,14 +117,24 @@ class MoveitVisuals {
   */
   const moveit::planning_interface::MoveGroupInterface::Plan &plan_;
 
+  /**
+   * the next object to be attached.
+   */
   std::map<std::string, moveit_msgs::AttachedCollisionObject> to_be_attached;
+
   /**
    * A function to prepare MoveIt! Visual Tools in RViz
   */
   void prepMoveItVisualTools();
 
+  /**
+   * Shows all objects: attached and planning scene obstacles
+   */
   void showStatus();
 
+  /**
+   * Adds table surface to planning scene on startup
+   */
   void addTableObstacle();
 };
 } // namespace visuals

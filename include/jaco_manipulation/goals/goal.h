@@ -17,7 +17,7 @@
 
 #include <jaco_manipulation/PlanAndMoveArmAction.h>
 #include <string>
-#include "goal.h"
+#include <jaco_manipulation/goals/goal.h>
 
 namespace jaco_manipulation {
 namespace goals {

@@ -16,7 +16,7 @@
 #define PROJECT_JOINTGOAL_H
 
 #include <vector>
-#include "goal.h"
+#include <jaco_manipulation/goals/goal.h>
 
 namespace jaco_manipulation {
 namespace goals {

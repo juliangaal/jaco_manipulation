@@ -15,6 +15,8 @@
 #ifndef PROJECT_GOAL_INPUT_H
 #define PROJECT_GOAL_INPUT_H
 
+#include <string>
+
 namespace jaco_manipulation {
 namespace goals {
 namespace goal_input {

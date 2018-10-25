@@ -14,7 +14,8 @@
 
 #ifndef PROJECT_GRASPGOAL_HPP
 #define PROJECT_GRASPGOAL_HPP
-#include "vision_goal.h"
+
+#include <jaco_manipulation/goals/vision_goal.h>
 
 namespace jaco_manipulation {
 namespace goals {

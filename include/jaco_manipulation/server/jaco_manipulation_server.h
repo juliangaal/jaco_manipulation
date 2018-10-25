@@ -41,8 +41,8 @@
 #include <string>
 #include <vector>
 
-#include "std_msgs/Float32.h"
-#include "sensor_msgs/JointState.h"
+#include <std_msgs/Float32.h>
+#include <sensor_msgs/JointState.h>
 
 #define ROS_STATUS(x) ROS_INFO_STREAM("\033[34m" << x << "\033[00m")
 #define ROS_SUCCESS(x) ROS_INFO_STREAM("\033[32m" << x << "\033[00m")
@@ -103,6 +103,9 @@ class JacoManipulationServer {
   */
   actionlib::SimpleActionServer<jaco_manipulation::PlanAndMoveArmAction> pam_server_;
 
+  /**
+   * Transfrom listener
+   */
   tf::TransformListener tf_listener_;
 
   /**
