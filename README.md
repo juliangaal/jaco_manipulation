@@ -6,9 +6,10 @@ Provides ROS Actionlib Server and Client interface to Jaco Robotic Arm as part o
 
 *Fun Fact: the arm (gen 1) made it to the [NYTimes](https://www.nytimes.com/2018/10/21/business/what-comes-after-the-roomba.html), although only the title picture...*
 
-Depends on [wpi_jaco](https://github.com/ksatyaki/wpi_jaco), a custom driver for the robotic arm and [rail_manipulation_msgs](https://github.com/GT-RAIL/rail_manipulation_msgs). Just drop the repos in your catkin workspace, or use the provided `.rosinstall` file in to start a fresh workspace.
+Depends on [wpi_jaco](https://github.com/ksatyaki/wpi_jaco), a custom driver for the robotic arm and [rail_manipulation_msgs](https://github.com/GT-RAIL/rail_manipulation_msgs). Just drop the repos in your catkin workspace, or use the provided `.rosinstall` file to start a fresh workspace with [wstool](http://wiki.ros.org/wstool).
 
-Depends on installation of [MoveIt!](https://moveit.ros.org/) and it's [visual tools](https://github.com/ros-planning/moveit_visual_tools). They can be installed with [this]() script.
+Depends on installation of [MoveIt!](https://moveit.ros.org/) and it's [visual tools](https://github.com/ros-planning/moveit_visual_tools). They can be installed with [this](https://github.com/juliangaal/reground_workspace/blob/reground/install/.install_apts.sh) script or with apt.
+
 Test the installation 
 ```
 cd <workspace_root>
@@ -128,7 +129,7 @@ jaco_manipulation::BoundingBox b;
 b.header.frame_id = "base_link";
 b.description = "bottle";
 b.point.x = 55._cm;
-b.point.y = 0.0._cm;
+b.point.y = 0.0_cm;
 b.point.z = 10._cm;
 b.dimensions.x = 6._cm;
 b.dimensions.y = 6._cm;
