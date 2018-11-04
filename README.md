@@ -22,6 +22,9 @@ An RViz window should open with Moveit! ready to be used
 
 *Note*: If you have any problems with dependencies, try running `rosdep install --from-paths src -i -y`
 
+## Testing
+All tests with the ReGround anchoring system in place have been moved to a [separate ROS package](https://github.com/juliangaal/jaco_manipulation_test).
+
 ## Server: jaco\_manipulation_server
 ### Config
 Define these ROS parameters in the [launch file](launch/jaco_manipulation.launch)
