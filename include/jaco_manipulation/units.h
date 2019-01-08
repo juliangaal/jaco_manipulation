@@ -18,7 +18,7 @@
 namespace jaco_manipulation {
 
 /**
- * User defined literal: Kilogram
+ * User defined literal: Meters
  * @param amount 
  * @return amount in meters
  */
