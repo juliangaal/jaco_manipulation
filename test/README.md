@@ -15,4 +15,4 @@
 * *Run*: `rosrun jaco_manipulation client_test`
 * *Evaluation*: your eyes
 
-All other test happen in a [separate package](https://github.com/juliangaal/jaco_manipulation_test)
+These two tests are only the very basic ones, all other complex tests happen in a [separate package](https://github.com/juliangaal/jaco_manipulation_test)
