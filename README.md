@@ -1,6 +1,6 @@
 # Jaco Manipulation
 
-Provides [ROS Actionlib](http://wiki.ros.org/actionlib) Server and Client interface to Jaco Robotic Arm as part of the [ReGround Projekt]().
+Provides [ROS Actionlib](http://wiki.ros.org/actionlib) Server and Client interface to Jaco Robotic Arm as part of the [ReGround Projekt](http://reground.cs.kuleuven.be/).
 
 <p align="center"><a href="https://imgur.com/Jrbe7nQ"><img src="https://i.imgur.com/Jrbe7nQ.jpg" title="source: imgur.com" /></a></p>
 
@@ -22,6 +22,9 @@ roslaunch manipulation_launch manipulation.launch use_rviz:=true
 An RViz window should open with Moveit! ready to be used
 
 *Note*: If you have any problems with dependencies, try running `rosdep install --from-paths src -i -y`
+
+# Testing
+All tests with the ReGround anchoring system in place have been moved to a [separate ROS package](https://github.com/juliangaal/jaco_manipulation_test).
 
 # Usage
 ## Server: jaco\_manipulation_server
@@ -144,5 +147,3 @@ jmc.dropAt(b);
 
 Examples can be found [here](test/).
 
-# Testing
-All tests with the ReGround anchoring system in place have been moved to a [separate ROS package](https://github.com/juliangaal/jaco_manipulation_test).
