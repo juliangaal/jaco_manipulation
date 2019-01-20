@@ -15,4 +15,5 @@
 * *Run*: `rosrun jaco_manipulation client_test`
 * *Evaluation*: your eyes
 
-These two tests are only the very basic ones, all other complex tests happen in a [separate package](https://github.com/juliangaal/jaco_manipulation_test)
+# More
+These two tests are only the very basic ones for quick testing of changes to this package, all other complex tests that were part of testing fro ReGround happen in a [separate package](https://github.com/juliangaal/jaco_manipulation_test)
