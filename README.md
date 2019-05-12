@@ -145,5 +145,5 @@ b.dimensions.z = 21._cm;
 jmc.dropAt(b);
 ```
 
-Examples can be found [here](test/).
+More examples can be found [here](test/).
 
