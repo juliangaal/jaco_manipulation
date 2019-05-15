@@ -6,6 +6,8 @@ Provides [ROS Actionlib](http://wiki.ros.org/actionlib) Server and Client interf
 
 *Fun Fact: the arm (gen 1) made it to the [NYTimes](https://www.nytimes.com/2018/10/21/business/what-comes-after-the-roomba.html), although only the title picture...*
 
+Videos of the manipulation of objects with the robotic arm from the linguistic interface can be found here: [[1]](https://vimeo.com/335614736) [[2]](https://vimeo.com/335614197) [[3]](https://vimeo.com/335614337) [[4]](https://vimeo.com/335614582) [[5]](https://vimeo.com/335614736)
+
 # Install
 Depends on [wpi_jaco](https://github.com/ksatyaki/wpi_jaco), a custom driver for the robotic arm and [rail_manipulation_msgs](https://github.com/GT-RAIL/rail_manipulation_msgs). Just drop the repos in your catkin workspace, or use the provided `.rosinstall` file to start a fresh workspace with [wstool](http://wiki.ros.org/wstool).
 
