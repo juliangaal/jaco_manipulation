@@ -1,6 +1,6 @@
 # Jaco Manipulation
 
-Provides [ROS Actionlib](http://wiki.ros.org/actionlib) Server and Client interface to Jaco Robotic Arm as part of the [ReGround Projekt](http://reground.cs.kuleuven.be/) and my [Bachelors Thesis](thesis.pdf).
+Provides [ROS Actionlib](http://wiki.ros.org/actionlib) Server and Client interface to Jaco Robotic Arm as part of the [ReGround Projekt](http://reground.cs.kuleuven.be/) and my [Bachelors Thesis](./thesis.pdf) (You probably want to download it for all links to work, Github Preview breaks some).
 
 <p align="center"><a href="https://imgur.com/Jrbe7nQ"><img src="https://i.imgur.com/Jrbe7nQ.jpg" title="source: imgur.com" /></a></p>
 
