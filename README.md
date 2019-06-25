@@ -67,6 +67,9 @@ Simple but convenient wrapper around ROS action server SimpleActionClient, tuned
 #### Usage
 > *WARNING* You are advised to use these defined literals in order to avoid any metric confusion in all cases except JointState and Pose Quaternion definition. A zero too many or little happens very quick and can lead to unreachable poses. Additionally, it clearly states intent.
 ```cpp
+# this header is required for the definitions
+#include <jaco_manipulation/units.h>
+
 double a = 1.0_m;  // 1 meter
 double b = 1.0_cm; // 1 centimeter, or 0.01
 double c = 1.0_mm; // 1 mm, or 0.001
